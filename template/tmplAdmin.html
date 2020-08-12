@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+  <title>Go Web</title>
+  <link rel="stylesheet" href="/js/layui-v2.5.6/layui/css/layui.css">
+   
+<script src="/js/layui-v2.5.6/layui/layui.all.js"></script>
+  <script src="/js/jquery-2.2.3.min.js"></script>
+  <script src="/js/echarts/echarts.js"></script>
+</head>
+
+<body style="">
+
+<div >
+  <div class="layui-container">
+  <!--
+	// info["ip"]          //ip
+	// info["send"]        //发送数量
+	// info["lost"]        //丢失数量
+	// info["recv"]        //接收数量
+	// info["short"]       //最短用时
+	// info["long"]        // 最长用时
+	// info["lostPercent"] // 丢包率
+	// info["upload"]      //上传速率
+  // info["download"]    //下载速率-->
+  <div class="layui-row" style="height: 40px;">
+    <div class="">
+      <!-- <button id="restart" class="layui-btn layui-btn-warm" onclick="restart()">重启</button>
+      <button id="testNetSpeed" class="layui-btn" onclick="testNetSpeed()">测试网速</button> -->
+      <label id="testNetSpeed-label" class="" style="line-height: 40px;"></label>
+    </div>
+    
+  </div>
+  <div class="layui-row layui-col-space10 ">
+    <div class="layui-col-xs6 ">
+      <h1>网络监控
+        <button id="modify" class="layui-btn layui-btn-normal" onclick="config()">修改配置文件</button>
+        <button id="restart" class="layui-btn layui-btn-warm" onclick="restart()">重启</button>
+        <button id="" class="layui-btn" onclick="test()">测试历史</button>
+      </h1>
+      
+      <table class="local layui-table" lay-size="lg" lay-skin="line">
+        <tr>
+          <th>本地 ip</th>
+          <th>上行</th>
+          <th>下行</th>
+          <th>网络使用率</th>
+        </tr>
+        <tr class="localcol">
+          <td id="localIP"></td>
+          <td id="upload"></td>
+          <td id="download"></td>
+          <td id="netuse"></td>
+        </tr>
+      </table>
+      <div class="zzLayer">
+      
+        <table class="muban layui-table" lay-size="sm" lay-skin="line">
+          <tr>
+            <th>远程主机IP</th>
+            <th>发送</th>
+            <th>接收</th>
+            <th>丢失</th>
+            <th>最短</th>
+            <th>最长</th>
+            <th>丢包率</th>
+            <th>操作</th>
+          </tr>
+          <tr class="trMuban invisible">
+            <td id="ip"></td>
+            <td id="send"></td>
+            <td id="recv"></td>
+            <td id="lost"></td>
+            <td id="short"></td>
+            <td id="long"></td>
+            <td id="lostPercent"></td>
+            <td><button class="trbtn">测速</button></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="layui-col-xs6">
+      <!-- <div id="network" style="width: 600px;height: 240px;"></div> -->
+      <div id="doudong" style="width: 600px;height: 550px;"></div>
+
+    </div>
+
+  
+  </div>
+ 
+  </div>
+</div>
+
+</body>
+<script>
+  // 对Date的扩展，将 Date 转化为指定格式的String
+  // 月(M)、日(d)、小时(H)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+  // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+  // 例子：
+  // (new Date()).Format("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423
+  // (new Date()).Format("yyyy-M-d H:m:s.S")      ==> 2006-7-2 8:9:4.18
+  Date.prototype.Format = function(fmt)
+  { //author: meizz
+    var o = {
+      "M+" : this.getMonth()+1,                 //月份
+      "d+" : this.getDate(),                    //日
+      "h+" : this.getHours(),                   //小时
+      "m+" : this.getMinutes(),                 //分
+      "s+" : this.getSeconds(),                 //秒
+      "q+" : Math.floor((this.getMonth()+3)/3), //季度
+      "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt))
+      fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    for(var k in o)
+      if(new RegExp("("+ k +")").test(fmt))
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+    return fmt;
+  }
+  function test() {
+    var d1  = new Date().Format("yyyy/MM/dd hh:mm:ss");
+    var d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
+    d1 = new Date("2020-8-6 14:58:43");
+    d1 = d1.getTime()
+    d1 = JSON.stringify(d1)
+    d2 = JSON.stringify(new Date().getTime())
+    d2 = new Date("2020-8-6 14:59:43");
+    d2 = d2.getTime()
+    d2 = JSON.stringify(d2)
+    console.log(d1)
+    console.log(d2)
+    $.ajax({
+      type: 'POST',
+      url: "http://192.168.96.183:8769/getHistory",
+      data: {d1:d1,d2:d2},
+      success: function (e) {
+        console.log("success")
+        console.log(e)
+      },
+      error:function(e){
+        console.log("err")
+        console.log(e)
+      },
+      dataType: "json"
+    });
+  }
+</script>
+<script type="text/javascript">
+
+  var dd = {{.}}
+  var ff = JSON.parse(dd)
+  var ffIp = ff.localIP
+  var infoURI = "ws://" + ffIp + ":8769/info";
+  var restartUrl = "http://" + ffIp + ":8769/sendRestart";
+  var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
+  var confUrl = "ws://" + ffIp + ":8769/config";
+  var infoSock = new WebSocket(infoURI);
+  console.log(ff.targetPingIP)
+  var htm = ""
+  var ips = ff.targetPingIP.split(",")
+  var options = generateOption()
+  var chart = document.getElementById("doudong");
+
+
+  var echart = echarts.init(chart);
+
+  // 根据muban复制出来一个table 
+  // $(".muban").clone().removeClass("muban").addClass("myTable").removeClass("invisible").appendTo(".zzLayer")
+  options.legend.data = []
+  options.series = []
+  var copyOfX = JSON.parse(JSON.stringify(options.xAxis[0]) )
+  // var copyOfy = JSON.parse(JSON.stringify(options.yAxis[0]) )
+  options.xAxis =[]
+  // options.yAxis =[]
+  for(var idx =0; idx<ips.length;idx++){
+    var mIP = $.trim(ips[idx])
+    console.log(mIP)
+    // 变量污染
+    var iiip = JSON.parse(JSON.stringify(mIP))
+    var ipTr = $(".trMuban").clone().removeClass("trMuban").removeClass("invisible").addClass(mIP)
+    // ipTr.find(".trbtn").on("click",function(e,mIP){
+    //   console.log(mIP)
+    //   testNetSpeed(mIP)
+    // });
+    ipTr.find(".trbtn").attr({"onclick":"testNetSpeed(\""+mIP+"\")"})
+    ipTr.appendTo(".muban")
+    testBeating(mIP)
+    options.legend.data.push(mIP) // catagory echart
+    var xxis = JSON.parse(JSON.stringify(copyOfX) )
+    xxis.name = mIP
+    xxis.axisLabel.margin = xxis.axisLabel.margin+ (xxis.axisLabel.textStyle.fontSize+4)*idx
+    xxis.axisLabel.show =(idx===0)
+    xxis.data =[]
+    options.xAxis.push(xxis) // n个x坐标轴
+    // var yyis = JSON.parse(JSON.stringify(copyOfy) )
+    // options.yAxis.push(yyis)
+    options.series.push(handleSeries(mIP))
+    
+  }
+  
+  function config(){
+    var layer = layui.layer
+    var confSock = new WebSocket(confUrl)
+    confSock.onopen = function (e) {
+      confSock.send("read")
+    }
+    var srcdata = ""
+    confSock.onmessage = function(e){
+      srcdata = e.data
+      layer.prompt({
+        formType: 2,
+        value: e.data,
+        title: '修改配置文件',
+        area: ['600px', '350px'] //自定义文本域宽高
+      }, function(value, index, elem){
+        if(value === srcdata){
+          // 没有改动
+          layer.close(index);
+          return
+        }
+        // alert(value); //得到value
+        if(value.split("，").length!==1){
+          layer.msg("不能包含中文标点符号")
+          return
+        }
+        if(confSock.readyState!==1){
+          // 开始修改配置文件
+          new WebSocket(confUrl).onopen = function(e){
+            e.target.send(value)
+            setTimeout(restart,2000)
+          }
+        }else{
+          confSock.send(value)
+        }
+        layer.close(index);
+      });
+    }
+    
+    // $.get('url', {}, function(str){
+    //   layui.layer.open({
+    //     type: 1,
+    //     content: str //注意，如果str是object，那么需要字符拼接。
+    //   });
+    // });
+  }
+
+  function restart() {
+    $("#restart").attr("disabled", true)
+    layui.layer.msg('正在重启中，请等待自动刷新……', {time: 8000});
+    layui.layer.load(1); //风格1的加载
+    $.ajax({
+      type: 'POST',
+      url: restartUrl,
+      data: {},
+      success: function (e) {
+        setTimeout(function () {
+          location.reload();
+        }, 8000)
+      },
+      error:function(e){
+        setTimeout(function () {
+          location.reload();
+        }, 8000)
+      },
+      dataType: "json"
+    });
+
+  }
+  function testBeating(ip){
+    var beaturl = "ws://" + ip + ":8669/beating";
+    var ipselecter = ipSelect(ip)
+    var testBeatingSock = new WebSocket(beaturl)
+    var timeoutSet = setTimeout(() => {
+      $("."+ipselecter).find(".trbtn").attr({'disabled':"true"});
+    }, 2000)
+    testBeatingSock.onerror =function(e){
+    }
+    testBeatingSock.onopen = function (e) {
+      clearTimeout(timeoutSet)
+      testBeatingSock.close()
+      // testSock.send(addr)//("http://192.168.96.183:8669/r")
+    }
+    testBeatingSock.onmessage = function (e){
+
+    }
+  }
+  function testNetSpeed(mIP) {
+    var addr = "http://"+mIP+":8669/r"
+      console.log("test speed:"+addr)
+    var ipselecter = ipSelect(mIP)
+    $("."+ipselecter).find(".trbtn").attr({'disabled':"true"});
+    $.ajax({
+      type: 'POST',
+      url: testNetSpeedUrl,
+      data: {addr:addr},
+      success: function (e) {
+        console.log("success")
+        console.log(e)
+        // 完成传输
+        console.log(e.data)
+        var speed = JSON.parse(e.data).speed
+        $("#testNetSpeed-label").text("传输速率："+speed +"MB/s")
+        $("."+ipselecter).find(".trbtn").removeAttr("disabled");
+      },
+      error:function(e){
+        console.log("err")
+        console.log(e)
+        layui.layer.msg("目标无应答，测试网速失败，请检查客户端连接",{time:3000})
+        $("."+ipselecter).find(".trbtn").removeAttr("disabled");
+      },
+      dataType: "json"
+    });
+
+
+  }
+  function ipSelect(ip) {
+    var ipbonds = $.trim(ip).split(".")
+    var classSelector = "";
+    for (var i = 0; i < ipbonds.length; i++) {
+      classSelector += ipbonds[i] + "\\."
+    }
+    var ipSelector = classSelector.substring(0, classSelector.length - 2)
+    return ipSelector
+  }
+  function initSock() {
+    // var opsNetwork ={
+    //   legend: {},
+    //   xAxis: {},
+    //   yAxis: {},
+    //   label: {},
+    //   tooltip: {},
+    //   series: []
+    // }
+    // var opsNetwork ={
+    //   legend: {data:["上行","下行"]},
+    //   xAxis: {
+    //     type: 'category',   // 还有其他的type，可以去官网喵两眼哦
+    //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],   // x轴数据
+    //     name: '日期',   // x轴名称
+    //     // x轴名称样式
+    //     nameTextStyle: {
+    //       fontWeight: 600,
+    //       fontSize: 18
+    //     }
+    //   },
+    //   yAxis: {},
+    //   label: {},
+    //   tooltip: {},
+    //   series: []
+    // }
+    // var chartNetwork = echarts.init(document.getElementById("network")) ;
+
+    infoSock.onmessage = function (e) {
+      // console.log(e.data)
+      if (e.data.indexOf("{") === -1){
+        return
+      }
+      var data = JSON.parse(e.data);
+      // console.log(e);
+      if (data.hasOwnProperty("upload")) {
+        // speedinfo
+        var duration = data.duration_sec
+        document.getElementById('localIP').innerHTML = data.ip;
+        document.getElementById('upload').innerHTML = (data.upload / 1024 / duration).toFixed(2) + "kb/s";
+        document.getElementById('download').innerHTML = (data.download / 1024 / duration).toFixed(2) + "kb/s";
+        var netUsePersent = (((data.download / 1024 / 1 + data.upload / 1024 / duration) / (data.bandwidth * 1024 / 8)) *
+          100).toFixed(3)
+        document.getElementById('netuse').innerHTML = netUsePersent + "%";
+        netUsePersent < 60 ? $(".localcol").css({
+          "color": "white",
+          "background": "#009688"
+        }) : $(".localcol").css({
+          "color": "white",
+          "background": "red"
+        })
+
+      } else {
+        // pinginfo
+        // 修改为动态根据ip创建dom
+
+        var ipSelector = ipSelect(data.ip)
+        var lostp=data.lostPercent/100
+
+        $("." + ipSelector).find("#ip").text(data.ip)
+        $("." + ipSelector).find("#send").text(data.send)
+        $("." + ipSelector).find("#lost").text(data.lost)
+        $("." + ipSelector).find("#recv").text(data.recv)
+        $("." + ipSelector).find("#short").text(data.short + "ms")
+        $("." + ipSelector).find("#long").text(data.long + "ms")
+        var colorLost = $("." + ipSelector).find("#lostPercent") //.text(data.lostPercent + "%")
+        colorLost.text(lostp + "%")
+        lostp === 0 ? colorLost.prevObject.css({
+          "color": "white",
+          "background": "#009688"
+        }) : lostp > 0 && lostp < 10 ? colorLost.prevObject.css({
+          "color": "white",
+          "background": "#FFB800"
+        }) : lostp > 10 ? colorLost.prevObject.css({
+          "color": "white",
+          "background": "red"
+        }) : colorLost.prevObject.css({
+          "color": "white",
+          "background": "black"
+        })
+        // document.getElementById('ip').innerHTML = data.ip;
+        // document.getElementById('send').innerHTML = data.send;
+        // document.getElementById('lost').innerHTML = data.lost;
+        // document.getElementById('recv').innerHTML = data.recv;
+        // document.getElementById('short').innerHTML = data.short;
+        // document.getElementById('long').innerHTML = data.long;
+        // document.getElementById('lostPercent').innerHTML = data.lostPercent + "%";
+        // echart绘制
+        var y=data.time.split(" ")[1]
+        // handle x data
+        for(var i =0;i<options.xAxis.length;i++){
+          if(options.xAxis[i].name === data.ip){
+            options.xAxis[i].data.push(y)
+            // 超过60个数据删除
+            if(options.xAxis[i].data.length>60){
+              //删除第一个数据
+              options.xAxis[i].data.shift()
+              // 对应删除y
+              for(let y=0;y<options.series.length;y++){
+                if(options.series[y].name === data.ip){
+                  options.series[y].data.shift()
+                }
+              }
+            }
+            
+          }
+        }
+        // handel y data
+        for(let j= 0;j<options.series.length;j++){
+          if(options.series[j].name === data.ip){
+            options.series[j].data.push(data.duration>=3000?-1:data.duration)
+          }
+         
+        }
+        echart.setOption(options);
+      }
+
+    }
+  }
+  function handleSeries(name){
+    let frgb = 256
+        let r = Math.round(Math.random() * 256, 0) // 保证数据颜色区分
+        let g = Math.round(Math.random() * 256, 0)
+        let b = Math.round(Math.random() * 256, 0)
+        let serie = {
+          name: name,
+          type: 'line',
+          smooth: false,
+          symbol: 'circle',
+          symbolSize: 5,
+          showSymbol: false,
+          lineStyle: {
+            normal: {
+              width: 1
+            }
+          },
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0.3)'
+              }, {
+                offset: 0.8,
+                color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0)'
+              }], false),
+              shadowColor: 'rgba(0, 0, 0, 0.1)',
+              shadowBlur: 10
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgb(' + r + ', ' + g + ', ' + b + ')',
+              borderColor: 'rgba(' + r + ', ' + g + ',2,0.27)',
+              borderWidth: 12
+
+            }
+          },
+          data: []
+        }
+        return serie
+  }
+  function generateOption(){
+    var ops= {
+        backgroundColor: '#394056',
+        title: {
+          top: 20,
+          text: '60秒网络抖动',
+          textStyle: {
+            fontWeight: 'normal',
+            fontSize: 16,
+            color: '#F1F1F3'
+          },
+          left: '1%'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            lineStyle: {
+              color: '#57617B'
+            }
+          }
+        },
+        legend: {
+          top: 60,
+          icon: 'rect',
+          itemWidth: 14,
+          itemHeight: 8,
+          itemGap: 13,
+          data: ['CMCC', 'CTCC', 'CUCC'],
+          right: '4%',
+          textStyle: {
+            fontSize: 12,
+            color: '#F1F1F3'
+          }
+        },
+        grid: {
+          top: 150,
+          left: '2%',
+          right: '2%',
+          bottom: '2%',
+          containLabel: true
+        },
+        xAxis: [{
+          type: 'category',
+          boundaryGap: false,
+          axisLine: {
+            lineStyle: {
+              color: '#57617B'
+            }
+          },
+          axisLabel: {
+            margin: 18,
+            textStyle: {
+              fontSize: 10,
+              color: 'white'
+            },
+            show: true
+          },
+          axisLine: { // x轴 和name 颜色
+            lineStyle: {
+              color: 'white'
+            }
+          },
+          data: ['13:00', '13:05', '13:10', '13:15', '13:20', '13:25', '13:30', '13:35', '13:40', '13:45',
+            '13:50', '13:55'
+          ]
+        }],
+        dataZoom:[{
+ 　　　　type:"inside"         //详细配置可见echarts官网
+ 　　　}],
+        yAxis: [{
+          type: 'value',
+          name: '毫秒',
+          axisTick: {
+            show: false
+          },
+          axisLine: { // y轴 和name 颜色
+            lineStyle: {
+              color: 'white'
+            }
+          },
+          axisLabel: {
+            margin: 10,
+            textStyle: {
+              fontSize: 14,
+              color: 'white'
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              color: '#57617B'
+            }
+          }
+        }],
+        series: [{
+          name: 'CMCC',
+          type: 'line',
+          smooth: false,
+          symbol: 'circle',
+          symbolSize: 5,
+          showSymbol: false,
+          lineStyle: {
+            normal: {
+              width: 1
+            }
+          },
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: 'rgba(137, 189, 27, 0.3)'
+              }, {
+                offset: 0.8,
+                color: 'rgba(137, 189, 27, 0)'
+              }], false),
+              shadowColor: 'rgba(0, 0, 0, 0.1)',
+              shadowBlur: 10
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgb(137,189,27)',
+              borderColor: 'rgba(137,189,2,0.27)',
+              borderWidth: 12
+
+            }
+          },
+          data: [220, 182, 191, 134, 150, 120, 110, 125, 145, 122, 165, 122]
+        }, {
+          name: 'CTCC',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 5,
+          showSymbol: false,
+          lineStyle: {
+            normal: {
+              width: 1
+            }
+          },
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: 'rgba(0, 136, 212, 0.3)'
+              }, {
+                offset: 0.8,
+                color: 'rgba(0, 136, 212, 0)'
+              }], false),
+              shadowColor: 'rgba(0, 0, 0, 0.1)',
+              shadowBlur: 10
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgb(0,136,212)',
+              borderColor: 'rgba(0,136,212,0.2)',
+              borderWidth: 12
+
+            }
+          },
+          data: [120, 110, 125, 145, 122, 165, 122, 220, 182, 191, 134, 150]
+        }, {
+          name: 'CUCC',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 5,
+          showSymbol: false,
+          lineStyle: {
+            normal: {
+              width: 1
+            }
+          },
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: 'rgba(219, 50, 51, 0.3)'
+              }, {
+                offset: 0.8,
+                color: 'rgba(219, 50, 51, 0)'
+              }], false),
+              shadowColor: 'rgba(0, 0, 0, 0.1)',
+              shadowBlur: 10
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: 'rgb(219,50,51)',
+              borderColor: 'rgba(219,50,51,0.2)',
+              borderWidth: 12
+            }
+          },
+          data: [220, 182, 125, 145, 122, 191, 134, 150, 120, 110, 165, 122]
+        }]
+      }
+      return JSON.parse(JSON.stringify(ops))
+  }
+  initSock()
+</script>
+
+<style>
+  .rev {
+    /* width: 80px; */
+  }
+
+  .line {
+    display: block;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  table,
+  td {
+    border: 1px solid black;
+    min-width: 40px;
+    min-height: 25px;
+  }
+
+  .invisible {
+    display: none;
+  }
+  th{
+    background-color: #3296FA;
+    color: white;
+  }
+.trbtn{
+  width: 40px;
+  height: 20px;
+}
+</style>
+
+</html>
