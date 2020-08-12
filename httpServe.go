@@ -222,6 +222,28 @@ func checkErr(err error, extra string) bool {
 
 	return false
 }
+
+func getSocketUrlFunc(w http.ResponseWriter, r *http.Request) {
+	type RequestSocketUrl struct {
+		Min     int      `json:"min"`
+		Targets []string `json:"targets"`
+	}
+	var data RequestSocketUrl
+
+	bd, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("fuck" + err.Error())
+
+	}
+	if err := json.Unmarshal(bd, &data); err != nil {
+		fmt.Println("fuck" + err.Error())
+	}
+	fmt.Printf("min:%s,tar:%s", data.Min, data.Targets)
+	//if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+	//	fmt.Println("decode err:"+ err.Error())
+	//}
+	return
+}
 func echoFunc(w http.ResponseWriter, r *http.Request) {
 	var addr string
 	if r.Method == "POST" {
@@ -290,6 +312,7 @@ func startLiteServer() {
 }
 func httpHandle() {
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
+	http.HandleFunc("/getSocketUrl", getSocketUrlFunc)             // 传输数据 读写
 	http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
 	http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
 	http.Handle("/js/", http.FileServer(http.Dir("template")))

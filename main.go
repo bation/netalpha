@@ -47,6 +47,12 @@ func main() {
 	go writeSpeedAndPingLog()
 	/* web服务*/
 	go startLiteServer()
+	//ll := getNewLogger("192.168.96.230","60")
+	//for{
+	//	ll.Info("asldfjlasdlfj")
+	//	time.Sleep(1*time.Second)
+	//}
+
 	//lableStart:
 	//interrupt = false
 	//

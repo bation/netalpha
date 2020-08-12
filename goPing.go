@@ -209,9 +209,9 @@ type Status struct {
 	SumDuration int64   `json:"sumDuration"`
 }
 type StatusStandalone struct {
-	Ip       string  `json:"ip"`
-	Stat     string  `json:"status"`
-	LostRate float64 `json:"lost"`
+	Ip   string `json:"ip"`
+	Stat string `json:"status"`
+	//LostRate float64 `json:"lost"`
 }
 
 func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
@@ -220,12 +220,12 @@ func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT 
 		sumQ += quene.list.Get(i).Data.(int64)
 	}
 	sumAVG := sumQ / int64(quene.Size())
-	fmt.Printf("sumAvg:%d", sumAVG)
+	//fmt.Printf("sumAvg:%d", sumAVG)
 	var stat StatusStandalone
 	stat.Ip = ip
 	ds := endduration
 	lost := (float64(lostN) / float64(sendN)) * float64(100)
-	stat.LostRate = lost
+	//stat.LostRate = lost
 	// 状态优先级 ONLINE OFFLINE > HIGHLATENCY WARN
 	stat.Stat = ONLINE
 	if ds > 300 && ds < 3000 {

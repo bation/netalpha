@@ -46,8 +46,8 @@ func structToJsonsting(v interface{}) string {
 	}
 	return string(data)
 }
-func jsonToStruct(msg string, stt interface{}) interface{} {
-	err := json.Unmarshal([]byte(msg), &stt)
+func jsonToStruct(msg []byte, stt interface{}) interface{} {
+	err := json.Unmarshal(msg, &stt)
 	if err != nil {
 		fmt.Println("转换失败jsontostruct:" + err.Error())
 	}

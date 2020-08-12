@@ -97,7 +97,34 @@
         </div>
       </div>
       <div class="layui-col-xs6">
-        <!-- <div id="network" style="width: 600px;height: 240px;"></div> -->
+        <!--  单目标监测 -->
+        <div>
+          <form class="layui-form" action="">
+            <div class="layui-form-item">
+              <label class="layui-form-label">检测持续时间</label>
+              <div class="layui-input-block">
+                <select name="min" lay-verify="required">
+                  <option value=""></option>
+                  <option value="5">5分钟</option>
+                  <option value="60">1小时</option>
+                  <option value="300">5小时</option>
+                  <option value="720">12小时</option>
+                  <option value="1440">24小时</option>
+                </select>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">请选择</label>
+              <div class="layui-input-block target2Ping">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn ipt_btn" lay-submit lay-filter="formDemo">立即提交</button>
+              </div>
+            </div>
+          </form>
+        </div>
         <div id="doudong" style="width: 600px;height: 550px;"></div>
 
       </div>
@@ -109,6 +136,17 @@
 </div>
 
 </body>
+<script>
+  window.onload = function () {
+
+
+
+    }
+
+
+  };
+
+</script>
 <script>
   // 对Date的扩展，将 Date 转化为指定格式的String
   // 月(M)、日(d)、小时(H)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
@@ -162,7 +200,9 @@
     });
   }
 </script>
+
 <script type="text/javascript">
+  var form = layui.form;
 
   var pData = {{.}}
   var fData = JSON.parse(pData)
@@ -173,6 +213,7 @@
   var restartUrl = "http://" + ffIp + ":8769/sendRestart";
   var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
   var confUrl = "ws://" + ffIp + ":8769/config";
+  var pingStandaloneUrl ="http://" + ffIp + ":8769/getSocketUrl";
   var infoSock = new WebSocket(infoURI);
   console.log(fData.targets)
   var htm = ""
@@ -194,7 +235,8 @@
   for(var idx =0; idx<ips.length;idx++){
     var mIP = $.trim(ips[idx])
     console.log(mIP)
-    // 变量污染
+    var iptHtml = '<input type="checkbox" class="ipt" name="'+mIP+'" title="'+mIP+'">'
+    $(".target2Ping").append(iptHtml)
     var ipTr = $(".onoffTr").clone().removeClass("onoffTr").removeClass("invisible").addClass(mIP)
     // ipTr.find(".trbtn").on("click",function(e,mIP){
     //   console.log(mIP)
@@ -698,6 +740,49 @@
       })
     },1000)
   }
+  function initForm(){
+    form.render()
+    //监听提交
+    form.on('submit(formDemo)', function(data){
+      $(".ipt").attr({"disabled":"true"})
+      $(".ipt_btn").attr({"disabled":"true"})
+      $(".ipt_btn").addClass("layui-btn-disabled")
+
+      form.render()
+      layer.msg(JSON.stringify(data.field));
+      var field = Object.keys(data.field)
+      var dt = []
+      field.forEach(value => {
+        if(value === "min"){
+          return
+        }
+        dt.push(value)
+      })
+      var datap ={
+        min: parseInt(data.field.min),
+        targets: dt
+      }
+      $.ajax({
+        type: 'POST',
+        url: pingStandaloneUrl,
+        data: JSON.stringify(datap) ,
+        success: function (e) {
+          console.log("success")
+          console.log(e)
+        },
+        error:function(e){
+          console.log("err")
+          console.log(e)
+        },
+        dataType: "json"
+      });
+
+      console.log(datap)
+
+      return false;
+    });
+  }
+  initForm()
 </script>
 
 <style>
