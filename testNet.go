@@ -59,7 +59,7 @@ func SendFile(path string, conn *websocket.Conn) int64 {
 // del标记 未使用的方法
 func ListenAndReceiveFile() {
 
-	var addr = "ws://" + deviceInfoMap["DEVICE_IP"] + ":" + server.Addr + "/echo" //你的地址(IP:PORT)
+	var addr = "ws://" + cfg.Ip + ":" + server.Addr + "/echo" //你的地址(IP:PORT)
 	listenner, err := net.Listen("tcp", addr)
 	if err != nil {
 		fmt.Println("net.Listen err =", err)

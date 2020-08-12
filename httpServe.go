@@ -168,7 +168,7 @@ func restartNow() {
 	time.Sleep(6 * time.Second)
 	// 计算ping+device(stat+monitor) ，+write, conn
 	connCount := 1
-	pingCount := len(strings.Split(deviceInfoMap["DEVICE_TARGET"], ","))
+	pingCount := len(cfg.Targets)
 	deviceThread := 2
 	writeThread := 1
 	threadCount := pingCount + deviceThread + writeThread + connCount
@@ -297,7 +297,7 @@ func httpHandle() {
 	http.HandleFunc("/sendRestart", restartProgram)     //只读
 	// http.HandleFunc("/", templateFunc)
 	http.HandleFunc("/getHistory", getHistoryFunc)
-	http.HandleFunc("/", adminTemplateFunc)
+	http.HandleFunc("/", templateFunc)
 	httpAdminHandle()
 }
 func httpAdminHandle() {
@@ -353,10 +353,8 @@ func templateFunc(w http.ResponseWriter, r *http.Request) {
 		lgg.Error(err)
 		return
 	}
-	tdata := make(map[string]string)
-	tdata["localIP"] = deviceInfoMap["DEVICE_IP"]
-	tdata["targetPingIP"] = deviceInfoMap["DEVICE_TARGET"]
-	mjson, _ := json.Marshal(tdata)
+
+	mjson, _ := json.Marshal(cfg)
 	mString := string(mjson)
 
 	t.Execute(w, mString)
@@ -368,28 +366,8 @@ func adminTemplateFunc(w http.ResponseWriter, r *http.Request) {
 		lgg.Error(err)
 		return
 	}
-	tdata := make(map[string]string)
-	tdata["localIP"] = deviceInfoMap["DEVICE_IP"]
-	tdata["targetPingIP"] = deviceInfoMap["DEVICE_TARGET"]
-	mjson, _ := json.Marshal(tdata)
+	mjson, _ := json.Marshal(cfg)
 	mString := string(mjson)
 
 	t.Execute(w, mString)
-}
-
-//获取URL的GET参数
-func GetUrlArg(r *http.Request, name string) string {
-	var arg string
-	values := r.URL.Query()
-	arg = values.Get(name)
-	return arg
-}
-func GetPostArg(r *http.Request, name string) string {
-	var arg string
-	err := r.ParseForm() // Parses the request body
-	if err != nil {
-		fmt.Println("获取参数失败：" + err.Error())
-	}
-	arg = r.Form.Get(name) // x will be "" if parameter is not set
-	return arg
 }

@@ -13,7 +13,6 @@ import (
 
 var mainThread = sync.WaitGroup{}
 var server http.Server
-var deviceInfoMap map[string]string
 var interrupt bool
 var interruptPool string
 var interval = 5 //间隔 秒
@@ -21,22 +20,17 @@ var interval = 5 //间隔 秒
 var brocastSpeedAndPing = NewBroadcaster()
 var chanelSpeedAndPingRcver = brocastSpeedAndPing.Listen()
 var cfg Config
-const(
-	ONLINE = "ONLINE"
-	OFFLINE = "OFFLINE"
-	WARN = "WARNNING" // 丢包率超过1% 警告
-	HIGHLATENCY = "HIGH_LATENCY" // 平均延迟超过300ms
-)
+
 func main() {
 
-	//httpHandle()
+	httpHandle()
 	// 初始化配置文件
 	iscfgOk := cfg.Init("./config/config.cfg")
 	//cfg.setValueByKey("DURATION","5")
-	iscfgOk,_ =cfg.SetValueByKey("DEVICE_IP"," 192.168.96.183")
+	iscfgOk, _ = cfg.SetValueByKey("DEVICE_IP", " 192.168.96.183")
 	// DONE 判断本地是否包含配置文件中的DEVICE_IP，不包含则说明配置文件需要修改。
-	fmt.Printf("间隔：%d 秒, ip:%s, 设备名：%s, 带宽：%f Mbps, 配置文件位置：%s, 网关：%s \n",cfg.interval,cfg.ip,cfg.name,cfg.bandwidth,cfg.path,cfg.targets)
-	if !iscfgOk{
+	fmt.Printf("间隔：%d 秒, ip:%s, 设备名：%s, 带宽：%f Mbps, 配置文件位置：%s, 网关：%s \n", cfg.Interval, cfg.Ip, cfg.name, cfg.Bandwidth, cfg.path, cfg.Targets)
+	if !iscfgOk {
 		//需要重新修改配置文件
 		fmt.Println("请修改配置文件中的 DEVICE_IP 和 DEVICE_BANDWIDTH，然后重新运行！")
 		os.Exit(1)
@@ -45,12 +39,14 @@ func main() {
 	defer lgg.Close()
 	lgg.LoadConfiguration("./config/log4go.xml")
 	lgg.Info("start running")
-	interval = cfg.interval
-//TODO 发送和接收应该重新设计数据结构
-//	获取 通断 丢包率 抖动
-	go GoPing(cfg.targets)
+	interval = cfg.Interval
+	//TODO 发送和接收应该重新设计数据结构
+	//	获取 通断 丢包率 抖动
+	go GoPing(cfg.Targets)
 	/*chanel数据写入日志*/
 	go writeSpeedAndPingLog()
+	/* web服务*/
+	go startLiteServer()
 	//lableStart:
 	//interrupt = false
 	//
@@ -67,8 +63,6 @@ func main() {
 	//*/
 	//go DeviceSpeed()
 
-	///* web服务*/
-	//go startLiteServer()
 	mainThread.Add(1)
 	mainThread.Wait()
 	//fmt.Println("finish")

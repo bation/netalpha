@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"net"
 	"os"
@@ -12,7 +11,19 @@ import (
 	"time"
 )
 
+var isStandalone = false
+
+const (
+	ONLINE      = "ONLINE"
+	OFFLINE     = "OFFLINE"
+	WARN        = "LOSTRATEG1"   // 丢包率超过1% 警告
+	HIGHLATENCY = "HIGH_LATENCY" // 平均延迟超过300ms
+)
+
 func GoPing(args []string) {
+	if len(args) == 1 {
+		isStandalone = true
+	}
 	var count int      //要发送的回显请求数。
 	var timeout int64  //等待每次回复的超时时间(毫秒)
 	var size int       //要发送缓冲区大小。
@@ -21,22 +32,6 @@ func GoPing(args []string) {
 	timeout = 3000
 	size = 32
 	neverstop = true
-
-	// flag.Int64Var(&timeout, "w", 3000, "等待每次回复的超时时间(毫秒)。")
-	// flag.IntVar(&count, "n", 4, "要发送的回显请求数。")
-	// flag.IntVar(&size, "l", 32, "要发送缓冲区大小。")
-	// flag.BoolVar(&neverstop, "t", true, "Ping 指定的主机，直到停止。")
-
-	// flag.Parse()
-	// args := flag.Args() // 从命令行接收改为从形参接收
-	fmt.Println("args: ", args)
-
-	if len(args) < 1 {
-		fmt.Println("Usage: ", os.Args[0], "host")
-		flag.PrintDefaults()
-		flag.Usage()
-		os.Exit(1)
-	}
 
 	ch := make(chan int)
 	argsmap := map[string]interface{}{}
@@ -86,7 +81,8 @@ func ping(host string, c chan int, args map[string]interface{}) {
 	shortT := int64(-1)
 	longT := int64(-1)
 	sumT := int64(0)
-
+	var quene Queue
+	quene.Init()
 	for count > 0 || neverstop {
 		if interrupt {
 			fmt.Println("ping out")
@@ -153,7 +149,15 @@ func ping(host string, c chan int, args map[string]interface{}) {
 
 		seq++
 		count--
-		stat(ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration)
+		quene.Enqueue(endduration)
+		if quene.Size() > 3 {
+			quene.Dequeue() //.(int64)
+		}
+		if isStandalone {
+			statStandalone(ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
+		} else {
+			stat(ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
+		}
 	}
 
 	c <- 1
@@ -193,17 +197,50 @@ func gensequence(v int64) (byte, byte) {
 func genidentifier(host string) (byte, byte) {
 	return host[0], host[1]
 }
+
 type Status struct {
-	Ip string `json:"ip"`
-	Send int64 `json:"send"`
-	Recv int64 `json:"recv"`
-	Lost float64 `json:"lost"`
-	Duration int64 `json:"duration"`
-	MaxDuration int64 `json:"maxDuration"`
-	MinDuration int64 `json:"minDuration"`
-	SumDuration int64 `json:"sumDuration"`
+	Ip          string  `json:"ip"`
+	Send        int64   `json:"send"`
+	Recv        int64   `json:"recv"`
+	Lost        float64 `json:"lost"`
+	Duration    int64   `json:"duration"`
+	MaxDuration int64   `json:"maxDuration"`
+	MinDuration int64   `json:"minDuration"`
+	SumDuration int64   `json:"sumDuration"`
 }
-func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64) {
+type StatusStandalone struct {
+	Ip       string  `json:"ip"`
+	Stat     string  `json:"status"`
+	LostRate float64 `json:"lost"`
+}
+
+func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
+	sumQ := int64(0)
+	for i := uint(0); i < quene.Size(); i++ {
+		sumQ += quene.list.Get(i).Data.(int64)
+	}
+	sumAVG := sumQ / int64(quene.Size())
+	fmt.Printf("sumAvg:%d", sumAVG)
+	var stat StatusStandalone
+	stat.Ip = ip
+	ds := endduration
+	lost := (float64(lostN) / float64(sendN)) * float64(100)
+	stat.LostRate = lost
+	// 状态优先级 ONLINE OFFLINE > HIGHLATENCY WARN
+	stat.Stat = ONLINE
+	if ds > 300 && ds < 3000 {
+		stat.Stat = HIGHLATENCY
+	}
+	if lost >= 1 && sendN >= 100 {
+		stat.Stat = WARN
+	}
+	if sumAVG >= 3000 {
+		stat.Stat = OFFLINE
+	}
+	brocastSpeedAndPing.Write(structToJsonsting(stat))
+
+}
+func statStandalone(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
 	// fmt.Println()
 	// fmt.Println(ip, " 的 Ping 统计信息:")
 	// fmt.Printf("    数据包: 已发送 = %d，已接收 = %d，丢失 = %d (%d%% 丢失)，\n", sendN, recvN, lostN, int(lostN*100/sendN))
@@ -224,11 +261,11 @@ func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT 
 	stat.Send = sendN
 	stat.Duration = endduration
 	stat.Ip = ip
-	stat.Lost = (float64(lostN)/float64(sendN))*100
+	stat.Lost = (float64(lostN) / float64(sendN)) * float64(100)
 	stat.MaxDuration = longT
 	stat.MinDuration = shortT
 	stat.Recv = recvN
-	stat.SumDuration = sumT/sendN
+	stat.SumDuration = sumT / sendN
 
 	brocastSpeedAndPing.Write(structToJsonsting(stat))
 }

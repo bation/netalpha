@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	lgg "github.com/AlexStocks/log4go"
+	"net/http"
 	"strconv"
 )
 
@@ -38,17 +39,34 @@ func strToFloat64(flo string) float64 {
 	}
 	return res
 }
-func structToJsonsting(v interface{}) string{
+func structToJsonsting(v interface{}) string {
 	data, err := json.Marshal(v)
-	if err!=nil{
-		fmt.Println("structToJsonsting 失败："+err.Error())
+	if err != nil {
+		fmt.Println("structToJsonsting 失败：" + err.Error())
 	}
-	return  string(data)
+	return string(data)
 }
-func jsonToStruct(msg string,stt interface{}) interface{}{
+func jsonToStruct(msg string, stt interface{}) interface{} {
 	err := json.Unmarshal([]byte(msg), &stt)
-	if err!=nil{
-		fmt.Println("转换失败jsontostruct:"+err.Error())
+	if err != nil {
+		fmt.Println("转换失败jsontostruct:" + err.Error())
 	}
 	return stt
+}
+
+//获取URL的GET参数
+func GetUrlArg(r *http.Request, name string) string {
+	var arg string
+	values := r.URL.Query()
+	arg = values.Get(name)
+	return arg
+}
+func GetPostArg(r *http.Request, name string) string {
+	var arg string
+	err := r.ParseForm() // Parses the request body
+	if err != nil {
+		fmt.Println("获取参数失败：" + err.Error())
+	}
+	arg = r.Form.Get(name) // x will be "" if parameter is not set
+	return arg
 }

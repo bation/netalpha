@@ -16,15 +16,17 @@
 <div >
   <div class="layui-container">
     <!--
-      // info["ip"]          //ip
-      // info["send"]        //发送数量
-      // info["lost"]        //丢失数量
-      // info["recv"]        //接收数量
-      // info["short"]       //最短用时
-      // info["long"]        // 最长用时
-      // info["lostPercent"] // 丢包率
-      // info["upload"]      //上传速率
-    // info["download"]    //下载速率-->
+    type Status struct {
+	Ip string `json:"ip"`
+	Send int64 `json:"send"`
+	Recv int64 `json:"recv"`
+	Lost float64 `json:"lost"` //丢失率  单位百分比
+	Duration int64 `json:"duration"`
+	MaxDuration int64 `json:"maxDuration"` //最大延迟
+	MinDuration int64 `json:"minDuration"` //最小延迟
+	SumDuration int64 `json:"sumDuration"` //平均延迟
+}
+ -->
     <div class="layui-row" style="height: 40px;">
       <div class="">
         <!-- <button id="restart" class="layui-btn layui-btn-warm" onclick="restart()">重启</button>
@@ -56,7 +58,6 @@
           </tr>
         </table>
         <div class="zzLayer">
-
           <table class="muban layui-table" lay-size="sm" lay-skin="line">
             <tr>
               <th>远程主机IP</th>
@@ -77,6 +78,20 @@
               <td id="long"></td>
               <td id="lostPercent"></td>
               <td><button class="trbtn">测速</button></td>
+            </tr>
+          </table>
+        </div>
+        <div class="onoff">
+          <table class="onoffTable layui-table" lay-size="sm" lay-skin="line">
+            <tr>
+              <th>远程主机IP</th>
+              <th>主机状态</th>
+              <th>操作</th>
+            </tr>
+            <tr class="onoffTr invisible">
+              <td id="ip"></td>
+              <td ><i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i> <i id="status"> </i> </td>
+              <td><button class="onoffTrbtn">测速</button></td>
             </tr>
           </table>
         </div>
@@ -149,17 +164,19 @@
 </script>
 <script type="text/javascript">
 
-  var dd = {{.}}
-  var ff = JSON.parse(dd)
-  var ffIp = ff.localIP
+  var pData = {{.}}
+  var fData = JSON.parse(pData)
+
+  console.log(pData)
+  var ffIp = fData.ip
   var infoURI = "ws://" + ffIp + ":8769/info";
   var restartUrl = "http://" + ffIp + ":8769/sendRestart";
   var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
   var confUrl = "ws://" + ffIp + ":8769/config";
   var infoSock = new WebSocket(infoURI);
-  console.log(ff.targetPingIP)
+  console.log(fData.targets)
   var htm = ""
-  var ips = ff.targetPingIP.split(",")
+  var ips = fData.targets
   var options = generateOption()
   var chart = document.getElementById("doudong");
 
@@ -178,14 +195,13 @@
     var mIP = $.trim(ips[idx])
     console.log(mIP)
     // 变量污染
-    var iiip = JSON.parse(JSON.stringify(mIP))
-    var ipTr = $(".trMuban").clone().removeClass("trMuban").removeClass("invisible").addClass(mIP)
+    var ipTr = $(".onoffTr").clone().removeClass("onoffTr").removeClass("invisible").addClass(mIP)
     // ipTr.find(".trbtn").on("click",function(e,mIP){
     //   console.log(mIP)
     //   testNetSpeed(mIP)
     // });
-    ipTr.find(".trbtn").attr({"onclick":"testNetSpeed(\""+mIP+"\")"})
-    ipTr.appendTo(".muban")
+    ipTr.find(".onoffTrbtn").attr({"onclick":"testNetSpeed(\""+mIP+"\")"})
+    ipTr.appendTo(".onoffTable")
     testBeating(mIP)
     options.legend.data.push(mIP) // catagory echart
     var xxis = JSON.parse(JSON.stringify(copyOfX) )
@@ -325,33 +341,6 @@
     return ipSelector
   }
   function initSock() {
-    // var opsNetwork ={
-    //   legend: {},
-    //   xAxis: {},
-    //   yAxis: {},
-    //   label: {},
-    //   tooltip: {},
-    //   series: []
-    // }
-    // var opsNetwork ={
-    //   legend: {data:["上行","下行"]},
-    //   xAxis: {
-    //     type: 'category',   // 还有其他的type，可以去官网喵两眼哦
-    //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],   // x轴数据
-    //     name: '日期',   // x轴名称
-    //     // x轴名称样式
-    //     nameTextStyle: {
-    //       fontWeight: 600,
-    //       fontSize: 18
-    //     }
-    //   },
-    //   yAxis: {},
-    //   label: {},
-    //   tooltip: {},
-    //   series: []
-    // }
-    // var chartNetwork = echarts.init(document.getElementById("network")) ;
-
     infoSock.onmessage = function (e) {
       // console.log(e.data)
       if (e.data.indexOf("{") === -1){
@@ -376,7 +365,7 @@
           "background": "red"
         })
 
-      } else {
+      } else if(data.hasOwnProperty("recv")){
         // pinginfo
         // 修改为动态根据ip创建dom
 
@@ -439,6 +428,21 @@
 
         }
         echart.setOption(options);
+      }else if (data.hasOwnProperty("status")){
+        var ipSelector = ipSelect(data.ip)
+        var stat=data.status
+
+        $("." + ipSelector).find("#ip").text(data.ip)
+        var colorStat = $("." + ipSelector).find("#status")
+        colorStat.text(data.status)
+        data.status === "ONLINE" ? colorStat.prevObject.css({
+          "color": "#009688"
+        }) : (data.status === "LOSTRATEG1" || data.status === "HIGH_LATENCY") ? colorStat.prevObject.css({
+          "color": "#FFB800",
+        }) : colorStat.prevObject.css({
+          "color": "red",
+        })
+        iconFlash(ipSelector)
       }
 
     }
@@ -684,6 +688,16 @@
     return JSON.parse(JSON.stringify(ops))
   }
   initSock()
+  function iconFlash(ipSelector){
+    $("." + ipSelector).find(".layui-icon").css({
+      "color": "green"
+    })
+    setTimeout(function(){
+      $("." + ipSelector).find(".layui-icon").css({
+        "color": "white"
+      })
+    },1000)
+  }
 </script>
 
 <style>

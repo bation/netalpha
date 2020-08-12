@@ -7,7 +7,6 @@ import (
 	"net"
 
 	"os"
-	"strconv"
 	"time"
 
 	lgg "github.com/AlexStocks/log4go"
@@ -21,7 +20,7 @@ import (
 func DeviceSpeed() {
 	// brocast.Write("")
 	// deviceInfoMap = LoadFile(configFilePath)
-	var cfgIP = deviceInfoMap["DEVICE_IP"]
+	var cfgIP = cfg.Ip
 	// var cfgBindwidth = deviceInfoMap["DEVICE_BANDWIDTH"]
 	// Find all devices
 	devices, err := pcap.FindAllDevs()
@@ -174,8 +173,8 @@ func monitor(downStreamDataSize *int, upStreamDataSize *int, ip string) {
 		speedInfo["upload"] = *upStreamDataSize     //本地上传速率
 		speedInfo["download"] = *downStreamDataSize //本地下载速率
 		speedInfo["duration_sec"] = sec             //间隔毫秒
-		bandwidth := deviceInfoMap["DEVICE_BANDWIDTH"]
-		speedInfo["bandwidth"], _ = strconv.Atoi(bandwidth) // 本地带宽
+		bandwidth := int(cfg.Bandwidth)
+		speedInfo["bandwidth"] = bandwidth // 本地带宽
 
 		// bandwidth := deviceInfoMap["DEVICE_BANDWIDTH"]
 		// localIp := StringIpToInt(ip)
