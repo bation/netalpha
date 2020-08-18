@@ -42,11 +42,9 @@ func main() {
 	// 正式开始
 
 	interval = cfg.Interval
-	//TODO 发送和接收应该重新设计数据结构
-
+	// ping 直接写入log
 	go GoPing(cfg.Targets, &lgg, 0)
-	/*chanel数据写入日志*/
-	go writeSpeedAndPingLog()
+
 	/* web服务*/
 	go startLiteServer()
 	//ll := getNewLogger("192.168.96.230","60")
