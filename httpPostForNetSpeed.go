@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"net/http"
 	"os"
 	"strconv"
@@ -47,7 +47,7 @@ func httpPostToTarget(addr string) string {
 	beforePost := time.Now()
 	resp, err := http.Post(addr, contentType, buf)
 	if err != nil {
-		lgg.Error("传输失败：" + err.Error())
+		log4go.Error("传输失败：" + err.Error())
 		return "{\"status\":\"fail\"}"
 
 	}

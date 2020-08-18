@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func float64ToStr(flt float64) string {
@@ -20,14 +22,14 @@ func intToStr(num int) string {
 func strToInt(num string) int {
 	intnum, err := strconv.Atoi(num)
 	if err != nil {
-		lgg.Error(err.Error())
+		log4go.Error(err.Error())
 	}
 	return intnum
 }
 func strToInt64(str string) int64 {
 	st, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
-		lgg.Error(err.Error())
+		log4go.Error(err.Error())
 	}
 	return st
 
@@ -35,7 +37,7 @@ func strToInt64(str string) int64 {
 func strToFloat64(flo string) float64 {
 	res, err := strconv.ParseFloat(flo, 64)
 	if err != nil {
-		lgg.Error(err.Error())
+		log4go.Error(err.Error())
 	}
 	return res
 }
@@ -69,4 +71,16 @@ func GetPostArg(r *http.Request, name string) string {
 	}
 	arg = r.Form.Get(name) // x will be "" if parameter is not set
 	return arg
+}
+func getLogEndTime(min string, startTime time.Time) time.Time {
+	var endTime time.Time
+	if !strings.Contains(min, "m") {
+		remainingMin, _ := time.ParseDuration(min + "m")
+		endTime = startTime.Add(remainingMin)
+
+	} else {
+		remainingMin, _ := time.ParseDuration(min)
+		endTime = startTime.Add(remainingMin)
+	}
+	return endTime
 }

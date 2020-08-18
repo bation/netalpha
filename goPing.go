@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/AlexStocks/log4go"
 	"net"
-	"os"
-
-	lgg "github.com/AlexStocks/log4go"
 
 	// "strconv"
 	"time"
@@ -19,11 +17,23 @@ const (
 	WARN        = "LOSTRATEG1"   // 丢包率超过1% 警告
 	HIGHLATENCY = "HIGH_LATENCY" // 平均延迟超过300ms
 )
+const NOTIME = "2006-01-02 15:04:05"
 
-func GoPing(args []string) {
+//	获取 通断 丢包率 抖动
+// args 需要ping的地址
+// min 执行分钟数 0代表一直运行
+func GoPing(args []string, logger *log4go.Logger, min int) {
 	if len(args) == 1 {
 		isStandalone = true
 	}
+	var now = time.Now() // 结束时间
+	var endTime time.Time
+	remainingMin, _ := time.ParseDuration(intToStr(min) + "m")
+	endTime = now.Add(remainingMin)
+	if now == endTime {
+		endTime, _ = time.ParseInLocation(NOTIME, NOTIME, time.Local)
+	}
+
 	var count int      //要发送的回显请求数。
 	var timeout int64  //等待每次回复的超时时间(毫秒)
 	var size int       //要发送缓冲区大小。
@@ -33,7 +43,6 @@ func GoPing(args []string) {
 	size = 32
 	neverstop = true
 
-	ch := make(chan int)
 	argsmap := map[string]interface{}{}
 
 	argsmap["w"] = timeout
@@ -45,17 +54,12 @@ func GoPing(args []string) {
 		if host == "" {
 			continue
 		}
-		go ping(host, ch, argsmap)
+		go ping(host, argsmap, logger, endTime)
 	}
 
-	for i := 0; i < len(args); i++ {
-		<-ch
-	}
-
-	os.Exit(0)
 }
 
-func ping(host string, c chan int, args map[string]interface{}) {
+func ping(host string, args map[string]interface{}, logger *log4go.Logger, endTime time.Time) {
 	var count int
 	var size int
 	var timeout int64
@@ -83,12 +87,27 @@ func ping(host string, c chan int, args map[string]interface{}) {
 	sumT := int64(0)
 	var quene Queue
 	quene.Init()
+	unLimitedTime, _ := time.ParseInLocation(NOTIME, NOTIME, time.Local)
+	var isUnlimited = false
+	if unLimitedTime == endTime {
+		// 不限时间
+		isUnlimited = true
+	}
+
 	for count > 0 || neverstop {
 		if interrupt {
 			fmt.Println("ping out")
 			interruptPool += "ping,"
 			return
 		}
+		if !isUnlimited {
+			if endTime.Sub(time.Now()).Seconds() <= 0 {
+				// 时间到，结束
+				logger.Info("*****因到达运行时间而终止*****")
+				return
+			}
+		}
+
 		sendN++
 		var msg []byte = make([]byte, size+ECHO_REQUEST_HEAD_LEN)
 		msg[0] = 8                        // echo
@@ -106,9 +125,8 @@ func ping(host string, c chan int, args map[string]interface{}) {
 
 		conn, err = net.DialTimeout("ip:icmp", host, time.Duration(timeout*1000*1000))
 		if err != nil {
-			fmt.Println("icmp 建立连接失败，本线程终止：" + err.Error())
-			lgg.Error("icmp 建立连接失败，本线程终止：" + err.Error())
-			break
+			logger.Error("icmp 建立连接失败，重试：" + err.Error())
+			continue
 		}
 
 		starttime = time.Now()
@@ -124,8 +142,14 @@ func ping(host string, c chan int, args map[string]interface{}) {
 		var endduration int64 = int64(time.Since(starttime)) / (1000 * 1000)
 
 		sumT += endduration
+		// 发送频次
+		if isStandalone {
+			// 异常节点监测，每5秒一次，不可调
+			time.Sleep(time.Duration(5 * 1000 * 1000 * 1000))
+		} else {
+			time.Sleep(time.Duration(interval * 1000 * 1000 * 1000))
 
-		time.Sleep(time.Duration(interval * 1000 * 1000 * 1000))
+		}
 
 		if err != nil || receive[ECHO_REPLY_HEAD_LEN+4] != msg[4] || receive[ECHO_REPLY_HEAD_LEN+5] != msg[5] || receive[ECHO_REPLY_HEAD_LEN+6] != msg[6] || receive[ECHO_REPLY_HEAD_LEN+7] != msg[7] || endduration >= int64(timeout) || receive[ECHO_REPLY_HEAD_LEN] == 11 {
 			lostN++
@@ -154,13 +178,12 @@ func ping(host string, c chan int, args map[string]interface{}) {
 			quene.Dequeue() //.(int64)
 		}
 		if isStandalone {
-			statStandalone(ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
+			statStandalone(logger, ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
 		} else {
-			stat(ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
+			stat(logger, ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
 		}
 	}
 
-	c <- 1
 }
 
 func checkSum(msg []byte) uint16 {
@@ -178,14 +201,6 @@ func checkSum(msg []byte) uint16 {
 	sum += (sum >> 16)
 	var answer uint16 = uint16(^sum)
 	return answer
-}
-
-func checkError(err error) {
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
-		lgg.Error(err)
-		os.Exit(1)
-	}
 }
 
 func gensequence(v int64) (byte, byte) {
@@ -214,7 +229,7 @@ type StatusStandalone struct {
 	//LostRate float64 `json:"lost"`
 }
 
-func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
+func stat(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
 	sumQ := int64(0)
 	for i := uint(0); i < quene.Size(); i++ {
 		sumQ += quene.list.Get(i).Data.(int64)
@@ -237,10 +252,12 @@ func stat(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT 
 	if sumAVG >= 3000 {
 		stat.Stat = OFFLINE
 	}
-	brocastSpeedAndPing.Write(structToJsonsting(stat))
+	//直接写日志，不用Chanel
+	logger.Info(structToJsonsting(stat))
+	//brocastSpeedAndPing.Write(structToJsonsting(stat))
 
 }
-func statStandalone(ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
+func statStandalone(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
 	// fmt.Println()
 	// fmt.Println(ip, " 的 Ping 统计信息:")
 	// fmt.Printf("    数据包: 已发送 = %d，已接收 = %d，丢失 = %d (%d%% 丢失)，\n", sendN, recvN, lostN, int(lostN*100/sendN))
@@ -266,6 +283,7 @@ func statStandalone(ip string, sendN int64, lostN int64, recvN int64, shortT int
 	stat.MinDuration = shortT
 	stat.Recv = recvN
 	stat.SumDuration = sumT / sendN
-
-	brocastSpeedAndPing.Write(structToJsonsting(stat))
+	//直接写日志，不用Chanel
+	logger.Info(structToJsonsting(stat))
+	//brocastSpeedAndPing.Write(structToJsonsting(stat))
 }

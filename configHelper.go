@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"github.com/google/gopacket/pcap"
 	"io"
 	"io/ioutil"
@@ -53,7 +53,7 @@ func (c *Config) SetValueByKey(key string, value string) (bool, error) {
 	if err != nil {
 		fmt.Println("read log file err:")
 		fmt.Println(err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return iscfgOk, err
 	}
 	sumstr := ""
@@ -111,7 +111,7 @@ func (c *Config) IsConfigSetup() bool {
 	// Find all devices
 	devices, err := pcap.FindAllDevs()
 	if err != nil {
-		lgg.Error(err)
+		log4go.Error(err)
 	}
 	// Print device information
 	//fmt.Println("Devices found:")
@@ -145,7 +145,7 @@ func (c *Config) Init(path string) bool {
 	c.path = path
 	F, err := os.Open(c.path)
 	if err != nil {
-		lgg.Error("config.cfg open failed\n")
+		log4go.Error("config.cfg open failed\n")
 		panic("config.cfg open failed\n")
 	}
 	filemap := make(map[string]string)
@@ -157,7 +157,7 @@ func (c *Config) Init(path string) bool {
 			err = nil
 			eof = true
 		} else if err != nil {
-			lgg.Error(err)
+			log4go.Error(err)
 			panic("parse file error\n")
 		}
 		if strings.HasPrefix(line, "#") {

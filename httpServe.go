@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/net/websocket"
 
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 )
 
 //TODO  写日志
@@ -42,7 +42,7 @@ func writeSpeedAndPingLog() {
 			return
 		}
 
-		lgg.Info(info)
+		log4go.Info(info)
 	}
 }
 func getTimeNowFormatedAsLogTime() string {
@@ -71,7 +71,7 @@ lableReachLineMax:
 	if err != nil {
 		fmt.Println("read log file err:")
 		fmt.Println(err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 	reader := bufio.NewReader(f)
@@ -94,7 +94,7 @@ lableReachLineMax:
 			} else {
 				fmt.Println("file read err or conn lost:")
 				fmt.Println(err)
-				lgg.Error(err)
+				log4go.Error(err)
 				break
 			}
 		} else {
@@ -117,7 +117,7 @@ lableReachLineMax:
 				if err != nil {
 					fmt.Println("发送失败，连接可能关闭 err")
 					fmt.Println(err)
-					lgg.Error(err)
+					log4go.Error(err)
 
 					break
 				}
@@ -125,7 +125,7 @@ lableReachLineMax:
 			lineCount += 1 //行计数
 			if lineCount >= (50000) {
 				fmt.Println("文件到达日志最大行，准备重新读取文件")
-				lgg.Info("文件到达日志最大行，准备重新读取文件")
+				log4go.Info("文件到达日志最大行，准备重新读取文件")
 				ferr := f.Close() // 不然会一直占用io导致日志无法rotate
 				if ferr != nil {
 					fmt.Println(ferr)
@@ -223,7 +223,9 @@ func checkErr(err error, extra string) bool {
 	return false
 }
 
-func getSocketUrlFunc(w http.ResponseWriter, r *http.Request) {
+func startPingTargetsFunc(w http.ResponseWriter, r *http.Request) {
+	// 传输的json必须是字符串格式的json string
+	defer r.Body.Close()
 	type RequestSocketUrl struct {
 		Min     int      `json:"min"`
 		Targets []string `json:"targets"`
@@ -232,16 +234,47 @@ func getSocketUrlFunc(w http.ResponseWriter, r *http.Request) {
 
 	bd, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("fuck" + err.Error())
-
+		log4go.Error("read body failed " + err.Error())
+		return
 	}
 	if err := json.Unmarshal(bd, &data); err != nil {
-		fmt.Println("fuck" + err.Error())
+		log4go.Error("format body to json failed " + err.Error())
+		return
 	}
-	fmt.Printf("min:%s,tar:%s", data.Min, data.Targets)
+	fmt.Printf("min: %d ,tar:%s \n", data.Min, data.Targets)
 	//if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 	//	fmt.Println("decode err:"+ err.Error())
 	//}
+	//查重，查看是否已有ping任务在运行
+	if isRepeatTask(data.Targets) {
+		log4go.Error("已在测试中，同时间段重复测试无效")
+		return
+	}
+	// 开始ping
+	for _, ip := range data.Targets {
+		fmt.Println(ip + "|||" + intToStr(data.Min))
+		// 获得logger后，需要ping target，每个ping和logger都是独立的.
+		// 修改ping，加个logger参数？
+		var ipLogger = getNewLogger(ip, intToStr(data.Min))
+		// 开始独立记录
+		go GoPing([]string{ip}, &ipLogger, data.Min)
+
+	}
+
+	/// 以下为结果返回
+	endUrl := "/config"
+	type result struct {
+		Data string `json:"data"`
+	}
+	var ret result
+	ret.Data = endUrl
+
+	ret_json, err := json.Marshal(ret)
+	if err != nil {
+		log4go.Error("res convert to json failed " + err.Error())
+		return
+	}
+	w.Write([]byte(ret_json))
 	return
 }
 func echoFunc(w http.ResponseWriter, r *http.Request) {
@@ -272,7 +305,7 @@ func handleConfigRequest(conn *websocket.Conn) {
 	if err != nil {
 		fmt.Println("receive config err")
 		fmt.Println(err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 	if msg == "" {
@@ -285,7 +318,7 @@ func handleConfigRequest(conn *websocket.Conn) {
 		err = websocket.Message.Send(conn, string(conf))
 		if err != nil {
 			fmt.Println("conf 发送失败")
-			lgg.Error("conf 发送失败")
+			log4go.Error("conf 发送失败")
 		}
 	} else {
 		fmt.Println("conf write")
@@ -293,7 +326,7 @@ func handleConfigRequest(conn *websocket.Conn) {
 
 		if err != nil {
 			fmt.Println(err)
-			lgg.Error("conf文件写入失败")
+			log4go.Error("conf文件写入失败")
 		}
 
 	}
@@ -312,7 +345,8 @@ func startLiteServer() {
 }
 func httpHandle() {
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
-	http.HandleFunc("/getSocketUrl", getSocketUrlFunc)             // 传输数据 读写
+	http.HandleFunc("/startPingTargets", startPingTargetsFunc) // 开始ping选择的地址
+
 	http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
 	http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
 	http.Handle("/js/", http.FileServer(http.Dir("template")))
@@ -373,7 +407,7 @@ func templateFunc(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("./template/tmpl.html")
 	if err != nil {
 		fmt.Fprintln(w, err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 
@@ -386,7 +420,7 @@ func adminTemplateFunc(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("./template/tmplAdmin.html")
 	if err != nil {
 		fmt.Fprintln(w, err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 	mjson, _ := json.Marshal(cfg)

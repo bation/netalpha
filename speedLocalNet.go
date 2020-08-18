@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -25,7 +25,7 @@ func DeviceSpeed() {
 	// Find all devices
 	devices, err := pcap.FindAllDevs()
 	if err != nil {
-		lgg.Error(err)
+		log4go.Error(err)
 	}
 
 	// Print device information
@@ -61,7 +61,7 @@ func speedTest(deviceName string) {
 	// 获取所有网卡
 	devices, err := pcap.FindAllDevs()
 	if err != nil {
-		lgg.Error(err)
+		log4go.Error(err)
 	}
 
 	// Find exact device
@@ -77,7 +77,7 @@ func speedTest(deviceName string) {
 	var ip = findDeviceIpv4(device)
 	macAddr, err := findMacAddrByIp(ip)
 	if err != nil {
-		lgg.Error(err)
+		log4go.Error(err)
 		return // ip为空直接退出
 		// panic(err)
 	}
@@ -88,7 +88,7 @@ func speedTest(deviceName string) {
 	// 获取网卡handler，可用于读取或写入数据包
 	handle, err := pcap.OpenLive(deviceName, 1024 /*每个数据包读取的最大值*/, true /*是否开启混杂模式*/, 30*time.Second /*读包超时时长*/)
 	if err != nil {
-		lgg.Error(err)
+		log4go.Error(err)
 	}
 	defer handle.Close()
 
@@ -122,7 +122,7 @@ func findDeviceIpv4(device pcap.Interface) string {
 	for _, addr := range device.Addresses {
 		defer func() {
 			if err := recover(); err != nil {
-				lgg.Error(err)
+				log4go.Error(err)
 			}
 		}()
 		if ipv4 := addr.IP.To4(); ipv4 != nil {
@@ -138,13 +138,13 @@ func findDeviceIpv4(device pcap.Interface) string {
 func findMacAddrByIp(ip string) (string, error) {
 	interfaces, err := net.Interfaces()
 	if err != nil {
-		lgg.Error(err)
+		log4go.Error(err)
 	}
 
 	for _, i := range interfaces {
 		addrs, err := i.Addrs()
 		if err != nil {
-			lgg.Error(err)
+			log4go.Error(err)
 		}
 
 		for _, addr := range addrs {

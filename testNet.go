@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"golang.org/x/net/websocket"
 )
 
@@ -17,7 +17,7 @@ func SendFile(path string, conn *websocket.Conn) int64 {
 
 	if err != nil {
 		fmt.Println("os.Open err =", err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return -1
 	}
 	defer file.Close()
@@ -33,7 +33,7 @@ func SendFile(path string, conn *websocket.Conn) int64 {
 				fmt.Println("文件发送完毕 io.eof")
 			} else {
 				fmt.Println("file.Read err =", err)
-				lgg.Error(err)
+				log4go.Error(err)
 			}
 
 			break
@@ -63,7 +63,7 @@ func ListenAndReceiveFile() {
 	listenner, err := net.Listen("tcp", addr)
 	if err != nil {
 		fmt.Println("net.Listen err =", err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 	defer listenner.Close()
@@ -71,7 +71,7 @@ func ListenAndReceiveFile() {
 	conn, errl := listenner.Accept()
 	if errl != nil {
 		fmt.Println("listenner.Accept err =", errl)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 	var n int
@@ -79,14 +79,14 @@ func ListenAndReceiveFile() {
 	n, err = conn.Read(buf)
 	if err != nil {
 		fmt.Println("conn.Read fileName err =", err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 	fileName := string(buf[:n])
 	n, err = conn.Write([]byte("ok"))
 	if err != nil {
 		fmt.Println("conn.Write ok err =", err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func RecvFile(fileName string, conn net.Conn) {
 	file, err := os.Create(fileName)
 	if err != nil {
 		fmt.Println("os.Create err =", err)
-		lgg.Error(err)
+		log4go.Error(err)
 		return
 	}
 
@@ -118,7 +118,7 @@ func RecvFile(fileName string, conn net.Conn) {
 				fmt.Println("文件接收完成,时间：" + time.Now().String())
 			} else {
 				fmt.Println("conn.Read err =", err)
-				lgg.Error(err)
+				log4go.Error(err)
 			}
 			return
 		}
@@ -126,7 +126,7 @@ func RecvFile(fileName string, conn net.Conn) {
 		n, err = file.Write(buf[:n])
 		if err != nil {
 			fmt.Println("file.Write err =", err)
-			lgg.Error(err)
+			log4go.Error(err)
 			break
 		}
 	}

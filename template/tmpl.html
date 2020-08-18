@@ -213,7 +213,7 @@
   var restartUrl = "http://" + ffIp + ":8769/sendRestart";
   var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
   var confUrl = "ws://" + ffIp + ":8769/config";
-  var pingStandaloneUrl ="http://" + ffIp + ":8769/getSocketUrl";
+  var pingStandaloneUrl ="http://" + ffIp + ":8769/startPingTargets";
   var infoSock = new WebSocket(infoURI);
   console.log(fData.targets)
   var htm = ""

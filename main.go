@@ -3,7 +3,7 @@ package main
 
 import (
 	"fmt"
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"net/http"
 	"os"
 	"strconv"
@@ -22,7 +22,11 @@ var chanelSpeedAndPingRcver = brocastSpeedAndPing.Listen()
 var cfg Config
 
 func main() {
-
+	lgg := log4go.NewLogger()
+	defer lgg.Close()
+	lgg.LoadConfiguration("./config/log4go.xml")
+	lgg.SetAsDefaultLogger()
+	lgg.Info("start running")
 	httpHandle()
 	// 初始化配置文件
 	iscfgOk := cfg.Init("./config/config.cfg")
@@ -36,13 +40,11 @@ func main() {
 		os.Exit(1)
 	}
 	// 正式开始
-	defer lgg.Close()
-	lgg.LoadConfiguration("./config/log4go.xml")
-	lgg.Info("start running")
+
 	interval = cfg.Interval
 	//TODO 发送和接收应该重新设计数据结构
-	//	获取 通断 丢包率 抖动
-	go GoPing(cfg.Targets)
+
+	go GoPing(cfg.Targets, &lgg, 0)
 	/*chanel数据写入日志*/
 	go writeSpeedAndPingLog()
 	/* web服务*/
@@ -76,12 +78,12 @@ func main() {
 
 }
 func beforeRestartDelLog() {
-	lgg.Close()
+	log4go.Close()
 	// 每次运行删除日志
 	oserr := os.Rename("./log/neta.log", "./log/neta.log"+strconv.FormatInt(time.Now().Unix(), 10))
 	if oserr != nil {
 		fmt.Println("重命名日志失败：")
 		fmt.Println(oserr)
-		lgg.Error("删除日志失败：" + oserr.Error())
+		log4go.Error("删除日志失败：" + oserr.Error())
 	}
 }

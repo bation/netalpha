@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"golang.org/x/net/websocket"
 )
 
@@ -31,7 +31,7 @@ func handleHartBeat(conn *websocket.Conn) {
 		err := websocket.Message.Send(conn, &msg)
 		if err != nil {
 			fmt.Println(" client heartbeat send err:" + err.Error())
-			lgg.Error(err)
+			log4go.Error(err)
 			conn.Close()
 			break
 		}
@@ -47,7 +47,7 @@ func receiveHandler(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Println(string(body))
 	// fmt.Printf("Get request result: %s\n", string(body))
-	lgg.Info("完成接收 字节数bytes:" + strconv.Itoa(len(body)))
+	log4go.Info("完成接收 字节数bytes:" + strconv.Itoa(len(body)))
 }
 
 //func getTimeNowFormatedAsLogTime() string {

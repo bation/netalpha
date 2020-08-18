@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	lgg "github.com/AlexStocks/log4go"
+	"github.com/AlexStocks/log4go"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -22,7 +22,7 @@ func getHistroy(start string, end string) string {
 	st, err := strconv.ParseInt(start[0:10], 10, 64)
 	ed, erree := strconv.ParseInt(end[0:10], 10, 64)
 	if err != nil && erree != nil {
-		lgg.Error("时间戳转换失败：" + err.Error() + erree.Error())
+		log4go.Error("时间戳转换失败：" + err.Error() + erree.Error())
 		return ""
 	}
 	//转化所需模板
@@ -56,7 +56,7 @@ func getHistoryFromLogFile(path string, stime time.Time, etime time.Time) string
 	file, err := os.Open(path)
 	defer file.Close()
 	if err != nil {
-		lgg.Error("open file err:" + err.Error())
+		log4go.Error("open file err:" + err.Error())
 	}
 	reader := bufio.NewReader(file)
 	result := ""
@@ -69,7 +69,7 @@ func getHistoryFromLogFile(path string, stime time.Time, etime time.Time) string
 			} else {
 				fmt.Println("file read err :")
 				fmt.Println(err)
-				lgg.Error(err)
+				log4go.Error(err)
 				break
 			}
 		} else {
@@ -109,7 +109,7 @@ func listAllFileByName(level int, fileDir string) []string {
 	var listFilePrefix string = "  "
 	files, dirErr := ioutil.ReadDir(fileDir)
 	if dirErr != nil {
-		lgg.Error("读取目录失败" + fileDir)
+		log4go.Error("读取目录失败" + fileDir)
 	}
 	tmpPrefix := ""
 	for i := 1; i < level; i++ {
