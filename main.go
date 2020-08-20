@@ -16,22 +16,35 @@ var server http.Server
 var interrupt bool
 var interruptPool string
 var interval = 5 //间隔 秒
-//整合广播ping speed
-var brocastSpeedAndPing = NewBroadcaster()
-var chanelSpeedAndPingRcver = brocastSpeedAndPing.Listen()
+////整合广播ping speed
+//var brocastSpeed = NewBroadcaster()
+//var chanelSpeedRcver = brocastSpeed.Listen()
+var netUsingQuene Queue // 接收及发送数据的队列--本地网卡流量
 var cfg Config
+var statusQuene Queue // 接收及发送数据的队列--网关节点状态监控
 
 func main() {
+	// 初始化配置文件
+	iscfgOk := cfg.Init("./config/config.cfg")
+	netUsingQuene.Init()
+	statusQuene.Init()
 	lgg := log4go.NewLogger()
 	defer lgg.Close()
-	lgg.LoadConfiguration("./config/log4go.xml")
+	//lgg.LoadConfiguration("./config/log4go.xml")
+	//lgg.SetAsDefaultLogger()
+	//lgg.Info("start running")
+	lgg.AddFilter("stdout", log4go.ERROR, log4go.NewConsoleLogWriter(false))
+	flw := log4go.NewFileLogWriter("./log/neta.log", true, len(cfg.Targets)*100*2)
+	flw.SetFormat("[%D %T]#%M") //("[%D %T] [%L] (%S) %M")
+	flw.SetRotate(true)
+	flw.SetRotateLines(80000)
+	lgg.AddFilter("log", log4go.INFO, flw)
 	lgg.SetAsDefaultLogger()
 	lgg.Info("start running")
 	httpHandle()
-	// 初始化配置文件
-	iscfgOk := cfg.Init("./config/config.cfg")
+
 	//cfg.setValueByKey("DURATION","5")
-	iscfgOk, _ = cfg.SetValueByKey("DEVICE_IP", " 192.168.96.183")
+	//iscfgOk, _ = cfg.SetValueByKey("DEVICE_IP", " 192.168.96.183")
 	// DONE 判断本地是否包含配置文件中的DEVICE_IP，不包含则说明配置文件需要修改。
 	fmt.Printf("间隔：%d 秒, ip:%s, 设备名：%s, 带宽：%f Mbps, 配置文件位置：%s, 网关：%s \n", cfg.Interval, cfg.Ip, cfg.name, cfg.Bandwidth, cfg.path, cfg.Targets)
 	if !iscfgOk {
@@ -43,7 +56,10 @@ func main() {
 
 	interval = cfg.Interval
 	// ping 直接写入log
-	go GoPing(cfg.Targets, &lgg, 0)
+	for statusQuene.Size() > 0 {
+		statusQuene.Dequeue()
+	}
+	go GoPing(cfg.Targets, false, &lgg, 0)
 
 	/* web服务*/
 	go startLiteServer()

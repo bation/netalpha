@@ -38,66 +38,52 @@
     <div class="layui-row layui-col-space10 ">
       <div class="layui-col-xs6 ">
         <h1>网络监控
+         <!--
           <button id="modify" class="layui-btn layui-btn-normal" onclick="config()">修改配置文件</button>
           <button id="restart" class="layui-btn layui-btn-warm" onclick="restart()">重启</button>
-          <button id="" class="layui-btn" onclick="test()">测试历史</button>
+          -->
         </h1>
 
-        <table class="local layui-table" lay-size="lg" lay-skin="line">
-          <tr>
-            <th>本地 ip</th>
-            <th>上行</th>
-            <th>下行</th>
-            <th>网络使用率</th>
-          </tr>
-          <tr class="localcol">
-            <td id="localIP"></td>
-            <td id="upload"></td>
-            <td id="download"></td>
-            <td id="netuse"></td>
-          </tr>
-        </table>
-        <div class="zzLayer">
-          <table class="muban layui-table" lay-size="sm" lay-skin="line">
-            <tr>
-              <th>远程主机IP</th>
-              <th>发送</th>
-              <th>接收</th>
-              <th>丢失</th>
-              <th>最短</th>
-              <th>最长</th>
-              <th>丢包率</th>
-              <th>操作</th>
-            </tr>
-            <tr class="trMuban invisible">
-              <td id="ip"></td>
-              <td id="send"></td>
-              <td id="recv"></td>
-              <td id="lost"></td>
-              <td id="short"></td>
-              <td id="long"></td>
-              <td id="lostPercent"></td>
-              <td><button class="trbtn">测速</button></td>
-            </tr>
-          </table>
-        </div>
         <div class="onoff">
+            <h3  style="display: inline">网关（节点）监控：</h3>
+            <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
           <table class="onoffTable layui-table" lay-size="sm" lay-skin="line">
             <tr>
               <th>远程主机IP</th>
               <th>主机状态</th>
-              <th>操作</th>
+              <th class="invisible">操作</th>
             </tr>
             <tr class="onoffTr invisible">
               <td id="ip"></td>
               <td ><i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i> <i id="status"> </i> </td>
-              <td><button class="onoffTrbtn">测速</button></td>
+              <td class="invisible"><button class="onoffTrbtn">测速</button></td>
+            </tr>
+          </table>
+        </div>
+        <h3 style="display: inline">本地网卡链路层流量监控：</h3>
+        <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStart()">开启监控</button>
+        <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStop()">关闭监控</button>
+        <div id="netstatusdiv" style="display: none">
+
+          <table class="local layui-table" lay-size="lg" lay-skin="line">
+            <tr>
+              <th class="netusestatus">本地ip <i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i></th>
+              <th>上行</th>
+              <th>下行</th>
+              <th>网络使用率</th>
+            </tr>
+            <tr class="localcol">
+              <td id="localIP"></td>
+              <td id="upload"></td>
+              <td id="download"></td>
+              <td id="netuse"></td>
             </tr>
           </table>
         </div>
       </div>
       <div class="layui-col-xs6">
-        <!--  单目标监测 -->
+        <!--  单目标监测 异常节点监测-->
+        <h2 style="margin-bottom: 10px">目标独立监测：</h2>
         <div>
           <form class="layui-form" action="">
             <div class="layui-form-item">
@@ -121,6 +107,9 @@
             <div class="layui-form-item">
               <div class="layui-input-block">
                 <button class="layui-btn ipt_btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <div id="timediv" style="display: none">
+                  <h3>剩余时间：</h3><i id="timer"></i><h3>秒</h3>
+                </div>
               </div>
             </div>
           </form>
@@ -136,18 +125,60 @@
 </div>
 
 </body>
-<script>
-  window.onload = function () {
+
+<script type="text/javascript">
+  var form = layui.form;
+
+  var pData = {{.}}
+  var fData = JSON.parse(pData)
+
+  console.log(pData)
+  var ffIp = fData.ip
+  var infoURI = "ws://" + ffIp + ":8769/info";
+  var restartUrl = "http://" + ffIp + ":8769/sendRestart";
+  var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
+  var confUrl = "ws://" + ffIp + ":8769/config";
+  var pingStandaloneUrl ="http://" + ffIp + ":8769/startPingTargets";
+  var pingStandalneInfoUrl = "ws://" + ffIp + ":8769/getPingTargetsInfo";
+  var controlNetUsingUrl = "http://" + ffIp + ":8769/controlNetUsing";
+  var monitorNetInfoUrl = "ws://" + ffIp + ":8769/getNetUsingInfo";
+  var getHistoryUrl = "http://" + ffIp + ":8769/getHistory";
+  console.log(fData.targets)
+  var htm = ""
+  var ips = fData.targets
+
+  for(var idx =0; idx<ips.length;idx++){
+    var mIP = $.trim(ips[idx])
+    console.log(mIP)
+    var iptHtml = '<input type="checkbox" class="ipt" name="'+mIP+'" title="'+mIP+'">'
+    $(".target2Ping").append(iptHtml)
+    var ipTr = $(".onoffTr").clone().removeClass("onoffTr").removeClass("invisible").addClass(mIP)
+    // ipTr.find(".trbtn").on("click",function(e,mIP){
+    //   console.log(mIP)
+    //   testNetSpeed(mIP)
+    // });
+    ipTr.find(".onoffTrbtn").attr({"onclick":"testNetSpeed(\""+mIP+"\")"})
+    ipTr.appendTo(".onoffTable")
+    // testBeating(mIP)
+  }
 
 
-
+  var timerForEnd =0
+  function caclLeftTimeSec(m){
+    var sec = parseInt(m) * 60
+    $("#timer").text(sec)
+    timerForEnd = setInterval("timerTicks()",1000)
+  }
+  function timerTicks(){
+    var sec = parseInt($("#timer").text()) - 1;
+    $("#timer").text(sec);
+    if(sec<=0){
+      clearInterval(timerForEnd)
+      $(".ipt").attr({"disabled":"false"})
+      $(".ipt_btn").attr({"disabled":"false"})
+      $(".ipt_btn").removeClass("layui-btn-disabled")
     }
-
-
-  };
-
-</script>
-<script>
+  }
   // 对Date的扩展，将 Date 转化为指定格式的String
   // 月(M)、日(d)、小时(H)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
   // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
@@ -172,92 +203,346 @@
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
     return fmt;
   }
-  function test() {
+  function queryHistory(st,et) {
     var d1  = new Date().Format("yyyy/MM/dd hh:mm:ss");
     var d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
-    d1 = new Date("2020-8-6 14:58:43");
+    d1 = new Date().setMinutes(new Date().getMinutes()-5);
+    d1 = new Date(d1)
     d1 = d1.getTime()
     d1 = JSON.stringify(d1)
     d2 = JSON.stringify(new Date().getTime())
-    d2 = new Date("2020-8-6 14:59:43");
+    d2 = new Date;
     d2 = d2.getTime()
     d2 = JSON.stringify(d2)
+    if(st&&et){
+      d1 = JSON.stringify(st.getTime())
+      d2 = JSON.stringify(et.getTime())
+    }
+    console.log("d1 开始时间   "+new Date(parseInt(d1)))
+    console.log("d2 结束时间   "+new Date(parseInt(d2)))
     console.log(d1)
     console.log(d2)
     $.ajax({
       type: 'POST',
-      url: "http://192.168.96.183:8769/getHistory",
+      url:getHistoryUrl,
       data: {d1:d1,d2:d2},
       success: function (e) {
         console.log("success")
-        console.log(e)
+        // console.log(e)
+        var res = JSON.parse(e.data)
+        console.log(res)
+        handleResHistory(res.result,{d1:d1,d2:d2})
+
       },
       error:function(e){
+
         console.log("err")
         console.log(e)
       },
       dataType: "json"
     });
   }
-</script>
+  var openedTable = null
+  var lastSelectTime = null
+  function handleResHistory(data,dtime) {
+    //在这里面输入任何合法的js语句
+    var st =new Date(parseInt(dtime.d1))
+    var et = new Date(parseInt(dtime.d2))
+    var estr = et.Format("yyyy-MM-dd hh:mm:ss")
+    var sstr = st.Format("yyyy-MM-dd hh:mm:ss")
+    var tt = sstr +" - "+ estr
+    window.leftHistory = function(){
 
-<script type="text/javascript">
-  var form = layui.form;
+      var st1 = new Date(st).setMinutes(new Date(st).getMinutes()-5)
+      var et1 = new Date(st)
+      if($("#test5").val() !== ""){
+        lastSelectTime = $("#test5").val()
+        var t5t = new Date($("#test5").val())
+        st1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes()-5)
+        et1 = new Date($("#test5").val())
+      }
+      st1 = new Date(st1)
+      queryHistory(st1,et1)
+    }
+    window.rightHistory = function(){
+      var st1 = new Date(et)
+      var et1 = new Date(et).setMinutes(new Date(et).getMinutes()+5)
+      if($("#test5").val() !== ""){
+        var t5t = new Date($("#test5").val())
+        st1 = new Date($("#test5").val())
+        et1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes()+5)
+      }
+      et1 = new Date(et1)
+      queryHistory(st1,et1)
+    }
+    // 如果已打开，不重复打开
+    if($("#openedLayerDiv").length === 0){
+      openedTable = layui.layer.open({
+        type: 0 //Page层类型
+        ,area: ['650px', '540px']
+        ,title: "5Min记录"+tt
+        ,shade: 0.6 //遮罩透明度
+        ,maxmin: true //允许全屏最小化
+        ,anim: 1 //0-6的动画形式，-1不开启
+        ,content: '<div id="openedLayerDiv" class="layui-inline">\n' +
+                '      <label class="layui-input-inline">选择参考时间</label>\n' +
+                '      <div class="layui-input-inline">\n' +
+                '        <input type="text" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">\n' +
+                '      </div>\n' +
+                '    </div>' +
+                ' <div class="layui-btn-group">\n' +
+                '    <button type="button" onclick="leftHistory(' +
+                ')" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-left"></i></button>\n' +
+                '    <button type="button" onclick="rightHistory(' +
+                ')" class="layui-btn layui-btn-sm "><i class="layui-icon layui-icon-right"></i></button>\n' +
+                '  </div>' +
+                '<table class="layui-hide" id="test"></table>'
+        ,id: 'testReload'
+      });
+    }
 
-  var pData = {{.}}
-  var fData = JSON.parse(pData)
-
-  console.log(pData)
-  var ffIp = fData.ip
-  var infoURI = "ws://" + ffIp + ":8769/info";
-  var restartUrl = "http://" + ffIp + ":8769/sendRestart";
-  var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
-  var confUrl = "ws://" + ffIp + ":8769/config";
-  var pingStandaloneUrl ="http://" + ffIp + ":8769/startPingTargets";
-  var infoSock = new WebSocket(infoURI);
-  console.log(fData.targets)
-  var htm = ""
-  var ips = fData.targets
-  var options = generateOption()
-  var chart = document.getElementById("doudong");
-
-
-  var echart = echarts.init(chart);
-
-  // 根据muban复制出来一个table
-  // $(".muban").clone().removeClass("muban").addClass("myTable").removeClass("invisible").appendTo(".zzLayer")
-  options.legend.data = []
-  options.series = []
-  var copyOfX = JSON.parse(JSON.stringify(options.xAxis[0]) )
-  // var copyOfy = JSON.parse(JSON.stringify(options.yAxis[0]) )
-  options.xAxis =[]
-  // options.yAxis =[]
-  for(var idx =0; idx<ips.length;idx++){
-    var mIP = $.trim(ips[idx])
-    console.log(mIP)
-    var iptHtml = '<input type="checkbox" class="ipt" name="'+mIP+'" title="'+mIP+'">'
-    $(".target2Ping").append(iptHtml)
-    var ipTr = $(".onoffTr").clone().removeClass("onoffTr").removeClass("invisible").addClass(mIP)
-    // ipTr.find(".trbtn").on("click",function(e,mIP){
-    //   console.log(mIP)
-    //   testNetSpeed(mIP)
-    // });
-    ipTr.find(".onoffTrbtn").attr({"onclick":"testNetSpeed(\""+mIP+"\")"})
-    ipTr.appendTo(".onoffTable")
-    testBeating(mIP)
-    options.legend.data.push(mIP) // catagory echart
-    var xxis = JSON.parse(JSON.stringify(copyOfX) )
-    xxis.name = mIP
-    xxis.axisLabel.margin = xxis.axisLabel.margin+ (xxis.axisLabel.textStyle.fontSize+4)*idx
-    xxis.axisLabel.show =(idx===0)
-    xxis.data =[]
-    options.xAxis.push(xxis) // n个x坐标轴
-    // var yyis = JSON.parse(JSON.stringify(copyOfy) )
-    // options.yAxis.push(yyis)
-    options.series.push(handleSeries(mIP))
+    console.log(openedTable)
+    renderTableHistory(data)
 
   }
+  function renderTableHistory(data) {
+    var table = layui.table;
 
+    table.render({
+      elem: '#test'
+      // ,height:350
+      ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+      ,cols: [[
+        {field:'ip', title: 'ip', sort: true}
+        ,{field:'status', title: '状态', sort: true} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+        ,{field:'time', title: '时间', sort: true}
+      ]]
+      ,data: data
+      ,page: true //是否显示分页
+      ,even: true
+      ,limits: [10, 20,50,100]
+      ,limit: 10 //每页默认显示的数量
+      ,done: function(res, curr, count){
+        // //如果是异步请求数据方式，res即为你接口返回的信息。
+        // //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+        // console.log(res);
+        //
+        // //得到当前页码
+        // console.log(curr);
+        //
+        // //得到数据总量
+        // console.log(count);
+
+        //日期时间选择器
+        layui.laydate.render({
+          elem: '#test5'
+          ,type: 'datetime'
+          ,value: lastSelectTime
+        });
+      }
+    });
+  }
+  function getPingTargetsInfo(selectIps){
+    var ptiSock = new WebSocket(pingStandalneInfoUrl)
+    var runningsTar = fData.running
+    var options = generateOption()
+    var chart = document.getElementById("doudong");
+    var echart = echarts.init(chart);
+    // 根据muban复制出来一个table
+    // $(".muban").clone().removeClass("muban").addClass("myTable").removeClass("invisible").appendTo(".zzLayer")
+    options.legend.data = []
+    options.series = []
+    var copyOfX = JSON.parse(JSON.stringify(options.xAxis[0]) )
+    // var copyOfy = JSON.parse(JSON.stringify(options.yAxis[0]) )
+    options.xAxis =[]
+    // options.yAxis =[]
+    if (selectIps){
+      runningsTar = selectIps
+    }
+    if (runningsTar){
+      for (var i=0;i<10;i++){
+        console.log(i)
+      }
+      for(var idx =0; idx < runningsTar.length;idx++) {
+        console.log(idx)
+        var ip = $.trim(runningsTar[idx])
+        options.legend.data.push(ip) // catagory echart
+        var xxis = JSON.parse(JSON.stringify(copyOfX))
+        xxis.name = ip
+        xxis.axisLabel.margin = xxis.axisLabel.margin + (xxis.axisLabel.textStyle.fontSize + 4) * idx
+        xxis.axisLabel.show = (idx === 0)
+        xxis.data = []
+        options.xAxis.push(xxis) // n个x坐标轴
+        // var yyis = JSON.parse(JSON.stringify(copyOfy) )
+        // options.yAxis.push(yyis)
+        options.series.push(handleSeries(ip))
+      }
+    }
+    ptiSock.onmessage = function (e) {
+      // console.log(e.data)
+      if (e.data.indexOf("{") === -1){
+        return
+      }
+      var data = JSON.parse(e.data);
+      // console.log(e);
+      if(data.hasOwnProperty("recv")){
+        // pinginfo
+        // 修改为动态根据ip创建dom
+
+        var ipSelector = ipSelect(data.ip)
+        // var lostp=data.lostPercent/100
+
+        // $("." + ipSelector).find("#ip").text(data.ip)
+        // $("." + ipSelector).find("#send").text(data.send)
+        // $("." + ipSelector).find("#lost").text(data.lost)
+        // $("." + ipSelector).find("#recv").text(data.recv)
+        // $("." + ipSelector).find("#short").text(data.short + "ms")
+        // $("." + ipSelector).find("#long").text(data.long + "ms")
+        // var colorLost = $("." + ipSelector).find("#lostPercent") //.text(data.lostPercent + "%")
+        // colorLost.text(lostp + "%")
+        // lostp === 0 ? colorLost.prevObject.css({
+        //   "color": "white",
+        //   "background": "#009688"
+        // }) : lostp > 0 && lostp < 10 ? colorLost.prevObject.css({
+        //   "color": "white",
+        //   "background": "#FFB800"
+        // }) : lostp > 10 ? colorLost.prevObject.css({
+        //   "color": "white",
+        //   "background": "red"
+        // }) : colorLost.prevObject.css({
+        //   "color": "white",
+        //   "background": "black"
+        // })
+
+        // echart绘制
+        var y=data.time.split(" ")[1]
+        // handle x data
+        for(var i =0;i<options.xAxis.length;i++){
+          if(options.xAxis[i].name === data.ip){
+            options.xAxis[i].data.push(y)
+            // 超过60个数据删除
+            if(options.xAxis[i].data.length>60){
+              //删除第一个数据
+              options.xAxis[i].data.shift()
+              // 对应删除y
+              for(let y=0;y<options.series.length;y++){
+                if(options.series[y].name === data.ip){
+                  options.series[y].data.shift()
+                }
+              }
+            }
+
+          }
+        }
+        // handel y data
+        for(let j= 0;j<options.series.length;j++){
+          if(options.series[j].name === data.ip){
+            options.series[j].data.push(data.duration>=3000?-1:data.duration)
+          }
+
+        }
+        echart.setOption(options);
+      }
+
+    }
+  }
+  var monitor = null
+  if(monitor){
+    if(monitor.readyState === monitor.CLOSED){
+      handleNetStart()
+    }
+  }else{
+    handleNetStart()
+  }
+  function  monitNetStart(){
+    $.ajax({
+      type: 'POST',
+      url: controlNetUsingUrl,
+      data: {"msg":"start"} ,
+      success: function (e) {
+        console.log("success")
+        console.log(e)
+        layui.layer.msg("已开启",{icon:1})
+        if(monitor){
+          if(monitor.readyState === monitor.CLOSED){
+            setTimeout("handleNetStart()",2000)
+          }
+        }else{
+          setTimeout("handleNetStart()",2000)
+        }
+
+      },
+      error:function(e){
+        console.log("err")
+        console.log(e)
+        // layui.layer.alert(e.responseText,{icon:2})
+
+      },
+      dataType: "json"
+    });
+  }
+  function handleNetStart() {
+    monitor = new WebSocket(monitorNetInfoUrl)
+    monitor.onclose = function(){
+      $("#netstatusdiv").css({"display":"none"})
+    }
+    monitor.onopen = function(){
+      $("#netstatusdiv").css({"display":""})
+    }
+      monitor.onmessage = function (e) {
+      // console.log(e.data)
+      if (e.data.indexOf("{") === -1) {
+        return
+      }
+      var data = JSON.parse(e.data);
+      // console.log(e);
+      if (data.hasOwnProperty("upload")) {
+        // speedinfo
+        var duration = data.duration_sec
+        document.getElementById('localIP').innerHTML = data.ip;
+        document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
+        document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
+        var netUsePersent = (((data.download + data.upload ) / (data.bandwidth * 1024 / 8)) *
+                100).toFixed(3)
+        document.getElementById('netuse').innerHTML = netUsePersent + "%";
+        netUsePersent < 60 ? $(".localcol").css({
+          "color": "#009688",
+          "background": "white"
+        }) : $(".localcol").css({
+          "color": "red",
+          "background": "white"
+        });
+        iconFlash("netusestatus")
+      }
+    }
+  }
+  function monitNetStop() {
+    $.ajax({
+      type: 'POST',
+      url: controlNetUsingUrl,
+      data: {"msg":"stop"} ,
+      success: function (e) {
+        console.log("success")
+        console.log(e)
+        var aaa = JSON.parse(e.data)
+        console.log(aaa)
+        $("#netstatusdiv").css({"display":"none"})
+        layui.layer.msg("已关闭",{icon:1})
+        if(monitor){
+          monitor.close()
+        }
+      },
+      error:function(e){
+        console.log("err")
+        console.log(e)
+        $("#netstatusdiv").css({"display":"none"})
+        layui.layer.alert(e.responseText,{icon:2})
+
+      },
+      dataType: "json"
+    });
+
+  }
   function config(){
     var layer = layui.layer
     var confSock = new WebSocket(confUrl)
@@ -383,6 +668,7 @@
     return ipSelector
   }
   function initSock() {
+    var infoSock = new WebSocket(infoURI);
     infoSock.onmessage = function (e) {
       // console.log(e.data)
       if (e.data.indexOf("{") === -1){
@@ -390,87 +676,7 @@
       }
       var data = JSON.parse(e.data);
       // console.log(e);
-      if (data.hasOwnProperty("upload")) {
-        // speedinfo
-        var duration = data.duration_sec
-        document.getElementById('localIP').innerHTML = data.ip;
-        document.getElementById('upload').innerHTML = (data.upload / 1024 / duration).toFixed(2) + "kb/s";
-        document.getElementById('download').innerHTML = (data.download / 1024 / duration).toFixed(2) + "kb/s";
-        var netUsePersent = (((data.download / 1024 / 1 + data.upload / 1024 / duration) / (data.bandwidth * 1024 / 8)) *
-                100).toFixed(3)
-        document.getElementById('netuse').innerHTML = netUsePersent + "%";
-        netUsePersent < 60 ? $(".localcol").css({
-          "color": "white",
-          "background": "#009688"
-        }) : $(".localcol").css({
-          "color": "white",
-          "background": "red"
-        })
-
-      } else if(data.hasOwnProperty("recv")){
-        // pinginfo
-        // 修改为动态根据ip创建dom
-
-        var ipSelector = ipSelect(data.ip)
-        var lostp=data.lostPercent/100
-
-        $("." + ipSelector).find("#ip").text(data.ip)
-        $("." + ipSelector).find("#send").text(data.send)
-        $("." + ipSelector).find("#lost").text(data.lost)
-        $("." + ipSelector).find("#recv").text(data.recv)
-        $("." + ipSelector).find("#short").text(data.short + "ms")
-        $("." + ipSelector).find("#long").text(data.long + "ms")
-        var colorLost = $("." + ipSelector).find("#lostPercent") //.text(data.lostPercent + "%")
-        colorLost.text(lostp + "%")
-        lostp === 0 ? colorLost.prevObject.css({
-          "color": "white",
-          "background": "#009688"
-        }) : lostp > 0 && lostp < 10 ? colorLost.prevObject.css({
-          "color": "white",
-          "background": "#FFB800"
-        }) : lostp > 10 ? colorLost.prevObject.css({
-          "color": "white",
-          "background": "red"
-        }) : colorLost.prevObject.css({
-          "color": "white",
-          "background": "black"
-        })
-        // document.getElementById('ip').innerHTML = data.ip;
-        // document.getElementById('send').innerHTML = data.send;
-        // document.getElementById('lost').innerHTML = data.lost;
-        // document.getElementById('recv').innerHTML = data.recv;
-        // document.getElementById('short').innerHTML = data.short;
-        // document.getElementById('long').innerHTML = data.long;
-        // document.getElementById('lostPercent').innerHTML = data.lostPercent + "%";
-        // echart绘制
-        var y=data.time.split(" ")[1]
-        // handle x data
-        for(var i =0;i<options.xAxis.length;i++){
-          if(options.xAxis[i].name === data.ip){
-            options.xAxis[i].data.push(y)
-            // 超过60个数据删除
-            if(options.xAxis[i].data.length>60){
-              //删除第一个数据
-              options.xAxis[i].data.shift()
-              // 对应删除y
-              for(let y=0;y<options.series.length;y++){
-                if(options.series[y].name === data.ip){
-                  options.series[y].data.shift()
-                }
-              }
-            }
-
-          }
-        }
-        // handel y data
-        for(let j= 0;j<options.series.length;j++){
-          if(options.series[j].name === data.ip){
-            options.series[j].data.push(data.duration>=3000?-1:data.duration)
-          }
-
-        }
-        echart.setOption(options);
-      }else if (data.hasOwnProperty("status")){
+      if (data.hasOwnProperty("status")){
         var ipSelector = ipSelect(data.ip)
         var stat=data.status
 
@@ -536,7 +742,7 @@
       backgroundColor: '#394056',
       title: {
         top: 20,
-        text: '60秒网络抖动',
+        text: '网络抖动',
         textStyle: {
           fontWeight: 'normal',
           fontSize: 16,
@@ -730,6 +936,10 @@
     return JSON.parse(JSON.stringify(ops))
   }
   initSock()
+  if (fData.running){
+    getPingTargetsInfo(null)
+  }
+
   function iconFlash(ipSelector){
     $("." + ipSelector).find(".layui-icon").css({
       "color": "green"
@@ -750,10 +960,12 @@
 
       form.render()
       layer.msg(JSON.stringify(data.field));
+
       var field = Object.keys(data.field)
       var dt = []
       field.forEach(value => {
         if(value === "min"){
+
           return
         }
         dt.push(value)
@@ -769,6 +981,9 @@
         success: function (e) {
           console.log("success")
           console.log(e)
+          $("#timediv").toggle()
+          caclLeftTimeSec(data.field.min)
+          getPingTargetsInfo(dt)
         },
         error:function(e){
           console.log("err")
@@ -798,12 +1013,6 @@
     border-collapse: collapse;
   }
 
-  table,
-  td {
-    border: 1px solid black;
-    min-width: 40px;
-    min-height: 25px;
-  }
 
   .invisible {
     display: none;
@@ -815,6 +1024,9 @@
   .trbtn{
     width: 40px;
     height: 20px;
+  }
+  h3{
+    margin: 5px;
   }
 </style>
 

@@ -17,34 +17,6 @@ import (
 	"github.com/AlexStocks/log4go"
 )
 
-//TODO  写日志
-func writeSpeedAndPingLog() {
-	writeCount := 0
-	//些日子
-	for {
-		writeCount += 1
-		if interrupt {
-			interruptPool += "write,"
-			writeCount = 0
-			fmt.Println("write log out")
-			return
-		}
-		if writeCount >= 50000 {
-			// 超过5w行 休眠一秒
-			time.Sleep(1 * time.Second)
-			writeCount = 0
-		}
-		info := chanelSpeedAndPingRcver.Read().(string)
-		if interrupt {
-			interruptPool += "write,"
-			writeCount = 0
-			fmt.Println("write log out")
-			return
-		}
-
-		log4go.Info(info)
-	}
-}
 func getTimeNowFormatedAsLogTime() string {
 	t := time.Now()
 	zone, _ := t.Zone()
@@ -64,78 +36,98 @@ func readTheFuckingLine(r *bufio.Reader) (string, error) {
 }
 func handleInfo(ws *websocket.Conn) {
 	defer ws.Close()
-	// //读取log
-lableReachLineMax:
-	f, err := os.Open("./log/neta.log")
-	defer f.Close()
-	if err != nil {
-		fmt.Println("read log file err:")
-		fmt.Println(err)
-		log4go.Error(err)
-		return
-	}
-	reader := bufio.NewReader(f)
-	isEOFOnce := false
-	fmt.Println("read log now")
-	lineCount := 0
 	for {
-		if interrupt {
-			fmt.Println("conn out")
-			interruptPool += "conn,"
-			return
-		}
-		line, err := readTheFuckingLine(reader)
-		if err != nil {
-			if err == io.EOF {
-				// 文件末尾
-				isEOFOnce = true // 读到了文件末尾
-				// 每次到文件末尾休息1秒
-				time.Sleep(1 * time.Second)
-			} else {
-				fmt.Println("file read err or conn lost:")
-				fmt.Println(err)
-				log4go.Error(err)
-				break
-			}
-		} else {
-			// err = nil 时处理消息
+		for i := 0; i < len(cfg.Targets); i++ {
+			data := statusQuene.GetData(uint(i))
+			if data != nil {
 
-			// 首次发送数据从最后一行开始发
-			if isEOFOnce {
-				line = strings.TrimSpace(line)
-				// fmt.Println(line)
-				splitLine := strings.Split(line, "#")
-				if len(splitLine) < 2 {
-					continue
-				}
-				tStr := splitLine[0][1 : len(splitLine[0])-5]
-				// fmt.Println(tStr)
-				msgSend := splitLine[1][0:len(splitLine[1])-1] + ",\"time\":\"" + tStr + "\"}"
-				// fmt.Println((msgSend))
-				err := websocket.Message.Send(ws, msgSend)
-
+				err := websocket.Message.Send(ws, data.(string))
 				if err != nil {
 					fmt.Println("发送失败，连接可能关闭 err")
 					fmt.Println(err)
 					log4go.Error(err)
-
-					break
+					return
 				}
 			}
-			lineCount += 1 //行计数
-			if lineCount >= (50000) {
-				fmt.Println("文件到达日志最大行，准备重新读取文件")
-				log4go.Info("文件到达日志最大行，准备重新读取文件")
-				ferr := f.Close() // 不然会一直占用io导致日志无法rotate
-				if ferr != nil {
-					fmt.Println(ferr)
-				}
-				time.Sleep(1 * time.Second) // 只能休眠<3秒否则icmp可能连接失败
-				goto lableReachLineMax
-			}
-
 		}
+		time.Sleep(time.Duration(cfg.Interval) * time.Second)
 	}
+	//	// //读取log
+	////lableReachLineMax:
+	//	f, err := os.Open("./log/neta.log")
+	//	defer f.Close()
+	//	if err != nil {
+	//		fmt.Println("read log file err:")
+	//		fmt.Println(err)
+	//		log4go.Error(err)
+	//		return
+	//	}
+	//	reader := bufio.NewReader(f)
+	//	isEOFOnce := false
+	//	fmt.Println("read log now")
+	//	lineCount := 0
+	//	for {
+	//		if interrupt {
+	//			fmt.Println("conn out")
+	//			interruptPool += "conn,"
+	//			return
+	//		}
+	//		line, err := readTheFuckingLine(reader)
+	//		if err != nil {
+	//			if err == io.EOF {
+	//				// 文件末尾
+	//				isEOFOnce = true // 读到了文件末尾
+	//				// 每次到文件末尾休息1秒
+	//				time.Sleep(1 * time.Second)
+	//			} else {
+	//				fmt.Println("file read err or conn lost:")
+	//				fmt.Println(err)
+	//				log4go.Error(err)
+	//				break
+	//			}
+	//		} else {
+	//			// err = nil 时处理消息
+	//
+	//			// 首次发送数据从最后一行开始发
+	//			if isEOFOnce {
+	//				line = strings.TrimSpace(line)
+	//				if !strings.Contains(line,"{"){
+	//					continue
+	//				}
+	//				// fmt.Println(line)
+	//				splitLine := strings.Split(line, "#")
+	//				if len(splitLine) < 2 {
+	//					continue
+	//				}
+	//				//tStr := splitLine[0][1 : len(splitLine[0])-5]
+	//				// fmt.Println(tStr)
+	//				//msgSend := splitLine[1][0:len(splitLine[1])-1] + ",\"time\":\"" + tStr + "\"}"
+	//				msgSend := splitLine[1]
+	//				//fmt.Println((msgSend))
+	//				err := websocket.Message.Send(ws, msgSend)
+	//
+	//				if err != nil {
+	//					fmt.Println("发送失败，连接可能关闭 err")
+	//					fmt.Println(err)
+	//					log4go.Error(err)
+	//
+	//					break
+	//				}
+	//			}
+	//			lineCount += 1 //行计数
+	//			//if lineCount >= (50000) {
+	//			//	fmt.Println("文件到达日志最大行，准备重新读取文件")
+	//			//	log4go.Info("文件到达日志最大行，准备重新读取文件")
+	//			//	ferr := f.Close() // 不然会一直占用io导致日志无法rotate
+	//			//	if ferr != nil {
+	//			//		fmt.Println(ferr)
+	//			//	}
+	//			//	time.Sleep(1 * time.Second) // 只能休眠<3秒否则icmp可能连接失败
+	//			//	goto lableReachLineMax
+	//			//}
+	//
+	//		}
+	//	}
 
 }
 
@@ -182,7 +174,7 @@ func restartNow() {
 		}
 		if threadCount <= interruptedCount {
 			mainThread.Done()
-			reNewBrocaster() // 新建广播
+			//reNewBrocaster() // 新建广播
 			fmt.Println("restarting now")
 			interruptPool = ""
 			break
@@ -223,6 +215,98 @@ func checkErr(err error, extra string) bool {
 	return false
 }
 
+// 异常节点测试 读取数据
+func handleTargetSocket(ws *websocket.Conn) {
+	defer ws.Close()
+	rFiles := GetRunningFiles()
+	// //读取log
+	var ch chan int
+	for _, val := range rFiles {
+		go readLog("./log/"+val, ch, ws)
+	}
+	for i := 0; i < len(rFiles); i++ {
+		<-ch
+	}
+
+}
+func readLog(path string, ch chan int, ws *websocket.Conn) {
+	f, err := os.Open(path)
+	defer f.Close()
+	if err != nil {
+		fmt.Println("read log file err:")
+		fmt.Println(err)
+		log4go.Error(err)
+		return
+	}
+	reader := bufio.NewReader(f)
+	isEOFOnce := false // false 从最后一行发
+	// true 从第一行发
+	isEOFOnce = true
+	fmt.Println("read tar log now")
+	lineCount := 0
+	for {
+		if interrupt {
+			fmt.Println("conn  tar out")
+			interruptPool += "tar,"
+			return
+		}
+		line, err := readLine(reader)
+		if err != nil {
+			if err == io.EOF {
+				// 文件末尾
+				isEOFOnce = true // 读到了文件末尾
+				// 每次到文件末尾休息5秒  因为5秒发一次
+				time.Sleep(5 * time.Second)
+			} else {
+				fmt.Println("file read err or conn lost:")
+				fmt.Println(err)
+				log4go.Error(err)
+				break
+			}
+		} else {
+			// err = nil 时处理消息
+
+			// 首次发送数据从最后一行开始发
+			if isEOFOnce {
+				line = strings.TrimSpace(line)
+				// fmt.Println(line)
+				if strings.Contains(line, "因到达运行时间而终止") {
+					break
+				}
+				splitLine := strings.Split(line, "#")
+				if len(splitLine) < 2 {
+					continue
+				}
+				tStr := splitLine[0][1 : len(splitLine[0])-5]
+				// fmt.Println(tStr)
+				msgSend := splitLine[1][0:len(splitLine[1])-1] + ",\"time\":\"" + tStr + "\"}"
+				// fmt.Println((msgSend))
+				err := websocket.Message.Send(ws, msgSend)
+
+				if err != nil {
+					fmt.Println("发送失败，连接可能关闭 err")
+					log4go.Error(err)
+
+					break
+				}
+			}
+			lineCount += 1 //行计数
+			//if lineCount >= (50000) {
+			//	fmt.Println("文件到达日志最大行，准备重新读取文件")
+			//	log4go.Info("文件到达日志最大行，准备重新读取文件")
+			//	ferr := f.Close() // 不然会一直占用io导致日志无法rotate
+			//	if ferr != nil {
+			//		fmt.Println(ferr)
+			//	}
+			//	time.Sleep(1 * time.Second) // 只能休眠<3秒否则icmp可能连接失败
+			//	goto lableReachLineMax
+			//}
+
+		}
+	}
+	ch <- 1
+}
+
 func startPingTargetsFunc(w http.ResponseWriter, r *http.Request) {
 	// 传输的json必须是字符串格式的json string
 	defer r.Body.Close()
@@ -257,7 +341,7 @@ func startPingTargetsFunc(w http.ResponseWriter, r *http.Request) {
 		// 修改ping，加个logger参数？
 		var ipLogger = getNewLogger(ip, intToStr(data.Min))
 		// 开始独立记录
-		go GoPing([]string{ip}, &ipLogger, data.Min)
+		go GoPing([]string{ip}, true, &ipLogger, data.Min)
 
 	}
 
@@ -343,10 +427,81 @@ func startLiteServer() {
 		fmt.Println("服务启动失败" + err.Error())
 	}
 }
+
+// 网络使用情况开关
+func controlNetUsing(w http.ResponseWriter, r *http.Request) {
+	var stat string
+	if r.Method == "POST" {
+		stat = GetPostArg(r, "msg")
+	}
+	fmt.Println(stat)
+	ret := historyRes{Data: ""}
+	if strings.Contains(stat, "start") {
+		// 开始网络流量监控
+		ret.Data = "{\"result\":\"" + "start" + "\"}"
+		//done 重复验证 只能运行一个
+		if netUsingQuene.GetStatus() {
+			w.Write([]byte("同一时间只能运行一个网络监控！"))
+			return
+		}
+		// 清空队列
+		for netUsingQuene.Size() > 0 {
+			netUsingQuene.Dequeue()
+		}
+		go DeviceSpeed()
+
+	} else {
+		// 停止网络流量监控
+		ret.Data = "{\"result\":\"" + "stop" + "\"}"
+		// 重复验证
+		if netUsingQuene.Contains("stop") {
+			w.Write([]byte("网络监控已经停止"))
+			return
+		}
+		// 添加一条数据就会停止运行
+		netUsingQuene.Enqueue("stop")
+	}
+	ret_json, err := json.Marshal(ret)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	w.Write([]byte(ret_json))
+
+}
+
+// 读取队列数据 net
+func handleNetUsing(conn *websocket.Conn) {
+	defer conn.Close()
+	for {
+		if !netUsingQuene.GetStatus() {
+			break
+		}
+		if netUsingQuene.Contains("stop") {
+			break
+		}
+		if netUsingQuene.Peek() == nil {
+			continue
+		}
+		var msg = netUsingQuene.Peek().(string)
+		//fmt.Println(msg)
+		//fmt.Printf("\n")
+		err := websocket.Message.Send(conn, msg)
+		if err != nil {
+			log4go.Error("netusinginfo 发送失败：%s", err.Error())
+			break
+		}
+		time.Sleep(1 * time.Second)
+
+	}
+
+}
 func httpHandle() {
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
 	http.HandleFunc("/startPingTargets", startPingTargetsFunc) // 开始ping选择的地址
-
+	// 获取ping 选择的地址的日志
+	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket))
+	http.HandleFunc("/controlNetUsing", controlNetUsing)
+	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing))
 	http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
 	http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
 	http.Handle("/js/", http.FileServer(http.Dir("template")))
@@ -360,10 +515,7 @@ func httpHandle() {
 func httpAdminHandle() {
 	http.HandleFunc("/admin", adminTemplateFunc)
 }
-func reNewBrocaster() {
-	brocastSpeedAndPing = NewBroadcaster()
-	chanelSpeedAndPingRcver = brocastSpeedAndPing.Listen()
-}
+
 func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	var d1 string
 	var d2 string
@@ -381,12 +533,13 @@ func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	//d2 := ds2[1]
 	res := getHistroy(d1, d2)
 	ret := historyRes{Data: ""}
-	ret.Data = "{\"result\":\"" + res + "\"}"
+	ret.Data = "{\"result\":" + res + "}"
 	//fmt.Println(ret.Result)
 	if len(res) > 100 {
 		fmt.Println(ret.Data[0:100] + "……")
 	}
 	if res == "" {
+		ret.Data = "{\"result\":\"" + res + "\"}"
 		fmt.Println(ret.Data)
 	}
 	ret_json, err := json.Marshal(ret)
@@ -410,7 +563,13 @@ func templateFunc(w http.ResponseWriter, r *http.Request) {
 		log4go.Error(err)
 		return
 	}
-
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
 	mjson, _ := json.Marshal(cfg)
 	mString := string(mjson)
 

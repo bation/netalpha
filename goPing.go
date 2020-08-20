@@ -22,10 +22,8 @@ const NOTIME = "2006-01-02 15:04:05"
 //	获取 通断 丢包率 抖动
 // args 需要ping的地址
 // min 执行分钟数 0代表一直运行
-func GoPing(args []string, logger *log4go.Logger, min int) {
-	if len(args) == 1 {
-		isStandalone = true
-	}
+func GoPing(args []string, isStandalone bool, logger *log4go.Logger, min int) {
+
 	var now = time.Now() // 结束时间
 	var endTime time.Time
 	remainingMin, _ := time.ParseDuration(intToStr(min) + "m")
@@ -54,12 +52,12 @@ func GoPing(args []string, logger *log4go.Logger, min int) {
 		if host == "" {
 			continue
 		}
-		go ping(host, argsmap, logger, endTime)
+		go ping(host, isStandalone, argsmap, logger, endTime)
 	}
 
 }
 
-func ping(host string, args map[string]interface{}, logger *log4go.Logger, endTime time.Time) {
+func ping(host string, isStandalone bool, args map[string]interface{}, logger *log4go.Logger, endTime time.Time) {
 	var count int
 	var size int
 	var timeout int64
@@ -68,6 +66,7 @@ func ping(host string, args map[string]interface{}, logger *log4go.Logger, endTi
 	size = args["l"].(int)
 	timeout = args["w"].(int64)
 	neverstop = args["t"].(bool)
+	defer logger.Close()
 
 	cname, _ := net.LookupCNAME(host)
 	starttime := time.Now()
@@ -104,6 +103,7 @@ func ping(host string, args map[string]interface{}, logger *log4go.Logger, endTi
 			if endTime.Sub(time.Now()).Seconds() <= 0 {
 				// 时间到，结束
 				logger.Info("*****因到达运行时间而终止*****")
+
 				return
 			}
 		}
@@ -226,9 +226,11 @@ type Status struct {
 type StatusStandalone struct {
 	Ip   string `json:"ip"`
 	Stat string `json:"status"`
+	Time string `json:"time"`
 	//LostRate float64 `json:"lost"`
 }
 
+// 网关在线状态监控
 func stat(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
 	sumQ := int64(0)
 	for i := uint(0); i < quene.Size(); i++ {
@@ -252,11 +254,19 @@ func stat(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int6
 	if sumAVG >= 3000 {
 		stat.Stat = OFFLINE
 	}
+	stat.Time = time.Now().Format("2006-01-02 15:04:05")
 	//直接写日志，不用Chanel
 	logger.Info(structToJsonsting(stat))
+	statusQuene.Enqueue(structToJsonsting(stat))
+	for statusQuene.Size() > uint(len(cfg.Targets)) {
+		//最多保留配置网关数量的个数
+		statusQuene.Dequeue()
+	}
 	//brocastSpeedAndPing.Write(structToJsonsting(stat))
 
 }
+
+// 异常节点监控
 func statStandalone(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int64, shortT int64, longT int64, sumT int64, endduration int64, quene Queue) {
 	// fmt.Println()
 	// fmt.Println(ip, " 的 Ping 统计信息:")

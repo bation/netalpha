@@ -103,6 +103,11 @@ func speedTest(deviceName string) {
 			fmt.Println("speed out")
 			return
 		}
+		if netUsingQuene.Size() == 3 {
+			netUsingQuene.ChangeStatus(false)
+			log4go.Error("monitor device2 pkg 退出")
+			break
+		}
 		// 只获取以太网帧
 		ethernetLayer := packet.Layer(layers.LayerTypeEthernet)
 		if ethernetLayer != nil {
@@ -158,9 +163,16 @@ func findMacAddrByIp(ip string) (string, error) {
 	return "", errors.New(fmt.Sprintf("no device has given ip: %s", ip))
 }
 
+type deviceSpeed struct {
+	Ip        string  `json:"ip"`
+	Upload    float32 `json:"upload"`   //kb/s
+	Download  float32 `json:"download"` //kb/s
+	Bandwidth int     `json:"bandwidth"`
+}
+
 // 每一秒计算一次该秒内的数据包大小平均值，并将下载、上传总量置零
 func monitor(downStreamDataSize *int, upStreamDataSize *int, ip string) {
-	var sec = interval
+	var sec = 1
 	for {
 		if interrupt {
 			interruptPool += "monitor,"
@@ -168,27 +180,35 @@ func monitor(downStreamDataSize *int, upStreamDataSize *int, ip string) {
 			fmt.Println("speed monitor out")
 			return
 		}
-		speedInfo := make(map[string]int)
-		speedInfo["ip"] = StringIpToInt(ip)         // 本地ip
-		speedInfo["upload"] = *upStreamDataSize     //本地上传速率
-		speedInfo["download"] = *downStreamDataSize //本地下载速率
-		speedInfo["duration_sec"] = sec             //间隔毫秒
-		bandwidth := int(cfg.Bandwidth)
-		speedInfo["bandwidth"] = bandwidth // 本地带宽
+		var ds deviceSpeed
+		ds.Ip = ip
+		ds.Bandwidth = int(cfg.Bandwidth)
+		ds.Upload = float32(*upStreamDataSize) / float32(1024) / float32(sec)
+		ds.Download = float32(*downStreamDataSize) / float32(1024) / float32(sec)
+		//speedInfo := make(map[string]int)
+		//speedInfo["ip"] = StringIpToInt(ip)         // 本地ip
+		//speedInfo["upload"] = *upStreamDataSize     //本地上传速率
+		//speedInfo["download"] = *downStreamDataSize //本地下载速率
+		//speedInfo["duration_sec"] = sec             //间隔秒
+		//bandwidth := int(cfg.Bandwidth)
+		//speedInfo["bandwidth"] = bandwidth // 本地带宽
 
-		// bandwidth := deviceInfoMap["DEVICE_BANDWIDTH"]
-		// localIp := StringIpToInt(ip)
-		// speedAndPingMap.Store("localIp", localIp)
-		// speedAndPingMap.Store("upload", *upStreamDataSize)
-		// speedAndPingMap.Store("download", *downStreamDataSize)
-		// speedAndPingMap.Store("bandwidth", strconv.Atoi(bandwidth))
+		netUsingQuene.Enqueue(structToJsonsting(ds))
+		//fmt.Printf("netusing队列长度 %d \n",netUsingQuene.Size())
+		if netUsingQuene.Contains("stop") {
+			log4go.Error("monitor device1 退出")
+			netUsingQuene.ChangeStatus(false)
+			break
+		}
+		for netUsingQuene.Size() >= 2 {
+			//确保队列数据只有一个
+			netUsingQuene.Dequeue()
+		}
 
-		brocastSpeedAndPing.Write(speedInfo)
 		os.Stdout.WriteString("")
 		// os.Stdout.WriteString(fmt.Sprintf("\r ip:%s Down:%.2fkb/s \t Up:%.2fkb/s", ip, float32(*downStreamDataSize)/1024/sec, float32(*upStreamDataSize)/1024/sec))
 		*downStreamDataSize = 0
 		*upStreamDataSize = 0
-		time.Sleep(time.Duration(interval * 1000 * 1000 * 1000))
-
+		time.Sleep(time.Duration(sec * 1000 * 1000 * 1000))
 	}
 }

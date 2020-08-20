@@ -12,13 +12,14 @@ import (
 )
 
 type Config struct {
-	attrMap   map[string]string //配置文件中的键值对
-	path      string            //配置文件地址
-	Targets   []string          `json:"targets"`   //网关地址
-	Bandwidth float64           `json:"bandwidth"` //网卡带宽
-	Interval  int               `json:"interval"`  // 间隔时间 单位秒
-	Ip        string            `json:"ip"`        // 本地ip
-	name      string            //设备名
+	attrMap        map[string]string //配置文件中的键值对
+	path           string            //配置文件地址
+	Targets        []string          `json:"targets"`   //网关地址
+	Bandwidth      float64           `json:"bandwidth"` //网卡带宽
+	Interval       int               `json:"interval"`  // 间隔时间 单位秒
+	Ip             string            `json:"ip"`        // 本地ip
+	name           string            //设备名
+	RunningTargets []string          `json:"running"` // 正在测试的异常节点ip
 }
 
 /*
@@ -98,6 +99,11 @@ func (c *Config) initValue() {
 	}
 	c.Targets = pingTargets
 	c.Interval = strToInt(c.GetValueByKey("INTERVAL_SEC"))
+	if c.Interval < 5 {
+		c.Interval = 5
+	} else if c.Interval > 20 {
+		c.Interval = 20
+	}
 	c.Ip = c.GetValueByKey("DEVICE_IP")
 	c.Bandwidth = strToFloat64(c.GetValueByKey("DEVICE_BANDWIDTH"))
 }

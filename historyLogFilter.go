@@ -36,6 +36,9 @@ func getHistroy(start string, end string) string {
 	logFiles := listAllFileByName(1, "./log")
 	var result string
 	for _, val := range logFiles {
+		if !strings.Contains(val, "neta.log") {
+			continue
+		}
 		result += getHistoryFromLogFile(val, stime, etime)
 	}
 
@@ -45,11 +48,11 @@ func getHistroy(start string, end string) string {
 	}
 	result = "[" + result[0:len(result)-1] + "]"
 	//fmt.Println("返回结果："+result)
-	return result[0 : len(result)-1]
+	return result
 
 }
 
-const UploadMessage = "upload"
+const UploadMessage = "status"
 
 // exclude 不包含的string
 func getHistoryFromLogFile(path string, stime time.Time, etime time.Time) string {
@@ -82,10 +85,10 @@ func getHistoryFromLogFile(path string, stime time.Time, etime time.Time) string
 			}
 			tstr := strs[0]
 			msg := strs[1]
-			if !strings.Contains(msg, "{") {
+			if !(strings.HasPrefix(msg, "{") && strings.HasSuffix(msg, "}")) {
 				continue
 			}
-			if strings.Contains(msg, UploadMessage) {
+			if !strings.Contains(msg, UploadMessage) {
 				continue
 			}
 			t, errt := time.ParseInLocation("2006/01/02 15:04:05 CST", tstr[1:len(tstr)-1], time.Local)

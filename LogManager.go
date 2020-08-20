@@ -10,10 +10,11 @@ import (
 
 func getNewLogger(ip string, minutes string) log4go.Logger {
 	tnow := time.Now().Format("2006-01-02-15-04-05")
-	fileName := "./log/" + ip + "_" + minutes + "m_" + tnow + ".log"
+	filename := ip + "_" + minutes + "m_" + tnow + ".log"
+	filePath := "./log/" + filename
 	log := log4go.NewLogger()
 	log.AddFilter("stdout", log4go.DEBUG, log4go.NewConsoleLogWriter(false))
-	flw := log4go.NewFileLogWriter(fileName, true, 0)
+	flw := log4go.NewFileLogWriter(filePath, true, 0)
 	flw.SetFormat("[%D %T]#%M") //("[%D %T] [%L] (%S) %M")
 	flw.SetRotate(false)
 	log.AddFilter("log", log4go.INFO, flw)
@@ -45,6 +46,28 @@ func isRepeatTask(targets []string) bool {
 	}
 
 	return isTaskRunning
+}
+
+func GetRunningFiles() []string {
+	files := listAllLogFileName(1, "./log")
+	var temp []string
+	for _, fname := range files {
+		fmt.Println(fname)
+		vls := strings.Split(fname, "_")
+		if len(vls) == 3 {
+			stt := strings.Split(vls[2], ".")[0]
+			min := vls[1]
+			startTime, _ := time.ParseInLocation("2006-01-02-15-04-05", stt, time.Local)
+			endTime := getLogEndTime(min, startTime)
+			// 结束时间-当前时间 <=0 时间已过
+			// deltTime > 0 说明是未来的时间
+			deltTime := endTime.Sub(time.Now()).Seconds()
+			if deltTime >= 0 {
+				temp = append(temp, fname)
+			}
+		}
+	}
+	return temp
 }
 
 // level 目录级别 单目录1
