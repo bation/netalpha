@@ -246,6 +246,7 @@ func controlNetUsing(w http.ResponseWriter, r *http.Request) {
 		ret.Data = "{\"result\":\"" + "start" + "\"}"
 		//done 重复验证 只能运行一个
 		if netUsingQuene.GetStatus() {
+			w.WriteHeader(403)
 			w.Write([]byte("同一时间只能运行一个网络监控！"))
 			return
 		}
@@ -260,6 +261,7 @@ func controlNetUsing(w http.ResponseWriter, r *http.Request) {
 		ret.Data = "{\"result\":\"" + "stop" + "\"}"
 		// 重复验证
 		if netUsingQuene.Contains("stop") {
+			w.WriteHeader(403)
 			w.Write([]byte("网络监控已经停止"))
 			return
 		}

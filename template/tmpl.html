@@ -45,10 +45,15 @@
         </h1>
 
         <div class="onoff">
-            <h3  style="display: inline">网关（节点）监控：</h3>
-          <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
-          <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="speedTest()" >网速测试</button>
-          <table class="onoffTable layui-table" lay-size="sm" lay-skin="line">
+
+          <div class="layui-btn-group" style="margin-top: 20px;">
+            <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
+            <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="speedTest()" >网速测试</button>
+            <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStart()">开启监控</button>
+            <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">关闭监控</button>
+          </div>
+            <!-- lay-size="sm" -->
+          <table class="onoffTable layui-table"  lay-skin="line">
             <tr>
               <th>远程主机IP</th>
               <th>主机状态</th>
@@ -61,11 +66,11 @@
             </tr>
           </table>
         </div>
-        <h3 style="display: inline">本地网卡链路层流量监控：</h3>
-        <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStart()">开启监控</button>
-        <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">关闭监控</button>
+
         <div id="netstatusdiv" class="layui-form" style="display: none">
-          <table  id="localNetFlow" class="layui-hide" lay-size="lg" lay-skin="line"></table>
+          <h3 style="display: inline">本地网卡链路层流量监控：</h3>
+
+          <table  id="localNetFlow" class="layui-hide" lay-skin="line"></table>
           <!--
           <table class="local layui-table" lay-size="lg" lay-skin="line">
             <colgroup>
@@ -100,8 +105,8 @@
       </div>
       <div class="layui-col-xs6">
         <!--  单目标监测 异常节点监测-->
-        <h2 style="margin-bottom: 10px">目标独立监测：</h2>
-        <div>
+        <h1 style="margin-top: 10px;margin-left: 25px">目标独立监测：</h1>
+        <div style="margin-top: 40px;">
           <form class="layui-form" action="">
             <div class="layui-form-item">
               <label class="layui-form-label">检测持续时间</label>
@@ -129,9 +134,9 @@
             </div>
             <div class="layui-form-item">
               <div class="layui-input-block">
-                <button class="layui-btn ipt_btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button class="layui-btn ipt_btn  layui-btn-primary" lay-submit lay-filter="formDemo">立即提交</button>
                 <div id="timediv" style="display: none">
-                  <h3>剩余时间：</h3><i id="timer"></i><h3>秒</h3>
+                  <h3 style="display: inline">剩余时间(秒)：</h3><i id="timer" style="display: inline"></i>
                 </div>
               </div>
             </div>
@@ -550,7 +555,7 @@
       error:function(e){
         console.log("err")
         console.log(e)
-        // layui.layer.alert(e.responseText,{icon:2})
+        layui.layer.alert(e.responseText,{icon:2})
 
       },
       dataType: "json"
@@ -595,6 +600,7 @@
         table.render({
           elem: '#localNetFlow'
           ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+          // ,size:"sm"
           ,cols: [[
             {field:'ip', width:130,align:"center", title: '本地IP'}
             ,{field:'upload', width:110,align:"center", title: '上行'}
