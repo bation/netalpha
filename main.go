@@ -4,17 +4,11 @@ package main
 import (
 	"fmt"
 	"github.com/AlexStocks/log4go"
-	"net/http"
 	"os"
-	"strconv"
 	"sync"
-	"time"
 )
 
 var mainThread = sync.WaitGroup{}
-var server http.Server
-var interrupt bool
-var interruptPool string
 var interval = 5 //间隔 秒
 ////整合广播ping speed
 //var brocastSpeed = NewBroadcaster()
@@ -63,41 +57,10 @@ func main() {
 
 	/* web服务*/
 	go startLiteServer()
-	//ll := getNewLogger("192.168.96.230","60")
-	//for{
-	//	ll.Info("asldfjlasdlfj")
-	//	time.Sleep(1*time.Second)
-	//}
-
-	//lableStart:
-	//interrupt = false
-	//
-	//time.Sleep(1 * time.Second)
-	//// 删除日志
-	//beforeRestartDelLog()
-	//
-	///**
-	//获取 通断 丢包率 抖动
-	//*/
-	//go GoPing(pingTargets)
-	///**
-	//通过配置文件获取本地网卡的上行和下行速率
-	//*/
-	//go DeviceSpeed()
 
 	mainThread.Add(1)
 	mainThread.Wait()
 	//fmt.Println("finish")
 	//goto lableStart
 
-}
-func beforeRestartDelLog() {
-	log4go.Close()
-	// 每次运行删除日志
-	oserr := os.Rename("./log/neta.log", "./log/neta.log"+strconv.FormatInt(time.Now().Unix(), 10))
-	if oserr != nil {
-		fmt.Println("重命名日志失败：")
-		fmt.Println(oserr)
-		log4go.Error("删除日志失败：" + oserr.Error())
-	}
 }

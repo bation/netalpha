@@ -52,83 +52,6 @@ func handleInfo(ws *websocket.Conn) {
 		}
 		time.Sleep(time.Duration(cfg.Interval) * time.Second)
 	}
-	//	// //读取log
-	////lableReachLineMax:
-	//	f, err := os.Open("./log/neta.log")
-	//	defer f.Close()
-	//	if err != nil {
-	//		fmt.Println("read log file err:")
-	//		fmt.Println(err)
-	//		log4go.Error(err)
-	//		return
-	//	}
-	//	reader := bufio.NewReader(f)
-	//	isEOFOnce := false
-	//	fmt.Println("read log now")
-	//	lineCount := 0
-	//	for {
-	//		if interrupt {
-	//			fmt.Println("conn out")
-	//			interruptPool += "conn,"
-	//			return
-	//		}
-	//		line, err := readTheFuckingLine(reader)
-	//		if err != nil {
-	//			if err == io.EOF {
-	//				// 文件末尾
-	//				isEOFOnce = true // 读到了文件末尾
-	//				// 每次到文件末尾休息1秒
-	//				time.Sleep(1 * time.Second)
-	//			} else {
-	//				fmt.Println("file read err or conn lost:")
-	//				fmt.Println(err)
-	//				log4go.Error(err)
-	//				break
-	//			}
-	//		} else {
-	//			// err = nil 时处理消息
-	//
-	//			// 首次发送数据从最后一行开始发
-	//			if isEOFOnce {
-	//				line = strings.TrimSpace(line)
-	//				if !strings.Contains(line,"{"){
-	//					continue
-	//				}
-	//				// fmt.Println(line)
-	//				splitLine := strings.Split(line, "#")
-	//				if len(splitLine) < 2 {
-	//					continue
-	//				}
-	//				//tStr := splitLine[0][1 : len(splitLine[0])-5]
-	//				// fmt.Println(tStr)
-	//				//msgSend := splitLine[1][0:len(splitLine[1])-1] + ",\"time\":\"" + tStr + "\"}"
-	//				msgSend := splitLine[1]
-	//				//fmt.Println((msgSend))
-	//				err := websocket.Message.Send(ws, msgSend)
-	//
-	//				if err != nil {
-	//					fmt.Println("发送失败，连接可能关闭 err")
-	//					fmt.Println(err)
-	//					log4go.Error(err)
-	//
-	//					break
-	//				}
-	//			}
-	//			lineCount += 1 //行计数
-	//			//if lineCount >= (50000) {
-	//			//	fmt.Println("文件到达日志最大行，准备重新读取文件")
-	//			//	log4go.Info("文件到达日志最大行，准备重新读取文件")
-	//			//	ferr := f.Close() // 不然会一直占用io导致日志无法rotate
-	//			//	if ferr != nil {
-	//			//		fmt.Println(ferr)
-	//			//	}
-	//			//	time.Sleep(1 * time.Second) // 只能休眠<3秒否则icmp可能连接失败
-	//			//	goto lableReachLineMax
-	//			//}
-	//
-	//		}
-	//	}
-
 }
 
 // func handleInfo(ws *websocket.Conn) {
@@ -150,70 +73,6 @@ func handleInfo(ws *websocket.Conn) {
 
 // 	}
 // }
-func restartProgram(w http.ResponseWriter, r *http.Request) {
-	// 接收重启信号
-	restartNow()
-}
-func restartNow() {
-	// restart
-	interrupt = true
-	time.Sleep(6 * time.Second)
-	// 计算ping+device(stat+monitor) ，+write, conn
-	connCount := 1
-	pingCount := len(cfg.Targets)
-	deviceThread := 2
-	writeThread := 1
-	threadCount := pingCount + deviceThread + writeThread + connCount
-	interruptedCount := len(strings.Split(interruptPool, ","))
-	loopCount := 0
-	for {
-		loopCount += 1
-		if loopCount > 3 {
-			fmt.Println("超过时间，强制重启")
-			break
-		}
-		if threadCount <= interruptedCount {
-			mainThread.Done()
-			//reNewBrocaster() // 新建广播
-			fmt.Println("restarting now")
-			interruptPool = ""
-			break
-		}
-		time.Sleep(1 * time.Second)
-	}
-
-}
-func handleJsonIntToIP(mString string, ip int) string {
-	strArr := strings.Split(mString, ",")
-	sumStr := ""
-	for index, val := range strArr {
-		if strings.Contains(val, "ip") {
-			if index == 0 {
-				sumStr += "{"
-			}
-			sumStr += ("\"ip\":\"" + IpIntToString(ip) + "\",")
-			continue
-		}
-		sumStr += (val + ",")
-	}
-	sumStr = sumStr[0 : len(sumStr)-1]
-	return sumStr
-}
-
-//错误处理函数
-func checkErr(err error, extra string) bool {
-	if err != nil {
-		formatStr := " Err : %s\n"
-		if extra != "" {
-			formatStr = extra + formatStr
-		}
-
-		fmt.Fprintf(os.Stderr, formatStr, err.Error())
-		return true
-	}
-
-	return false
-}
 
 // 异常节点测试 读取数据
 func handleTargetSocket(ws *websocket.Conn) {
@@ -245,11 +104,7 @@ func readLog(path string, ch chan int, ws *websocket.Conn) {
 	fmt.Println("read tar log now")
 	lineCount := 0
 	for {
-		if interrupt {
-			fmt.Println("conn  tar out")
-			interruptPool += "tar,"
-			return
-		}
+
 		line, err := readLine(reader)
 		if err != nil {
 			if err == io.EOF {
@@ -365,63 +220,9 @@ func startPingTargetsFunc(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(ret_json))
 	return
 }
-func echoFunc(w http.ResponseWriter, r *http.Request) {
-	var addr string
-	if r.Method == "POST" {
-		addr = GetPostArg(r, "addr")
-		fmt.Println(addr)
-	}
-
-	ret := historyRes{Data: ""}
-	ret.Data = httpPostToTarget(addr)
-
-	ret_json, err := json.Marshal(ret)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	w.Write([]byte(ret_json))
-	// 返回时间#数据长度
-	//w.Write([]byte(time.Now().String() + "#" + strconv.Itoa(len(body))))
-}
-func handleConfigRequest(conn *websocket.Conn) {
-	var path = "./config/config.cfg"
-	// file, _ := os.Open(path)
-	// defer file.Close()
-	defer conn.Close()
-	msg := ""
-	err := websocket.Message.Receive(conn, &msg)
-	if err != nil {
-		fmt.Println("receive config err")
-		fmt.Println(err)
-		log4go.Error(err)
-		return
-	}
-	if msg == "" {
-		return
-	}
-	if msg == "read" {
-		fmt.Println("conf read")
-
-		conf, _ := ioutil.ReadFile(path)
-		err = websocket.Message.Send(conn, string(conf))
-		if err != nil {
-			fmt.Println("conf 发送失败")
-			log4go.Error("conf 发送失败")
-		}
-	} else {
-		fmt.Println("conf write")
-		err := ioutil.WriteFile(path, []byte(msg), os.ModeAppend)
-
-		if err != nil {
-			fmt.Println(err)
-			log4go.Error("conf文件写入失败")
-		}
-
-	}
-}
 
 func startLiteServer() {
-	server = http.Server{
+	var server = http.Server{
 		Addr: ":8769",
 	}
 	fmt.Println("*********server addr********************")
@@ -501,23 +302,19 @@ func handleNetUsing(conn *websocket.Conn) {
 }
 func httpHandle() {
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
-	http.HandleFunc("/startPingTargets", startPingTargetsFunc) // 开始ping选择的地址
-	// 获取ping 选择的地址的日志
-	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket))
-	http.HandleFunc("/controlNetUsing", controlNetUsing)
-	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing))
-	http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
-	http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
-	http.Handle("/js/", http.FileServer(http.Dir("template")))
-	http.Handle("/info", websocket.Handler(handleInfo)) // 只写
-	http.HandleFunc("/sendRestart", restartProgram)     //只读
-	// http.HandleFunc("/", templateFunc)
-	http.HandleFunc("/getHistory", getHistoryFunc)
-	http.HandleFunc("/", templateFunc)
-	httpAdminHandle()
-}
-func httpAdminHandle() {
-	http.HandleFunc("/admin", adminTemplateFunc)
+
+	//http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
+	//http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
+	//http.HandleFunc("/sendRestart", restartProgram)     //只读
+	//http.HandleFunc("/admin", adminTemplateFunc)
+	http.HandleFunc("/startPingTargets", startPingTargetsFunc)                // 开始ping选择的地址
+	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket)) // 获取ping 选择的地址的日志
+	http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
+	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing))        //获取网络流量websocket
+	http.Handle("/js/", http.FileServer(http.Dir("template")))                // 文件服务
+	http.Handle("/info", websocket.Handler(handleInfo))                       // 获取通断信息
+	http.HandleFunc("/getHistory", getHistoryFunc)                            // 获取历史记录接口
+	http.HandleFunc("/", templateFunc)                                        //入口
 }
 
 func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
@@ -579,15 +376,71 @@ func templateFunc(w http.ResponseWriter, r *http.Request) {
 
 	t.Execute(w, mString)
 }
-func adminTemplateFunc(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("./template/tmplAdmin.html")
+
+//func adminTemplateFunc(w http.ResponseWriter, r *http.Request) {
+//	t, err := template.ParseFiles("./template/tmplAdmin.html")
+//	if err != nil {
+//		fmt.Fprintln(w, err)
+//		log4go.Error(err)
+//		return
+//	}
+//	mjson, _ := json.Marshal(cfg)
+//	mString := string(mjson)
+//
+//	t.Execute(w, mString)
+//}
+
+func echoFunc(w http.ResponseWriter, r *http.Request) {
+	var addr string
+	if r.Method == "POST" {
+		addr = GetPostArg(r, "addr")
+		fmt.Println(addr)
+	}
+
+	ret := historyRes{Data: ""}
+	ret.Data = httpPostToTarget(addr)
+
+	ret_json, err := json.Marshal(ret)
 	if err != nil {
-		fmt.Fprintln(w, err)
+		fmt.Println(err.Error())
+	}
+	w.Write([]byte(ret_json))
+	// 返回时间#数据长度
+	//w.Write([]byte(time.Now().String() + "#" + strconv.Itoa(len(body))))
+}
+func handleConfigRequest(conn *websocket.Conn) {
+	var path = "./config/config.cfg"
+	// file, _ := os.Open(path)
+	// defer file.Close()
+	defer conn.Close()
+	msg := ""
+	err := websocket.Message.Receive(conn, &msg)
+	if err != nil {
+		fmt.Println("receive config err")
+		fmt.Println(err)
 		log4go.Error(err)
 		return
 	}
-	mjson, _ := json.Marshal(cfg)
-	mString := string(mjson)
+	if msg == "" {
+		return
+	}
+	if msg == "read" {
+		fmt.Println("conf read")
 
-	t.Execute(w, mString)
+		conf, _ := ioutil.ReadFile(path)
+		err = websocket.Message.Send(conn, string(conf))
+		if err != nil {
+			fmt.Println("conf 发送失败")
+			log4go.Error("conf 发送失败")
+		}
+	} else {
+		fmt.Println("conf write")
+		err := ioutil.WriteFile(path, []byte(msg), os.ModeAppend)
+
+		if err != nil {
+			fmt.Println(err)
+			log4go.Error("conf文件写入失败")
+		}
+
+	}
 }

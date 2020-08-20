@@ -94,11 +94,6 @@ func ping(host string, isStandalone bool, args map[string]interface{}, logger *l
 	}
 
 	for count > 0 || neverstop {
-		if interrupt {
-			fmt.Println("ping out")
-			interruptPool += "ping,"
-			return
-		}
 		if !isUnlimited {
 			if endTime.Sub(time.Now()).Seconds() <= 0 {
 				// 时间到，结束
@@ -183,7 +178,6 @@ func ping(host string, isStandalone bool, args map[string]interface{}, logger *l
 			stat(logger, ip.String(), sendN, lostN, recvN, shortT, longT, sumT, endduration, quene)
 		}
 	}
-
 }
 
 func checkSum(msg []byte) uint16 {
@@ -221,7 +215,7 @@ type Status struct {
 	Duration    int64   `json:"duration"`
 	MaxDuration int64   `json:"maxDuration"`
 	MinDuration int64   `json:"minDuration"`
-	SumDuration int64   `json:"sumDuration"`
+	AvgDuration int64   `json:"avgDuration"`
 }
 type StatusStandalone struct {
 	Ip   string `json:"ip"`
@@ -292,7 +286,7 @@ func statStandalone(logger *log4go.Logger, ip string, sendN int64, lostN int64, 
 	stat.MaxDuration = longT
 	stat.MinDuration = shortT
 	stat.Recv = recvN
-	stat.SumDuration = sumT / sendN
+	stat.AvgDuration = sumT / sendN
 	//直接写日志，不用Chanel
 	logger.Info(structToJsonsting(stat))
 	//brocastSpeedAndPing.Write(structToJsonsting(stat))

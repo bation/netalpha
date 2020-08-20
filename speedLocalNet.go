@@ -98,11 +98,7 @@ func speedTest(deviceName string) {
 	// 开始抓包
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
-		if interrupt {
-			interruptPool += "speed,"
-			fmt.Println("speed out")
-			return
-		}
+
 		if netUsingQuene.Size() == 3 {
 			netUsingQuene.ChangeStatus(false)
 			log4go.Error("monitor device2 pkg 退出")
@@ -174,12 +170,7 @@ type deviceSpeed struct {
 func monitor(downStreamDataSize *int, upStreamDataSize *int, ip string) {
 	var sec = 1
 	for {
-		if interrupt {
-			interruptPool += "monitor,"
 
-			fmt.Println("speed monitor out")
-			return
-		}
 		var ds deviceSpeed
 		ds.Ip = ip
 		ds.Bandwidth = int(cfg.Bandwidth)
