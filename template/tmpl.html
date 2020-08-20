@@ -63,23 +63,36 @@
         </div>
         <h3 style="display: inline">本地网卡链路层流量监控：</h3>
         <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStart()">开启监控</button>
-        <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStop()">关闭监控</button>
-        <div id="netstatusdiv" style="display: none">
-
+        <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">关闭监控</button>
+        <div id="netstatusdiv" class="layui-form" style="display: none">
+          <table  id="localNetFlow" class="layui-hide" lay-size="lg" lay-skin="line"></table>
+          <!--
           <table class="local layui-table" lay-size="lg" lay-skin="line">
+            <colgroup>
+              <col width="160">
+              <col width="150">
+              <col width="150">
+              <col>
+            </colgroup>
+            <thead>
             <tr>
-              <th class="netusestatus">本地ip <i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i></th>
+              <th class="netusestatus">本地ip <i class="layui-icon layui-icon-radio"
+                                               style="font-size: 5px; color: white;"></i></th>
               <th>上行</th>
               <th>下行</th>
               <th>网络使用率</th>
             </tr>
+            </thead>
+            <tbody>
             <tr class="localcol">
               <td id="localIP"></td>
               <td id="upload"></td>
               <td id="download"></td>
               <td id="netuse"></td>
             </tr>
+            </tbody>
           </table>
+          -->
         </div>
         <div>
 
@@ -139,6 +152,7 @@
 <script type="text/javascript">
   var form = layui.form;
   var layer = layui.layer;
+  var table = layui.table;
 
   var pData = {{.}}
   var fData = JSON.parse(pData)
@@ -559,19 +573,35 @@
       // console.log(e);
       if (data.hasOwnProperty("upload")) {
         // speedinfo
-        var duration = data.duration_sec
-        document.getElementById('localIP').innerHTML = data.ip;
-        document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
-        document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
+        // document.getElementById('localIP').innerHTML = data.ip;
+        // document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
+        // document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
+        // var netUsePersent = (((data.download + data.upload ) / (data.bandwidth * 1024 / 8)) *
+        //         100).toFixed(3)
+        // document.getElementById('netuse').innerHTML = netUsePersent + "%";
+        // netUsePersent < 60 ? $(".localcol").css({
+        //   "color": "#009688",
+        //   "background": "white"
+        // }) : $(".localcol").css({
+        //   "color": "red",
+        //   "background": "white"
+        // });
         var netUsePersent = (((data.download + data.upload ) / (data.bandwidth * 1024 / 8)) *
                 100).toFixed(3)
-        document.getElementById('netuse').innerHTML = netUsePersent + "%";
-        netUsePersent < 60 ? $(".localcol").css({
-          "color": "#009688",
-          "background": "white"
-        }) : $(".localcol").css({
-          "color": "red",
-          "background": "white"
+        data.upload = data.upload.toFixed(2) + "kb/s";
+        data.download = data.download.toFixed(2) + "kb/s";
+        data.netuse = netUsePersent+ "%"
+
+        table.render({
+          elem: '#localNetFlow'
+          ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+          ,cols: [[
+            {field:'ip', width:130,align:"center", title: '本地IP'}
+            ,{field:'upload', width:110,align:"center", title: '上行'}
+            ,{field:'download', width:110,align:"center", title: '下行'}
+            ,{field:'netuse',align:"center", title: '网络占用率'}
+          ]]
+          ,data:[data]
         });
         iconFlash("netusestatus")
       }
@@ -1052,6 +1082,7 @@
   h3{
     margin: 5px;
   }
+
 </style>
 
 </html>

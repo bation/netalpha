@@ -162,7 +162,7 @@ func readLog(path string, ch chan int, ws *websocket.Conn) {
 	ch <- 1
 }
 
-func startPingTargetsFunc(w http.ResponseWriter, r *http.Request) {
+func startPingTargetStandaloneFunc(w http.ResponseWriter, r *http.Request) {
 	// 传输的json必须是字符串格式的json string
 	defer r.Body.Close()
 	type RequestSocketUrl struct {
@@ -307,7 +307,7 @@ func httpHandle() {
 	//http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
 	//http.HandleFunc("/sendRestart", restartProgram)     //只读
 	//http.HandleFunc("/admin", adminTemplateFunc)
-	http.HandleFunc("/startPingTargets", startPingTargetsFunc)                // 开始ping选择的地址
+	http.HandleFunc("/startPingTargets", startPingTargetStandaloneFunc)       // 开始ping选择的地址
 	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket)) // 获取ping 选择的地址的日志
 	http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
 	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing))        //获取网络流量websocket
