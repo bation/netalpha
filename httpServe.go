@@ -332,6 +332,10 @@ func startPingTargetsFunc(w http.ResponseWriter, r *http.Request) {
 	//查重，查看是否已有ping任务在运行
 	if isRepeatTask(data.Targets) {
 		log4go.Error("已在测试中，同时间段重复测试无效")
+		ret := historyRes{Data: "已在测试中，同时间段重复测试无效"}
+		w.WriteHeader(403)
+		ret_json, _ := json.Marshal(ret)
+		w.Write([]byte(ret_json))
 		return
 	}
 	// 开始ping

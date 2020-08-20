@@ -46,7 +46,8 @@
 
         <div class="onoff">
             <h3  style="display: inline">网关（节点）监控：</h3>
-            <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
+          <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
+          <button id="" class="layui-btn layui-btn-sm" onclick="speedTest()" >网速测试</button>
           <table class="onoffTable layui-table" lay-size="sm" lay-skin="line">
             <tr>
               <th>远程主机IP</th>
@@ -105,6 +106,12 @@
               </div>
             </div>
             <div class="layui-form-item">
+              <label class="layui-form-label">其它节点</label>
+              <div class="layui-input-block">
+                <input type="text" name="otherip" lay-verify="otherip" autocomplete="off" placeholder="请输入ip" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
               <div class="layui-input-block">
                 <button class="layui-btn ipt_btn" lay-submit lay-filter="formDemo">立即提交</button>
                 <div id="timediv" style="display: none">
@@ -128,6 +135,7 @@
 
 <script type="text/javascript">
   var form = layui.form;
+  var layer = layui.layer;
 
   var pData = {{.}}
   var fData = JSON.parse(pData)
@@ -135,16 +143,15 @@
   console.log(pData)
   var ffIp = fData.ip
   var infoURI = "ws://" + ffIp + ":8769/info";
-  var restartUrl = "http://" + ffIp + ":8769/sendRestart";
-  var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
-  var confUrl = "ws://" + ffIp + ":8769/config";
+  // var restartUrl = "http://" + ffIp + ":8769/sendRestart";
+  // var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
+  // var confUrl = "ws://" + ffIp + ":8769/config";
   var pingStandaloneUrl ="http://" + ffIp + ":8769/startPingTargets";
   var pingStandalneInfoUrl = "ws://" + ffIp + ":8769/getPingTargetsInfo";
   var controlNetUsingUrl = "http://" + ffIp + ":8769/controlNetUsing";
   var monitorNetInfoUrl = "ws://" + ffIp + ":8769/getNetUsingInfo";
   var getHistoryUrl = "http://" + ffIp + ":8769/getHistory";
   console.log(fData.targets)
-  var htm = ""
   var ips = fData.targets
 
   for(var idx =0; idx<ips.length;idx++){
@@ -203,6 +210,10 @@
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
     return fmt;
   }
+  function speedTest(){
+
+  }
+
   function queryHistory(st,et) {
     var d1  = new Date().Format("yyyy/MM/dd hh:mm:ss");
     var d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
@@ -950,26 +961,56 @@
       })
     },1000)
   }
+
+
+  function isValidIP(ip) {
+    var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+    return reg.test(ip);
+  }
+
+
   function initForm(){
+
     form.render()
+    // //自定义验证规则
+    // form.verify({
+    //   otherip: function(value){
+    //     if(isValidIP(value)){
+    //       return 'IP地址填写错误';
+    //     }
+    //   }
+    // });
     //监听提交
     form.on('submit(formDemo)', function(data){
-      $(".ipt").attr({"disabled":"true"})
-      $(".ipt_btn").attr({"disabled":"true"})
-      $(".ipt_btn").addClass("layui-btn-disabled")
+
 
       form.render()
-      layer.msg(JSON.stringify(data.field));
+      // layer.msg(JSON.stringify(data.field));
 
       var field = Object.keys(data.field)
       var dt = []
+      var isContainIp = false // 是否包含ip
       field.forEach(value => {
-        if(value === "min"){
-
+        if(value === "min" || value === "otherip"){
           return
+        }
+        if (isValidIP(value)){
+          isContainIp = true
         }
         dt.push(value)
       })
+      if(isValidIP(data.field.otherip)){
+        isContainIp = true
+        dt.push(data.field.otherip)
+      }
+      if(dt.length ===0 || !isContainIp){
+        return layui.layer.msg("请选择ip或填写ip",{icon:2})
+      }
+
+      // if()
+      $(".ipt").attr({"disabled":"true"})
+      $(".ipt_btn").attr({"disabled":"true"})
+      $(".ipt_btn").addClass("layui-btn-disabled")
       var datap ={
         min: parseInt(data.field.min),
         targets: dt
@@ -988,6 +1029,7 @@
         error:function(e){
           console.log("err")
           console.log(e)
+          layui.layer.msg(e.responseJSON.data,{icon:2})
         },
         dataType: "json"
       });
