@@ -47,7 +47,7 @@
         <div class="onoff">
             <h3  style="display: inline">网关（节点）监控：</h3>
           <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
-          <button id="" class="layui-btn layui-btn-sm" onclick="speedTest()" >网速测试</button>
+          <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="speedTest()" >网速测试</button>
           <table class="onoffTable layui-table" lay-size="sm" lay-skin="line">
             <tr>
               <th>远程主机IP</th>
@@ -80,6 +80,9 @@
               <td id="netuse"></td>
             </tr>
           </table>
+        </div>
+        <div>
+
         </div>
       </div>
       <div class="layui-col-xs6">
@@ -143,8 +146,6 @@
   console.log(pData)
   var ffIp = fData.ip
   var infoURI = "ws://" + ffIp + ":8769/info";
-  // var restartUrl = "http://" + ffIp + ":8769/sendRestart";
-  // var testNetSpeedUrl = "http://" + ffIp + ":8769/echo";
   // var confUrl = "ws://" + ffIp + ":8769/config";
   var pingStandaloneUrl ="http://" + ffIp + ":8769/startPingTargets";
   var pingStandalneInfoUrl = "ws://" + ffIp + ":8769/getPingTargetsInfo";
@@ -211,7 +212,56 @@
     return fmt;
   }
   function speedTest(){
+    // 如果已打开，不重复打开
+    if($("#netSpeedTest").length === 0){
+      layui.layer.open({
+        type: 0 //Page层类型
+        ,area: ['650px', '540px']
+        ,title: "网速测试"
+        ,shade: 0.6 //遮罩透明度
+        ,maxmin: true //允许全屏最小化
+        ,anim: 1 //0-6的动画形式，-1不开启
+        ,content: '<div id="netSpeedTest">\n' +
+                '  <div class="layui-form-item">\n' +
+                '\t<label class="layui-form-label">测速节点</label>\n' +
+                '\t<div class="layui-input-block">\n' +
+                '\t  <input type="text" id="netSpeedTestAddr" placeholder="请输入地址" class="layui-input layui-input-inline">\n' +
+                '\t  <button onclick="runSpeedTest()" class="layui-btn layui-btn-normal">开始</button>\n' +
+                '\t</div>\n' +
+                '\t<div class="layui-form-item">\n' +
+                '\t  <label  class="layui-form-label">测速结果</label>\n' +
+                '\t  <div class="layui-input-block">\n' +
+                '\t\t <textarea readonly style="margin-top:20px;height:250px" class="layui-textarea"></textarea>\n' +
+                '\t  </div>\n' +
+                '\t</div>\n' +
+                '  </div>\n' +
+                '</div>'
+      });
+    }
+    window.runSpeedTest = function () {
+      var ip = $("#netSpeedTestAddr").val()
+      if (isValidIP(ip)) {
+        // TODO 通知开始网速测试
+        $.ajax({
+          type: 'POST',
+          url: "",
+          data: {addr: ip},
+          success: function (e) {
+            console.log("success")
+            console.log(e)
+          },
+          error:function(e){
 
+            console.log("err")
+            console.log(e)
+          },
+          dataType: "json"
+        });
+
+      } else {
+        layui.layer.msg("IP地址不合法", {icon: 2});
+      }
+    }
   }
 
   function queryHistory(st,et) {
@@ -600,75 +650,7 @@
     // });
   }
 
-  function restart() {
-    $("#restart").attr("disabled", true)
-    layui.layer.msg('正在重启中，请等待自动刷新……', {time: 8000});
-    layui.layer.load(1); //风格1的加载
-    $.ajax({
-      type: 'POST',
-      url: restartUrl,
-      data: {},
-      success: function (e) {
-        setTimeout(function () {
-          location.reload();
-        }, 8000)
-      },
-      error:function(e){
-        setTimeout(function () {
-          location.reload();
-        }, 8000)
-      },
-      dataType: "json"
-    });
 
-  }
-  function testBeating(ip){
-    var beaturl = "ws://" + ip + ":8669/beating";
-    var ipselecter = ipSelect(ip)
-    var testBeatingSock = new WebSocket(beaturl)
-    var timeoutSet = setTimeout(() => {
-      $("."+ipselecter).find(".trbtn").attr({'disabled':"true"});
-    }, 2000)
-    testBeatingSock.onerror =function(e){
-    }
-    testBeatingSock.onopen = function (e) {
-      clearTimeout(timeoutSet)
-      testBeatingSock.close()
-      // testSock.send(addr)//("http://192.168.96.183:8669/r")
-    }
-    testBeatingSock.onmessage = function (e){
-
-    }
-  }
-  function testNetSpeed(mIP) {
-    var addr = "http://"+mIP+":8669/r"
-    console.log("test speed:"+addr)
-    var ipselecter = ipSelect(mIP)
-    $("."+ipselecter).find(".trbtn").attr({'disabled':"true"});
-    $.ajax({
-      type: 'POST',
-      url: testNetSpeedUrl,
-      data: {addr:addr},
-      success: function (e) {
-        console.log("success")
-        console.log(e)
-        // 完成传输
-        console.log(e.data)
-        var speed = JSON.parse(e.data).speed
-        $("#testNetSpeed-label").text("传输速率："+speed +"MB/s")
-        $("."+ipselecter).find(".trbtn").removeAttr("disabled");
-      },
-      error:function(e){
-        console.log("err")
-        console.log(e)
-        layui.layer.msg("目标无应答，测试网速失败，请检查客户端连接",{time:3000})
-        $("."+ipselecter).find(".trbtn").removeAttr("disabled");
-      },
-      dataType: "json"
-    });
-
-
-  }
   function ipSelect(ip) {
     var ipbonds = $.trim(ip).split(".")
     var classSelector = "";
