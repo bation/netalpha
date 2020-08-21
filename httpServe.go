@@ -321,8 +321,8 @@ func reportNodeDownFunc(ip string, downtime string) []byte {
 
 }
 func httpHandle() {
+	http.HandleFunc("/testSpeed", httpEthr) // 传输数据 ethr
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
-
 	//http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
 	//http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
 	//http.HandleFunc("/sendRestart", restartProgram)     //只读

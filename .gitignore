@@ -1,8 +1,5 @@
 neta.debug.exe
 neta.exe
-neta.exe
-neta.exe
-neta.exe
 /log
 /neta.debug.exe
 /neta.exe
@@ -10,3 +7,4 @@ neta.exe
 /test2
 client/client.exe
 /*.exe
+/ethrc.log
