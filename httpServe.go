@@ -302,13 +302,23 @@ func handleNetUsing(conn *websocket.Conn) {
 	}
 
 }
-func reportNodeDownFunc(w http.ResponseWriter, r *http.Request) {
-	//TODO 反馈节点掉线接口
-	type nodeDown struct {
-		Ip       string `json:"ip"`
-		Status   string `json:"status"`
-		DownTime string `json:"downTime"`
+
+// 反馈节点掉线，
+func reportNodeDownFunc(ip string, downtime string) []byte {
+	//done 反馈节点掉线接口
+	if cfg.offlineRepURL == "" {
+		return nil
 	}
+	var ptc PostMapData
+	ptc.Url = cfg.offlineRepURL
+	ptc.Data["ip"] = ip
+	ptc.Data["downtime"] = downtime
+	resp, err := ptc.PostWithFormData()
+	if err != nil {
+		log4go.Error("反馈失败：" + err.Error())
+	}
+	return resp
+
 }
 func httpHandle() {
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
@@ -321,7 +331,6 @@ func httpHandle() {
 	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket)) // 获取ping 选择的地址的日志
 	http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
 	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing))        //获取网络流量websocket
-	http.HandleFunc("/reportNodeDown", reportNodeDownFunc)                    // 反馈节点掉线接口
 	http.Handle("/js/", http.FileServer(http.Dir("template")))                // 文件服务
 	http.Handle("/info", websocket.Handler(handleInfo))                       // 获取通断信息
 	http.HandleFunc("/getHistory", getHistoryFunc)                            // 获取历史记录接口

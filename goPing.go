@@ -247,6 +247,7 @@ func stat(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int6
 	}
 	if sumAVG >= 3000 {
 		stat.Stat = OFFLINE
+		reportNodeDownFunc(stat.Ip, stat.Time)
 	}
 	stat.Time = time.Now().Format("2006-01-02 15:04:05")
 	//直接写日志，不用Chanel

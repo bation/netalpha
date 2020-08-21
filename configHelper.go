@@ -19,6 +19,7 @@ type Config struct {
 	Interval       int               `json:"interval"`  // 间隔时间 单位秒
 	Ip             string            `json:"ip"`        // 本地ip
 	name           string            //设备名
+	offlineRepURL  string            //断线通知地址
 	RunningTargets []string          `json:"running"` // 正在测试的异常节点ip
 }
 
@@ -104,6 +105,7 @@ func (c *Config) initValue() {
 	} else if c.Interval > 20 {
 		c.Interval = 20
 	}
+	c.offlineRepURL = c.GetValueByKey("OFFLINE_MSG_REP_URL")
 	c.Ip = c.GetValueByKey("DEVICE_IP")
 	c.Bandwidth = strToFloat64(c.GetValueByKey("DEVICE_BANDWIDTH"))
 }

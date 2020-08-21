@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/AlexStocks/log4go"
+	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -130,4 +133,76 @@ func checkErr(err error, extra string) bool {
 	}
 
 	return false
+}
+
+type PostMapData struct {
+	Url           string
+	Data          map[string]string //post要传输的数据，必须key value必须都是string
+	DataInterface map[string]interface{}
+}
+
+//适用于 application/x-www-form-urlencoded
+func (r *PostMapData) PostWithAppEncoded() ([]byte, error) {
+	client := &http.Client{}
+	//post要提交的数据
+	DataUrlVal := url.Values{}
+	for key, val := range r.Data {
+		DataUrlVal.Add(key, val)
+	}
+	req, err := http.NewRequest("POST", r.Url, strings.NewReader(DataUrlVal.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	//伪装头部
+	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+	req.Header.Add("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4")
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("Content-Length", "25")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Cookie", "")
+	//req.Header.Add("Host","www.lagou.com")
+	//req.Header.Add("Origin","https://www.lagou.com")
+	//req.Header.Add("Referer","https://www.lagou.com/jobs/list_python?labelWords=&fromSearch=true&suginput=")
+	req.Header.Add("X-Anit-Forge-Code", "0")
+	req.Header.Add("X-Anit-Forge-Token", "None")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+	req.Header.Add("X-Requested-With", "XMLHttpRequest")
+	//提交请求
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	//读取返回值
+	result, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+func (r *PostMapData) PostWithFormData() ([]byte, error) {
+	body := new(bytes.Buffer)
+	w := multipart.NewWriter(body)
+	for k, v := range r.Data {
+		w.WriteField(k, v)
+	}
+	w.Close()
+	req, err := http.NewRequest(http.MethodPost, r.Url, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	resp.Body.Close()
+	fmt.Println(resp.StatusCode)
+	fmt.Printf("%s", data)
+	return data, nil
 }

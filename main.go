@@ -20,6 +20,7 @@ var statusQuene Queue // 接收及发送数据的队列--网关节点状态监�
 func main() {
 	// 初始化配置文件
 	iscfgOk := cfg.Init("./config/config.cfg")
+	//fmt.Println("",cfg.offlineRepURL=="")
 	netUsingQuene.Init()
 	statusQuene.Init()
 	lgg := log4go.NewLogger()
