@@ -205,12 +205,12 @@ func startPingTargetStandaloneFunc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/// 以下为结果返回
-	endUrl := "/config"
+	rres := "done"
 	type result struct {
 		Data string `json:"data"`
 	}
 	var ret result
-	ret.Data = endUrl
+	ret.Data = rres
 
 	ret_json, err := json.Marshal(ret)
 	if err != nil {
