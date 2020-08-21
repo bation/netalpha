@@ -8,3 +8,4 @@ neta.exe
 client/client.exe
 /*.exe
 /ethrc.log
+/client/ethrs.log

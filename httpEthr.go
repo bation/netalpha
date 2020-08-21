@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/AlexStocks/log4go"
-	"github.com/Microsoft/ethr"
+	ethr "github.com/ethrToPkg"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func httpEthr(w http.ResponseWriter, r *http.Request) {
 	}
 	//获取带宽
 	fmt.Println("开始测试带宽")
-	ethr.EthrRun(ip, "http", "b")
+	ethr.EthrRun(ip, "http", "b") // b bandwidth c connections/s p packets/s l 延迟
 	fmt.Println("结束测试带宽")
 	if ethr.FinishFlag {
 		/// 以下为结果返回
