@@ -47,8 +47,13 @@ func (q *Queue) Peek() interface{} {
 // Contains 队列中包含值
 func (q *Queue) Contains(value interface{}) bool {
 	for i := uint(0); i < q.Size(); i++ {
-		if value == q.list.Get(i).Data {
-			return true
+		gdata := q.list.Get(i)
+		if gdata != nil {
+			if value == gdata.Data {
+				return true
+			}
+		} else {
+			return false
 		}
 	}
 	return false
