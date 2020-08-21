@@ -48,7 +48,7 @@
 
           <div class="layui-btn-group" style="margin-top: 20px;">
             <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()" >查看历史</button>
-            <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="speedTest()" >网速测试</button>
+            <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="netFlowTest()" >网速测试</button>
             <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal" onclick="monitNetStart()">开启监控</button>
             <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">关闭监控</button>
           </div>
@@ -172,6 +172,7 @@
   var controlNetUsingUrl = "http://" + ffIp + ":8769/controlNetUsing";
   var monitorNetInfoUrl = "ws://" + ffIp + ":8769/getNetUsingInfo";
   var getHistoryUrl = "http://" + ffIp + ":8769/getHistory";
+  var netFlowTestUrl = "http://" + ffIp + ":8769/testNetFlow";
   console.log(fData.targets)
   var ips = fData.targets
 
@@ -231,46 +232,76 @@
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
     return fmt;
   }
-  function speedTest(){
+  function netFlowTest(){
+
     // 如果已打开，不重复打开
     if($("#netSpeedTest").length === 0){
       layui.layer.open({
         type: 0 //Page层类型
-        ,area: ['650px', '540px']
+        ,area: ['550px', '440px']
         ,title: "网速测试"
         ,shade: 0.6 //遮罩透明度
         ,maxmin: true //允许全屏最小化
         ,anim: 1 //0-6的动画形式，-1不开启
         ,content: '<div id="netSpeedTest">\n' +
                 '  <div class="layui-form-item">\n' +
-                '\t<label class="layui-form-label">测速节点</label>\n' +
-                '\t<div class="layui-input-block">\n' +
-                '\t  <input type="text" id="netSpeedTestAddr" placeholder="请输入地址" class="layui-input layui-input-inline">\n' +
-                '\t  <button onclick="runSpeedTest()" class="layui-btn layui-btn-normal">开始</button>\n' +
-                '\t</div>\n' +
-                '\t<div class="layui-form-item">\n' +
-                '\t  <label  class="layui-form-label">测速结果</label>\n' +
-                '\t  <div class="layui-input-block">\n' +
-                '\t\t <textarea readonly style="margin-top:20px;height:250px" class="layui-textarea"></textarea>\n' +
-                '\t  </div>\n' +
-                '\t</div>\n' +
+                '    <label class="layui-form-label">测速节点</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <input type="text" id="netSpeedTestAddr" placeholder="请输入地址" class="layui-input layui-input-inline">\n' +
+                '      <button onclick="runSpeedTest()" class="layui-btn layui-btn-normal">开始</button>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label class="layui-form-label">协议</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <select id="protoc" name="quiz1" style="min-height: 36px;border:0.5px" \n' +
+                '        <option value="">请选择</option>\n' +
+                '        <option value="http" selected="">http</option>\n' +
+                '        <option value="tcp">tcp</option>\n' +
+                '        <option value="udp">udp</option>\n' +
+                '      </select>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="layui-form-item">\n' +
+                '    <label  class="layui-form-label">测速结果</label>\n' +
+                '    <div class="layui-input-block">\n' +
+                '      <textarea id="netspeedres" readonly style="margin-top:20px;height:200px" class="layui-textarea"></textarea>\n' +
+                '    </div>\n' +
                 '  </div>\n' +
                 '</div>'
       });
     }
+    var mySpIndex = null
     window.runSpeedTest = function () {
+
+      $("#netspeedres").text("")
       var ip = $("#netSpeedTestAddr").val()
+      var protoc = $("#protoc").val()
       if (isValidIP(ip)) {
+        mySpIndex = layui.layer.load(1, {
+          shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
         // TODO 通知开始网速测试
         $.ajax({
           type: 'POST',
-          url: "",
-          data: {addr: ip},
+          url: netFlowTestUrl,
+          data: {ip: ip,protocol:protoc},
           success: function (e) {
+            layui.layer.close(mySpIndex)
             console.log("success")
             console.log(e)
+            var sum = ""
+            e.data.forEach(dp=>{
+              if(dp.protocol !== $("#protoc").val().toUpperCase()){
+                return
+              }
+             sum += dp.protocol +"   --------   "+ dp.bits +"\n"
+            })
+            $("#netspeedres").text(sum)
           },
           error:function(e){
+            layui.layer.close(mySpIndex)
+            $("#netspeedres").text(e.responseText)
 
             console.log("err")
             console.log(e)
