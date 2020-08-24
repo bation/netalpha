@@ -297,7 +297,7 @@ func handleNetUsing(conn *websocket.Conn) {
 			log4go.Error("netusinginfo 发送失败：%s", err.Error())
 			break
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 
 	}
 
