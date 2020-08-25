@@ -329,20 +329,56 @@ func httpHandle() {
 	//http.HandleFunc("/admin", adminTemplateFunc)
 	http.HandleFunc("/startPingTargets", startPingTargetStandaloneFunc)       // 开始ping选择的地址
 	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket)) // 获取ping 选择的地址的日志
-	http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
-	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing))        //获取网络流量websocket
-	http.Handle("/js/", http.FileServer(http.Dir("template")))                // 文件服务
-	http.Handle("/info", websocket.Handler(handleInfo))                       // 获取通断信息
-	http.HandleFunc("/getHistory", getHistoryFunc)                            // 获取历史记录接口
-	http.HandleFunc("/", templateFunc)                                        //入口
+	//http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
+	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing)) //获取网络流量websocket
+	http.Handle("/js/", http.FileServer(http.Dir("template")))         // 文件服务
+	http.Handle("/info", websocket.Handler(handleInfo))                // 获取通断信息
+	http.HandleFunc("/getHistory", getHistoryFunc)                     // 获取历史记录接口
+	http.HandleFunc("/getHistoryNetUse", getHistroyNetUseFunc)         // 获取历史记录接口
+	http.HandleFunc("/", templateFunc)                                 //入口
+}
+
+func getHistroyNetUseFunc(w http.ResponseWriter, r *http.Request) {
+	var d1 string
+	var d2 string
+	var netuse string
+	if r.Method == "POST" {
+		d1 = GetPostArg(r, "d1")
+		d2 = GetPostArg(r, "d2")
+		netuse = GetPostArg(r, "netuse")
+	}
+	if strings.TrimSpace(netuse) == "" {
+		netuse = "0"
+	}
+	fmt.Println(d1 + "|||" + d2)
+	res := getHistroyNetUse(d1, d2, netuse)
+	ret := historyRes{Data: ""}
+	ret.Data = "{\"result\":" + res + "}"
+	//fmt.Println(ret.Result)
+	if len(res) > 100 {
+		fmt.Println(ret.Data[0:100] + "……")
+	}
+	if res == "" {
+		ret.Data = "{\"result\":\"" + res + "\"}"
+		fmt.Println(ret.Data)
+	}
+	ret_json, err := json.Marshal(ret)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	w.Write([]byte(ret_json))
 }
 
 func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	var d1 string
 	var d2 string
+	var ip string
+	var status string
 	if r.Method == "POST" {
 		d1 = GetPostArg(r, "d1")
 		d2 = GetPostArg(r, "d2")
+		ip = GetPostArg(r, "ip")
+		status = strings.ToUpper(GetPostArg(r, "status"))
 	}
 	fmt.Println(d1 + "|||" + d2)
 	//body, _ := ioutil.ReadAll(r.Body)
@@ -352,7 +388,7 @@ func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	//ds2 := strings.Split(data[1], "=")
 	//d1 := ds1[1]
 	//d2 := ds2[1]
-	res := getHistroy(d1, d2)
+	res := getHistroy(d1, d2, ip, status)
 	ret := historyRes{Data: ""}
 	ret.Data = "{\"result\":" + res + "}"
 	//fmt.Println(ret.Result)

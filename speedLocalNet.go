@@ -44,6 +44,7 @@ func DeviceSpeed() {
 		}
 		if currentDeviceIP == cfgIP {
 			go speedTest(name)
+			break
 		}
 
 	}
@@ -52,8 +53,10 @@ func DeviceSpeed() {
 
 func speedTest(deviceName string) {
 	var (
-		downStreamDataSize = 0 // 单位时间内下行的总字节数
-		upStreamDataSize   = 0 // 单位时间内上行的总字节数
+		downStreamDataSize   = 0 // 单位时间内下行的总字节数
+		upStreamDataSize     = 0 // 单位时间内上行的总字节数
+		downStreamDataSize30 = 0 // 单位时间内下行的总字节数
+		upStreamDataSize30   = 0 // 单位时间内上行的总字节数
 		// deviceName         = flag.String("i", "eth0", "network interface device name") // 要监控的网卡名称
 	)
 	fmt.Println("goin speedtest")
@@ -94,7 +97,15 @@ func speedTest(deviceName string) {
 
 	// 开启子线程，每一秒计算一次该秒内的数据包大小平均值，并将下载、上传总量置零
 	go monitor(&downStreamDataSize, &upStreamDataSize, ip)
+	log30 := log4go.NewLogger()
+	log30.AddFilter("stdout", log4go.ERROR, log4go.NewConsoleLogWriter(false))
+	flw := log4go.NewFileLogWriter("./log/device.log", true, 0)
+	flw.SetFormat("[%D %T]#%M") //("[%D %T] [%L] (%S) %M")
+	flw.SetRotate(true)
+	flw.SetRotateLines(100000)
 
+	log30.AddFilter("log", log4go.INFO, flw)
+	go writeStatus(&downStreamDataSize30, &upStreamDataSize30, ip, log30)
 	// 开始抓包
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
@@ -111,8 +122,10 @@ func speedTest(deviceName string) {
 			// 如果封包的目的MAC是本机则表示是下行的数据包，否则为上行
 			if ethernet.DstMAC.String() == macAddr {
 				downStreamDataSize += len(packet.Data()) // 统计下行封包总大小
+				downStreamDataSize30 += len(packet.Data())
 			} else {
 				upStreamDataSize += len(packet.Data()) // 统计上行封包总大小
+				upStreamDataSize30 += len(packet.Data())
 			}
 		}
 	}
@@ -164,6 +177,7 @@ type deviceSpeed struct {
 	Upload    float32 `json:"upload"`   //kb/s
 	Download  float32 `json:"download"` //kb/s
 	Bandwidth int     `json:"bandwidth"`
+	NetUse    float32 `json:"netuse"` // 网络占用率
 }
 
 // 每一秒计算一次该秒内的数据包大小平均值，并将下载、上传总量置零
@@ -176,6 +190,7 @@ func monitor(downStreamDataSize *int, upStreamDataSize *int, ip string) {
 		ds.Bandwidth = int(cfg.Bandwidth)
 		ds.Upload = float32(*upStreamDataSize) / float32(1024) / float32(sec)
 		ds.Download = float32(*downStreamDataSize) / float32(1024) / float32(sec)
+		ds.NetUse = ((ds.Download + ds.Upload) / (float32(cfg.Bandwidth) * 1024 / 8)) * 100
 		//speedInfo := make(map[string]int)
 		//speedInfo["ip"] = StringIpToInt(ip)         // 本地ip
 		//speedInfo["upload"] = *upStreamDataSize     //本地上传速率
@@ -197,6 +212,34 @@ func monitor(downStreamDataSize *int, upStreamDataSize *int, ip string) {
 		}
 
 		os.Stdout.WriteString("")
+		// os.Stdout.WriteString(fmt.Sprintf("\r ip:%s Down:%.2fkb/s \t Up:%.2fkb/s", ip, float32(*downStreamDataSize)/1024/sec, float32(*upStreamDataSize)/1024/sec))
+		*downStreamDataSize = 0
+		*upStreamDataSize = 0
+		time.Sleep(time.Duration(sec * 1000 * 1000 * 1000))
+	}
+}
+
+// 每30秒计算30秒内每秒的数据包大小平均值，并将下载、上传总量置零
+func writeStatus(downStreamDataSize *int, upStreamDataSize *int, ip string, logger log4go.Logger) {
+	var sec = 30
+	defer logger.Close()
+	for {
+
+		var ds deviceSpeed
+		ds.Ip = ip
+		ds.Bandwidth = int(cfg.Bandwidth)
+		ds.Upload = float32(*upStreamDataSize) / float32(1024) / float32(sec)
+		ds.Download = float32(*downStreamDataSize) / float32(1024) / float32(sec)
+		ds.NetUse = ((ds.Download + ds.Upload) / (float32(cfg.Bandwidth) * 1024 / 8)) * 100
+		//speedInfo := make(map[string]int)
+		//speedInfo["ip"] = StringIpToInt(ip)         // 本地ip
+		//speedInfo["upload"] = *upStreamDataSize     //本地上传速率
+		//speedInfo["download"] = *downStreamDataSize //本地下载速率
+		//speedInfo["duration_sec"] = sec             //间隔秒
+		//bandwidth := int(cfg.Bandwidth)
+		//speedInfo["bandwidth"] = bandwidth // 本地带宽
+		logger.Info(structToJsonsting(ds))
+
 		// os.Stdout.WriteString(fmt.Sprintf("\r ip:%s Down:%.2fkb/s \t Up:%.2fkb/s", ip, float32(*downStreamDataSize)/1024/sec, float32(*upStreamDataSize)/1024/sec))
 		*downStreamDataSize = 0
 		*upStreamDataSize = 0

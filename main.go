@@ -54,8 +54,10 @@ func main() {
 	for statusQuene.Size() > 0 {
 		statusQuene.Dequeue()
 	}
+	// 网络通断监控
 	go GoPing(cfg.Targets, false, &lgg, 0)
-
+	// 网卡流量监控
+	go DeviceSpeed()
 	/* web服务*/
 	go startLiteServer()
 

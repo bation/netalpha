@@ -9,3 +9,4 @@ client/client.exe
 /*.exe
 /ethrc.log
 /client/ethrs.log
+/*.log
