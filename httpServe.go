@@ -434,10 +434,72 @@ func httpHandle() {
 	http.HandleFunc("/getHistoryNetUse", getHistroyNetUseFunc)         // 获取网卡流量历史记录接口
 	http.HandleFunc("/updateConfig", updateConfig)                     //修改配置文件
 	// 以上接口 ****** 以下路由
-	http.HandleFunc("/", indexFunc)            //入口
-	http.HandleFunc("/temp", templateFunc)     //入口
-	http.HandleFunc("/config", templateConfig) //入口
+	http.HandleFunc("/", indexFunc)                  //入口
+	http.HandleFunc("/node", templateNode)           //入口
+	http.HandleFunc("/netflow", templateNetFlow)     //入口
+	http.HandleFunc("/exception", templateException) //入口
+	http.HandleFunc("/config", templateConfig)       //入口
 
+}
+
+func templateNode(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/node.html")
+	if err != nil {
+		fmt.Fprintln(w, err)
+		log4go.Error(err)
+		return
+	}
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
+	mjson, _ := json.Marshal(cfg)
+	mString := string(mjson)
+
+	t.Execute(w, mString)
+}
+
+func templateException(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/exception.html")
+	if err != nil {
+		fmt.Fprintln(w, err)
+		log4go.Error(err)
+		return
+	}
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
+	mjson, _ := json.Marshal(cfg)
+	mString := string(mjson)
+
+	t.Execute(w, mString)
+}
+
+func templateNetFlow(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/netflow.html")
+	if err != nil {
+		fmt.Fprintln(w, err)
+		log4go.Error(err)
+		return
+	}
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
+	mjson, _ := json.Marshal(cfg)
+	mString := string(mjson)
+
+	t.Execute(w, mString)
 }
 
 func templateConfig(w http.ResponseWriter, r *http.Request) {
