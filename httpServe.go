@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -163,6 +164,8 @@ func readLog(path string, ch chan int, ws *websocket.Conn) {
 }
 
 func startPingTargetStandaloneFunc(w http.ResponseWriter, r *http.Request) {
+	AllowCrossOrigin(w)
+
 	// 传输的json必须是字符串格式的json string
 	defer r.Body.Close()
 	type RequestSocketUrl struct {
@@ -306,11 +309,11 @@ func handleNetUsing(conn *websocket.Conn) {
 // 反馈节点掉线，
 func reportNodeDownFunc(ip string, downtime string) []byte {
 	//done 反馈节点掉线接口
-	if cfg.offlineRepURL == "" {
+	if cfg.OfflineRepURL == "" {
 		return nil
 	}
 	var ptc PostMapData
-	ptc.Url = cfg.offlineRepURL
+	ptc.Url = cfg.OfflineRepURL
 	ptc.Data["ip"] = ip
 	ptc.Data["downtime"] = downtime
 	resp, err := ptc.PostWithFormData()
@@ -320,25 +323,11 @@ func reportNodeDownFunc(ip string, downtime string) []byte {
 	return resp
 
 }
-func httpHandle() {
-	http.HandleFunc("/testNetFlow", httpEthr) // 传输数据 ethr
-	// http.Handle("/css/", http.FileServer(http.Dir("template")))
-	//http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
-	//http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
-	//http.HandleFunc("/sendRestart", restartProgram)     //只读
-	//http.HandleFunc("/admin", adminTemplateFunc)
-	http.HandleFunc("/startPingTargets", startPingTargetStandaloneFunc)       // 开始ping选择的地址
-	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket)) // 获取ping 选择的地址的日志
-	//http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
-	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing)) //获取网络流量websocket
-	http.Handle("/js/", http.FileServer(http.Dir("template")))         // 文件服务
-	http.Handle("/info", websocket.Handler(handleInfo))                // 获取通断信息
-	http.HandleFunc("/getHistory", getHistoryFunc)                     // 获取历史记录接口
-	http.HandleFunc("/getHistoryNetUse", getHistroyNetUseFunc)         // 获取历史记录接口
-	http.HandleFunc("/", templateFunc)                                 //入口
-}
 
+// 获取网卡流量历史记录
 func getHistroyNetUseFunc(w http.ResponseWriter, r *http.Request) {
+	AllowCrossOrigin(w)
+
 	var d1 string
 	var d2 string
 	var netuse string
@@ -369,7 +358,9 @@ func getHistroyNetUseFunc(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(ret_json))
 }
 
+// 获取通断历史记录
 func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
+	AllowCrossOrigin(w)
 	var d1 string
 	var d2 string
 	var ip string
@@ -408,9 +399,90 @@ func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte(time.Now().String() + "#" + strconv.Itoa(len(body))))
 }
 
+// 更新配置文件
+func updateConfig(w http.ResponseWriter, r *http.Request) {
+	AllowCrossOrigin(w)
+	defer r.Body.Close()
+	r.ParseForm()
+	var jsonMap url.Values
+	jsonMap = r.PostForm
+	ret := historyRes{Data: ""}
+	ret.Data = "ok"
+	ret_json, err := json.Marshal(ret)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	if isok, _ := cfg.SetValues(jsonMap); isok {
+		w.Write([]byte(ret_json))
+	}
+	//fmt.Printf("jsonMap:%s \n",jsonMap)
+}
+func httpHandle() {
+	http.HandleFunc("/testNetFlow", httpEthr) // 传输数据 ethr
+	// http.Handle("/css/", http.FileServer(http.Dir("template")))
+	//http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
+	//http.Handle("/config", websocket.Handler(handleConfigRequest)) // 配置 读写
+	//http.HandleFunc("/sendRestart", restartProgram)     //只读
+	//http.HandleFunc("/admin", adminTemplateFunc)
+	http.HandleFunc("/startPingTargets", startPingTargetStandaloneFunc)       // 开始ping选择的地址
+	http.Handle("/getPingTargetsInfo", websocket.Handler(handleTargetSocket)) // 获取ping 选择的地址的日志
+	//http.HandleFunc("/controlNetUsing", controlNetUsing)                      // 控制网络流量开关
+	http.Handle("/getNetUsingInfo", websocket.Handler(handleNetUsing)) //获取网络流量websocket
+	http.Handle("/js/", http.FileServer(http.Dir("template")))         // 文件服务
+	http.Handle("/info", websocket.Handler(handleInfo))                // 获取通断信息
+	http.HandleFunc("/getHistory", getHistoryFunc)                     // 获取通断历史记录接口
+	http.HandleFunc("/getHistoryNetUse", getHistroyNetUseFunc)         // 获取网卡流量历史记录接口
+	http.HandleFunc("/updateConfig", updateConfig)                     //修改配置文件
+	// 以上接口 ****** 以下路由
+	http.HandleFunc("/", indexFunc)            //入口
+	http.HandleFunc("/temp", templateFunc)     //入口
+	http.HandleFunc("/config", templateConfig) //入口
+
+}
+
+func templateConfig(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/config.html")
+	if err != nil {
+		fmt.Fprintln(w, err)
+		log4go.Error(err)
+		return
+	}
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
+	mjson, _ := json.Marshal(cfg)
+	mString := string(mjson)
+
+	t.Execute(w, mString)
+}
+
 type historyRes struct {
 	// 这里有坑，这里的变量名必须大写，引用范围机制
 	Data string `json:"data"` //`json:",string"`
+}
+
+func indexFunc(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/index.html")
+	if err != nil {
+		fmt.Fprintln(w, err)
+		log4go.Error(err)
+		return
+	}
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
+	mjson, _ := json.Marshal(cfg)
+	mString := string(mjson)
+
+	t.Execute(w, mString)
 }
 
 func templateFunc(w http.ResponseWriter, r *http.Request) {

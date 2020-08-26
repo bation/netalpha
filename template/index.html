@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>首页</title>
+  <link rel="stylesheet" href="js/layui-v2.5.6/layui/css/layui.css">
+  <link rel="stylesheet" href="js/ag-grid/ag-grid.css">
+  <script src="/js/layui-v2.5.6/layui/layui.all.js"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+  <!--1.头部区域-->
+  <div class="layui-header">
+    <div class="layui-logo">网络监控</div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <!--<li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+          贤心
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="">退了</a></li>-->
+    </ul>
+  </div>
+  <!--2.左侧导航-->
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+        <li id="indexli"class="layui-nav-item leftdaohang" data-url="/temp" mytitle="节点监控"><a>节点监控</a></li>
+        <li class="layui-nav-item leftdaohang" data-url="/config" mytitle="流量监测"><a>流量监测</a></li>
+        <li class="layui-nav-item leftdaohang" data-url="/config" mytitle="异常监测"><a>异常监测</a></li>
+        <li class="layui-nav-item leftdaohang" data-url="/config" mytitle="配置修改"><a>配置修改</a></li>
+
+      </ul>
+    </div>
+  </div>
+  <!--3.右侧主体内容区-->
+  <div class="layui-body">
+    <!--tabs标签-->
+    <div class="layui-tab layui-tab-card" lay-filter="demo" lay-allowclose="true">
+      <ul class="layui-tab-title">
+      </ul>
+      <div class="layui-tab-content">
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+    var $ = layui.jquery
+            ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+
+    //触发事件
+    var active = {
+      tabAdd: function(){
+        //新增一个Tab项
+        var htmlurl=$(this).attr('data-url');
+        var mytitle=$(this).attr('mytitle');
+//                  alert("触发tab增加事件："+mytitle);
+        //先判断是否已经有了tab
+        var arrayObj = new Array();　//创建一个数组
+        $(".layui-tab-title").find('li').each(function() {
+          var y = $(this).attr("lay-id");
+          arrayObj.push(y);
+        });
+//                    alert("遍历取到的数组："+arrayObj);
+        var have=$.inArray(mytitle, arrayObj);  //返回 3,
+        if (have>=0) {
+          //tab已有标签
+//                        alert("遍历的已有标签："+mytitle);
+          element.tabChange('demo', mytitle); //切换到当前点击的页面
+        } else{
+          //没有相同tab
+//                      alert("遍历的没有相同tab："+mytitle);
+          element.tabAdd('demo', {
+            title:mytitle //用于演示
+            ,content: '<iframe style="width: 80vw;height: 100vh;" scrolling="no" src='+htmlurl+' ></iframe>'
+            ,id: mytitle //实际使用一般是规定好的id，这里以时间戳模拟下
+          })
+          element.tabChange('demo', mytitle); //切换到当前点击的页面
+        }
+      }
+
+    };
+    $(".leftdaohang").click(function(){
+      var type="tabAdd";
+      var othis = $(this);
+//                var htmlurl=$(this).attr('data-url');
+//                var mytitle=$(this).attr('mytitle');
+      active[type] ? active[type].call(this, othis) : '';
+    });
+	var first=$('.layui-tab-item').height();
+	console.log(123,first)
+  $(("#indexli")).click()
+</script>
+</body>
+<style>
+/*.layui-tab{*/
+/*  width: 100vw;*/
+/*  height: 100vh;*/
+/*}*/
+
+iframe {
+  border-width: 0px;
+  border-style: inset;
+  border-color: initial;
+  border-image: initial;
+}
+</style>
+</html>

@@ -306,6 +306,7 @@
         $.ajax({
           type: 'POST',
           url: netFlowTestUrl,
+          contentType:"application/x-www-form-urlencoded",
           data: {
             ip: ip,
             protocol: protoc
@@ -379,26 +380,19 @@
    * 查询历史记录
    * @param st 开始时间
    * @param et 结束时间
+   * @param ip ip地址
+   * @param status 状态
    */
-  function queryHistory(st, et) {
-    let d1 = new Date().Format("yyyy/MM/dd hh:mm:ss");
+  function queryHistory(st, et,ip="",status="") {
+    let d1 = new Date(new Date().setMinutes(new Date().getMinutes() - 5)).Format("yyyy/MM/dd hh:mm:ss");
     let d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
-    d1 = new Date().setMinutes(new Date().getMinutes() - 5);
-    d1 = new Date(d1)
-    d1 = d1.getTime()
-    d1 = JSON.stringify(d1)
-    d2 = JSON.stringify(new Date().getTime())
-    d2 = new Date;
-    d2 = d2.getTime()
-    d2 = JSON.stringify(d2)
     if (st && et) {
-      d1 = JSON.stringify(st.getTime())
-      d2 = JSON.stringify(et.getTime())
+      d1 = st.Format("yyyy/MM/dd hh:mm:ss");
+      d2 = et.Format("yyyy/MM/dd hh:mm:ss");
     }
-    console.log("d1 开始时间   " + new Date(parseInt(d1)))
-    console.log("d2 结束时间   " + new Date(parseInt(d2)))
-    console.log(d1)
-    console.log(d2)
+
+    console.log("d1 开始时间   " + d1)
+    console.log("d2 结束时间   " + d2)
     let historyLayer = layui.layer.load(1, {
       shade: [0.1, '#fff'] //0.1透明度的白色背景
     });
@@ -407,9 +401,12 @@
     $.ajax({
       type: 'POST',
       url: getHistoryUrl,
+      contentType:"application/x-www-form-urlencoded",
       data: {
         d1: d1,
-        d2: d2
+        d2: d2,
+        ip:ip,
+        status:status
       },
       success: function (e) {
         layui.layer.close(historyLayer)
@@ -420,7 +417,9 @@
         console.log(res)
         handleResHistory(res.result, {
           d1: d1,
-          d2: d2
+          d2: d2,
+          ip:ip,
+          status:status
         })
 
       },
@@ -443,13 +442,12 @@
    */
   function handleResHistory(data, dtime) {
     //在这里面输入任何合法的js语句
-    let st = new Date(parseInt(dtime.d1))
-    let et = new Date(parseInt(dtime.d2))
-    let estr = et.Format("yyyy-MM-dd hh:mm:ss")
-    let sstr = st.Format("yyyy-MM-dd hh:mm:ss")
+    let st = new Date(dtime.d1)
+    let et = new Date(dtime.d2)
+    let estr = et.Format("yyyy/MM/dd hh:mm:ss")
+    let sstr = st.Format("yyyy/MM/dd hh:mm:ss")
     let tt = sstr + " - " + estr
     window.leftHistory = function () {
-
       let st1 = new Date(st).setMinutes(new Date(st).getMinutes() - 5)
       let et1 = new Date(st)
       if ($("#test5").val() !== "") {
@@ -461,7 +459,7 @@
         $("#test5").val(t5StrNew)
       }
       st1 = new Date(st1)
-      queryHistory(st1, et1)
+      queryHistory(st1, et1,$("#test5ip").val(),$("#test5status").val())
     }
     window.rightHistory = function () {
       let st1 = new Date(et)
@@ -474,7 +472,7 @@
         $("#test5").val(t5StrNew)
       }
       et1 = new Date(et1)
-      queryHistory(st1, et1)
+      queryHistory(st1, et1,$("#test5ip").val(),$("#test5status").val())
     }
     // 如果已打开，不重复打开
     if ($("#openedLayerDiv").length === 0) {
@@ -495,7 +493,19 @@
           '        <input type="text" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">\n' +
           '      </div>\n' +
           '    </div>' +
-          ' <div class="layui-btn-group">\n' +
+                '<div  class="layui-inline">\n' +
+                '      <label class="layui-input-inline">IP </label>\n' +
+                '      <div class="layui-input-inline">\n' +
+                '        <input type="text" class="layui-input" id="test5ip" placeholder="ip">\n' +
+                '      </div>\n' +
+                '    </div>' +
+                '<div  class="layui-inline">\n' +
+                '      <label class="layui-input-inline">状态 </label>\n' +
+                '      <div class="layui-input-inline">\n' +
+                '        <input type="text" class="layui-input" id="test5status" placeholder="status">\n' +
+                '      </div>\n' +
+                '    </div>' +
+                ' <div class="layui-btn-group">\n' +
           '    <button type="button" onclick="leftHistory(' +
           ')" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-left"></i></button>\n' +
           '    <button type="button" onclick="rightHistory(' +
@@ -594,6 +604,7 @@
     $.ajax({
       type: 'POST',
       url: getHistoryNetUseUrl,
+      contentType:"application/x-www-form-urlencoded",
       data: {
         d1: d1,
         d2: d2,
@@ -1514,6 +1525,7 @@ let gridOptions ={}
         type: 'POST',
         url: pingStandaloneUrl,
         data: JSON.stringify(datap),
+        contentType:"application/x-www-form-urlencoded",
         success: function (e) {
           console.log("success")
           console.log(e)

@@ -7,6 +7,7 @@ import (
 	"github.com/google/gopacket/pcap"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -19,8 +20,8 @@ type Config struct {
 	Interval       int               `json:"interval"`  // 间隔时间 单位秒
 	Ip             string            `json:"ip"`        // 本地ip
 	name           string            //设备名
-	offlineRepURL  string            //断线通知地址
-	RunningTargets []string          `json:"running"` // 正在测试的异常节点ip
+	OfflineRepURL  string            `json:"offline_resp_url"` //断线通知地址
+	RunningTargets []string          `json:"running"`          // 正在测试的异常节点ip
 }
 
 /*
@@ -89,6 +90,51 @@ func (c *Config) SetValueByKey(key string, value string) (bool, error) {
 	iscfgOk = c.Init(c.path) //重新加载配置文件
 	return iscfgOk, err
 }
+func (c *Config) SetValues(vmap url.Values) (bool, error) {
+	iscfgOk := false
+	f, err := os.Open(c.path)
+	defer f.Close()
+	if err != nil {
+		fmt.Println("read log file err:")
+		fmt.Println(err)
+		log4go.Error(err)
+		return iscfgOk, err
+	}
+	sumstr := ""
+	reader := bufio.NewReader(f)
+	for {
+	labelA:
+		line, err := readLine(reader)
+		if err != nil {
+			if err == io.EOF {
+				// 文件末尾
+				break
+			} else {
+				return iscfgOk, err
+			}
+		} else {
+			if line == "" {
+				continue
+			}
+			for key, value := range vmap {
+				if strings.Contains(line, key) && !strings.HasPrefix(line, "#") {
+					sumstr += key + " = " + value[0] + "\n"
+					goto labelA
+				}
+			}
+
+			sumstr += line + "\n"
+		}
+	}
+	sumstr = sumstr[0 : len(sumstr)-1]
+	err = ioutil.WriteFile(c.path, []byte(sumstr), os.ModeAppend)
+	fmt.Println("*************************************************************")
+	fmt.Println("修改后的配置文件:")
+	fmt.Println(sumstr)
+	fmt.Println("*************************************************************")
+	iscfgOk = c.Init(c.path) //重新加载配置文件
+	return iscfgOk, err
+}
 
 // 初始化DEVICE_TARGET
 func (c *Config) initValue() {
@@ -105,7 +151,7 @@ func (c *Config) initValue() {
 	} else if c.Interval > 20 {
 		c.Interval = 20
 	}
-	c.offlineRepURL = c.GetValueByKey("OFFLINE_MSG_REP_URL")
+	c.OfflineRepURL = c.GetValueByKey("OFFLINE_MSG_REP_URL")
 	c.Ip = c.GetValueByKey("DEVICE_IP")
 	c.Bandwidth = strToFloat64(c.GetValueByKey("DEVICE_BANDWIDTH"))
 }

@@ -254,3 +254,14 @@ func Post(url string, data interface{}, contentType string) string {
 	result, _ := ioutil.ReadAll(resp.Body)
 	return string(result)
 }
+
+// 允许跨域 CRS
+func AllowCrossOrigin(w http.ResponseWriter) http.ResponseWriter {
+	w.Header().Set("Access-Control-Allow-Origin", "*")          //允许访问所有域
+	w.Header().Set("content-type", "application/json")          //返回数据格式是json
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET") //允许的请求方法
+	w.Header().Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, "+
+		"WG-App-Version, WG-Device-Id, WG-Network-Type, WG-Vendor, WG-OS-Type, WG-OS-Version, WG-Device-Model, WG-CPU, WG-Sid, WG-App-Id, WG-Token") //header的类型
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	return w
+}

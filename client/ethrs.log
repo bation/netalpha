@@ -720,3 +720,337 @@
 {"Time":"2020-08-21T07:29:24Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"223.87M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
 {"Time":"2020-08-21T07:29:25Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"237.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
 {"Time":"2020-08-21T07:29:25Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-21T08:48:58Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61014"}
+{"Time":"2020-08-21T08:48:58Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:48:59Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.68M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:00Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.42M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:01Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.94M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:02Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.32M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:03Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.04M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:03Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:49:07Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61028"}
+{"Time":"2020-08-21T08:49:07Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:49:09Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.94M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:10Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.96M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:11Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.32M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:12Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.06M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:13Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.19M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:13Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:49:17Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61046"}
+{"Time":"2020-08-21T08:49:17Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:49:18Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"93.95M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:19Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.72M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:20Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.98M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:21Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.59M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:22Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.85M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:22Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:49:31Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61063"}
+{"Time":"2020-08-21T08:49:31Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:49:32Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"0","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:33Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.31M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:34Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"94.08M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:35Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.57M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:36Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.57M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:37Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:49:37Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:50:03Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61112"}
+{"Time":"2020-08-21T08:50:03Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:50:04Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"0","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:05Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.30M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:06Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.81M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:07Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:08Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.55M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:09Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"39.68M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:09Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:50:11Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61125"}
+{"Time":"2020-08-21T08:50:11Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:50:13Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"93.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:14Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.98M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:15Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.85M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:16Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.72M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:17Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.85M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:17Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:50:21Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 61152"}
+{"Time":"2020-08-21T08:50:21Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-21T08:50:23Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.18M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:24Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.82M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:25Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.82M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:26Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"94.21M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:27Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-21T08:50:27Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Accepting IP version: ipv4, ipv6"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 9999 for TCP bandwidth tests"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 9998 for TCP conn/s tests"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 9996 for TCP latency tests"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 9899 for HTTP bandwidth tests"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 9799 for HTTPS bandwidth tests"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 9896 for HTTP latency tests"}
+{"Time":"2020-08-24T00:39:58Z","Type":"INFO","Message":"Listening on 8888 for control plane"}
+{"Time":"2020-08-24T00:50:03Z","Type":"INFO","Message":"Accepting IP version: ipv4, ipv6"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 9999 for TCP bandwidth tests"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 9998 for TCP conn/s tests"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 9996 for TCP latency tests"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 9899 for HTTP bandwidth tests"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 9799 for HTTPS bandwidth tests"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 9896 for HTTP latency tests"}
+{"Time":"2020-08-24T00:50:04Z","Type":"INFO","Message":"Listening on 8888 for control plane"}
+{"Time":"2020-08-24T00:50:49Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 51488"}
+{"Time":"2020-08-24T00:50:49Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:50:51Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.45M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:50:52Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"41.09M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:50:53Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"41.34M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:50:54Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.83M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:50:55Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"41.22M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:50:55Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:51:01Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 51528"}
+{"Time":"2020-08-24T00:51:01Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:51:03Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"41.47M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:04Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.32M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:05Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.83M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:06Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.45M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:07Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"41.60M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:07Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:51:10Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 51534"}
+{"Time":"2020-08-24T00:51:10Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:51:12Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"38.78M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:13Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.06M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:14Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.96M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:15Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:16Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"38.78M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:16Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:51:45Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 51562"}
+{"Time":"2020-08-24T00:51:45Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:51:47Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.83M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:48Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"41.34M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:49Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.19M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:50Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.83M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:51Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"HTTP","BitsPerSecond":"40.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:51:51Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:52:03Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 51594"}
+{"Time":"2020-08-24T00:52:03Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:52:04Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.08M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:05Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.85M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:06Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.85M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:07Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.98M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:08Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"TCP","BitsPerSecond":"94.72M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:08Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:52:14Z","Type":"INFO","Message":"New control connection from 192.168.96.230, port 51609"}
+{"Time":"2020-08-24T00:52:14Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T00:52:15Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"91.65M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:16Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:17Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.82M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:18Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.44M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:19Z","Type":"TestResult","RemoteAddr":"192.168.96.230","Protocol":"UDP","BitsPerSecond":"93.82M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T00:52:19Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.230"}
+{"Time":"2020-08-24T01:30:04Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5057"}
+{"Time":"2020-08-24T01:30:04Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:05Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"237.82M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:06Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"258.56M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:07Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"264.19M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:08Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"249.60M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:09Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"260.22M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:09Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:21Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5070"}
+{"Time":"2020-08-24T01:30:21Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:23Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.49G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:24Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.42G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:25Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.68G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:26Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.99G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:27Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.80G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:27Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:31Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5079"}
+{"Time":"2020-08-24T01:30:31Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:32Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.17G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:33Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.43G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:34Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.40G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:35Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.54G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:36Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.40G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:36Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:38Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5085"}
+{"Time":"2020-08-24T01:30:38Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:40Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.39G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:41Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.33G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:42Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.42G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:43Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.48G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:44Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.38G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:44Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:52Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5094"}
+{"Time":"2020-08-24T01:30:52Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:30:52Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"0","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:53Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.87G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:54Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.58G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:55Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"6.03G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:56Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.13G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:57Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"6.98G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:30:57Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:31:29Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5138"}
+{"Time":"2020-08-24T01:31:29Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:31:29Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"0","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:30Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"246.40M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:31Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"259.84M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:32Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"253.70M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:33Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"250.88M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:34Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"260.86M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:34Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:31:40Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5149"}
+{"Time":"2020-08-24T01:31:40Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:31:41Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.07G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:42Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.23G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:43Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.23G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:44Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.16G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:45Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.15G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:31:45Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:34:33Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 5288"}
+{"Time":"2020-08-24T01:34:33Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:34:35Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"244.10M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:34:36Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"254.34M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:34:37Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"247.42M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:34:38Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"243.71M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:34:39Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"272.77M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:34:39Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:49:46Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6296"}
+{"Time":"2020-08-24T01:49:46Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:49:48Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"233.86M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:49:49Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"252.03M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:49:50Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"250.37M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:49:51Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"256.26M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:49:52Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"258.43M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:49:52Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:50:48Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6367"}
+{"Time":"2020-08-24T01:50:48Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:50:50Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"249.60M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:50:51Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"258.43M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:50:52Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"238.59M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:50:53Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"255.36M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:50:54Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"253.06M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:50:54Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:51:17Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6401"}
+{"Time":"2020-08-24T01:51:17Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:51:19Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"249.34M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:51:20Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"238.21M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:51:21Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"257.02M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:51:22Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"260.35M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:51:23Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"254.46M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:51:23Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:52:26Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6481"}
+{"Time":"2020-08-24T01:52:26Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:52:28Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"254.08M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:29Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"247.94M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:30Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"260.35M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:31Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"252.67M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:32Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"255.23M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:32Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:52:51Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6514"}
+{"Time":"2020-08-24T01:52:51Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:52:53Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"249.34M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:54Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"254.98M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:55Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"262.66M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:56Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"265.98M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:57Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"241.92M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:52:57Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:53:27Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6555"}
+{"Time":"2020-08-24T01:53:27Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:53:29Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"221.44M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:53:30Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"249.22M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:53:31Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"264.45M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:53:32Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"243.84M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:53:33Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"259.46M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:53:33Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:54:47Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6647"}
+{"Time":"2020-08-24T01:54:47Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:54:48Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"224.51M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:54:49Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"245.38M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:54:50Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"260.61M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:54:51Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"254.72M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:54:52Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"245.12M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:54:52Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:55:01Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6662"}
+{"Time":"2020-08-24T01:55:01Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:55:03Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"246.14M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:04Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"251.65M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:05Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"258.05M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:06Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"263.94M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:07Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"249.34M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:07Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:55:32Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6696"}
+{"Time":"2020-08-24T01:55:32Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:55:34Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"250.37M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:35Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"257.28M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:36Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"255.49M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:37Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"256.90M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:38Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"239.74M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:55:38Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:04Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6734"}
+{"Time":"2020-08-24T01:56:04Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:05Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"4.23G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:06Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.28G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:07Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.20G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:08Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"4.32G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:09Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.27G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:09Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:18Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6753"}
+{"Time":"2020-08-24T01:56:18Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:20Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.16G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:21Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.84G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:22Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.01G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:23Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.61G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:24Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"3.84G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:24Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:42Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6782"}
+{"Time":"2020-08-24T01:56:42Z","Type":"INFO","Message":"Starting TCP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:43Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.66G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:44Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.80G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:45Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"6.50G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:46Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.94G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:47Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"TCP","BitsPerSecond":"5.17G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:47Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:56Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6801"}
+{"Time":"2020-08-24T01:56:56Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:56:57Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.45G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:58Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.50G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:56:59Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.33G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:00Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.49G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:01Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.51G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:01Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:57:13Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6817"}
+{"Time":"2020-08-24T01:57:13Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:57:14Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"0","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:15Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.57G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:16Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.38G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:17Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.37G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:18Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.47G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:19Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.46G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:19Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:57:29Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6833"}
+{"Time":"2020-08-24T01:57:29Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:57:30Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.26G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:31Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.42G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:32Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.49G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:33Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.44G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:34Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.41G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:34Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:57:45Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 6851"}
+{"Time":"2020-08-24T01:57:45Z","Type":"INFO","Message":"Starting UDP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T01:57:47Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.25G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:48Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.26G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:49Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.40G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:50Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"3.43G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:51Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"UDP","BitsPerSecond":"2.88G","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T01:57:51Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T02:53:44Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 11121"}
+{"Time":"2020-08-24T02:53:44Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T02:53:45Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"209.28M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:46Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"221.95M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:47Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"240.51M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:48Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"251.39M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:49Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"253.95M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:49Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T02:53:55Z","Type":"INFO","Message":"New control connection from 192.168.96.183, port 11133"}
+{"Time":"2020-08-24T02:53:55Z","Type":"INFO","Message":"Starting HTTP Bandwidth test from 192.168.96.183"}
+{"Time":"2020-08-24T02:53:55Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"0","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:56Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"226.05M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:57Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"248.83M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:58Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"246.14M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:53:59Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"248.96M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:54:00Z","Type":"TestResult","RemoteAddr":"192.168.96.183","Protocol":"HTTP","BitsPerSecond":"259.58M","ConnectionsPerSecond":"","PacketsPerSecond":"","AverageLatency":""}
+{"Time":"2020-08-24T02:54:00Z","Type":"INFO","Message":"Ending Bandwidth test from 192.168.96.183"}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" href="/js/layui-v2.5.6/layui/css/layui.css">
+<script src="/js/layui-v2.5.6/layui/layui.all.js"></script>
+<style type="text/css">
+    .comments {
+        width: 100%; /*自动适应父布局宽度*/
+        overflow: auto;
+        word-break: break-all;
+        /*在ie中解决断行问题(防止自动变为在一行显示，主要解决ie兼容问题，ie8中当设宽度为100%时，文本域类容超过一行时，
+        当我们双击文本内容就会自动变为一行显示，所以只能用ie的专有断行属性“word-break或word-wrap”控制其断行)*/
+    }
+</style>
+
+<body>
+<div>
+
+    <div class="layui-form" lay-filter="configForm" style="max-width: 600px; margin: 0px auto; padding: 5% 0;">
+        <div class="layui-form-item" style="margin-top:10px;">
+			<label class="layui-form-label" for="test1">监控间隔：</label>
+			<div class="layui-input-block">
+                <input type="text" class="layui-input" lay-verify="interval" name="INTERVAL_SEC" placeholder="以秒位单位，最小5，最大20，超出范围，自动取相近值5或20">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top:10px;">
+			<label class="layui-form-label" for="test2">本机带宽：</label>
+			<div class="layui-input-block">
+                <input type="text" class="layui-input" lay-verify="bandwidth" name="DEVICE_BANDWIDTH" placeholder="本机带宽">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top:10px;">
+			<label class="layui-form-label" for="test3">反馈接口地址：</label>
+			<div class="layui-input-block">
+                <input type="text" class="layui-input" lay-verify="respUrl" name="OFFLINE_MSG_REP_URL" placeholder="示例：http://0.0.0.0:8080/archiveInfo">
+            </div>
+        </div>
+
+		<div class="layui-form-item layui-form-text">
+			<label class="layui-form-label">网络节点IP：</label>
+			<div class="layui-input-block">
+				<textarea name="DEVICE_TARGET" lay-verify="nodes" placeholder="多个IP以逗号“,”分割 ，例如：0.0.0.0,1.1.1.1" class="layui-textarea"></textarea>
+			</div>
+		</div>
+		<div style="text-align: left;margin-left:245px ;margin-top:10px;">
+			<button  class="layui-btn  layui-btn-primary" lay-submit lay-filter="formDemo">保存</button>
+		</div>
+    </div>
+
+</div>
+
+<script>
+    const dd = {{.}}
+	const $ = layui.$
+	const ff = JSON.parse(dd)
+    console.log(dd)
+	const ffIp = ff.ip
+	const updateConfigURI = "http://" + ffIp + ":8769/updateConfig";
+    const form = layui.form;
+    form.render()
+    form.val('configForm', {
+        "INTERVAL_SEC": ff.interval // "name": "value"
+        ,"DEVICE_BANDWIDTH": ff.bandwidth
+        ,"OFFLINE_MSG_REP_URL": ff.offline_resp_url
+        ,"DEVICE_TARGET": ff.targets
+    });
+	//自定义验证规则
+	form.verify({
+		interval: [
+		/^[1-9]\d*$/
+		,'间隔时间必须是正整数'
+	]
+		,bandwidth: [
+			/^[1-9]\d*$/
+			,'带宽必须是正整数'
+		]
+		// url正则匹配到端口号之前
+		,respUrl: [
+			/^((https|http):\/\/(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5]):[\w\W]+)*$/
+				,'url需正确填写'
+		]
+		,nodes: [
+			/^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5]))+(,(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5]))*$/
+			,'请正确填写节点地址'
+		]
+	});
+	//监听提交
+	form.on('submit(formDemo)', function (data) {
+		// layer.msg(JSON.stringify(data.field));
+
+		let field = data.field
+		console.log(field)
+		$.ajax({
+			type: 'POST',
+			url: updateConfigURI,
+			contentType:"application/x-www-form-urlencoded",
+			data: field,
+			success: function (e) {
+				console.log("success")
+				console.log(e)
+                layui.layer.msg("修改成果："+e.data, {
+                    icon: 1
+                })
+			},
+			error: function (e) {
+				console.log("err")
+				console.log(e)
+				layui.layer.msg("err", {
+					icon: 2
+				})
+			},
+			dataType: "json"
+		});
+	});
+	/**
+	 * IP地址的正则表达式
+	 * @param ip IP地址
+	 * @returns {boolean} ip地址格式是否正确
+	 */
+	function isValidIP(ip) {
+		let reg =
+				/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+		return reg.test(ip);
+	}
+
+</script>
+</body>
+</html>

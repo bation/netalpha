@@ -9,6 +9,8 @@ import (
 )
 
 func httpEthr(w http.ResponseWriter, r *http.Request) {
+	AllowCrossOrigin(w)
+
 	/// 以下为结果返回
 	type result struct {
 		Data []ethr.BindWithStruct `json:"data"`
