@@ -83,7 +83,7 @@
 //                      alert("遍历的没有相同tab："+mytitle);
           element.tabAdd('demo', {
             title:mytitle //用于演示
-            ,content: '<iframe style="width: 80vw;height: 100vh;" scrolling="no" src='+htmlurl+' ></iframe>'
+            ,content: '<iframe style="width: 80vw;height: 100vh;" scrolling="yes" src='+htmlurl+' ></iframe>'
             ,id: mytitle //实际使用一般是规定好的id，这里以时间戳模拟下
           })
           element.tabChange('demo', mytitle); //切换到当前点击的页面

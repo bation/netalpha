@@ -2,1596 +2,710 @@
 <html lang="en">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-  <title>Go Web</title>
-  <link rel="stylesheet" href="/js/layui-v2.5.6/layui/css/layui.css">
-  <link rel="stylesheet" href="/js/ag-grid/ag-grid.css">
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>Go Web</title>
+    <link rel="stylesheet" href="/js/layui-v2.5.6/layui/css/layui.css">
+    <link rel="stylesheet" href="/js/ag-grid/ag-grid.css">
 
-  <script src="/js/layui-v2.5.6/layui/layui.all.js"></script>
-  <script src="/js/ag-grid/ag-grid-community.js"></script>
+    <script src="/js/layui-v2.5.6/layui/layui.all.js"></script>
+    <script src="/js/ag-grid/ag-grid-community.js"></script>
 
-  <script src="/js/jquery-2.2.3.min.js"></script>
-  <script src="/js/echarts/echarts.js"></script>
 </head>
 
 <body>
 
-  <div>
+<div>
     <div class="layui-container">
-      <!--
-    type Status struct {
-	Ip string `json:"ip"`
-	Send int64 `json:"send"`
-	Recv int64 `json:"recv"`
-	Lost float64 `json:"lost"` //丢失率  单位百分比
-	Duration int64 `json:"duration"`
-	MaxDuration int64 `json:"maxDuration"` //最大延迟
-	MinDuration int64 `json:"minDuration"` //最小延迟
-	SumDuration int64 `json:"sumDuration"` //平均延迟
-}
- -->
-      <div class="layui-row" style="line-height: 40px;">
-        <div class="nav">
-        </div>
-      </div>
-      <div class="layui-row layui-col-space10 ">
-        <div class="layui-col-xs6 ">
-          <h1>网络监控
-            <!--
-          <button id="modify" class="layui-btn layui-btn-normal" onclick="config()">修改配置文件</button>
-          <button id="restart" class="layui-btn layui-btn-warm" onclick="restart()">重启</button>
-          -->
-          </h1>
-
-          <div class="onoff">
-
+        <h1>流量监控</h1>
+        <div class="onoff">
             <div class="layui-btn-group" style="margin-top: 20px;">
-              <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()">查看历史</button>
-              <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="netFlowTest()">网速测试</button>
-              <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal"
-                onclick="monitNetStart()">开启监控</button>
-              <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">关闭监控</button>
+                <button id="" class="layui-btn layui-btn-sm" onclick="queryHistoryNetUse()">查看历史</button>
+                <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="netFlowTest()">网速测试</button>
+                <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal"
+                        onclick="monitNetStart()">开启监控
+                </button>
+                <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">
+                    关闭监控
+                </button>
             </div>
-            <!-- lay-size="sm" -->
-            <table class="onoffTable layui-table" lay-skin="line">
-              <tr>
-                <th>远程主机IP</th>
-                <th>主机状态<sup>*</sup></th>
-                <th class="invisible">操作</th>
-              </tr>
-              <tr class="onoffTr invisible">
-                <td id="ip"></td>
-                <td><i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i> <i id="status">
-                  </i> </td>
-                <td class="invisible"><button class="onoffTrbtn">测速</button></td>
-              </tr>
-            </table>
-            <div id="gatewayStatusDiv"></div>
-            <div class="statusCommentDiv" style="padding-top: 5px;color:black;font-size: 12px;">
-              <SUP>*</SUP>状态说明：
-              <p> <i style="color: #009688">ONLINE</i>: 网络通畅</p>
-              <p> <i style="color: #FFB800">LOSTRATEG1</i>: 丢包率大于1%</p>
-              <p> <i style="color: #FFB800">HIGH_LATENCY</i>: 平均延迟超过300ms</p>
-              <p> <i style="color: red">OFFLINE</i>: 网络不可达</p>
-            </div>
-            <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=1)" width="100%" color=#987cb9 SIZE=3>
-
-          </div>
-
-          <div id="netstatusdiv" class="layui-form" style="display: none">
-            <h3 class="netusestatus" style="display: inline;color:#3296FA"><i class="layui-icon layui-icon-radio"
-                style="font-size: 5px; color: white;"></i>
-              本地网卡链路层流量监控：</h3>
-            <button id="" class="layui-btn layui-btn-sm" onclick="queryHistoryNetUse()">查看历史</button>
-            <div id="localNetFlow" style="width: 100%;height: 62px;overflow: hidden !important;" class="ag-theme-balham"></div>
-            <!--
-          <table class="local layui-table" lay-size="lg" lay-skin="line">
-            <colgroup>
-              <col width="160">
-              <col width="150">
-              <col width="150">
-              <col>
-            </colgroup>
-            <thead>
-            <tr>
-              <th class="netusestatus">本地ip <i class="layui-icon layui-icon-radio"
-                                               style="font-size: 5px; color: white;"></i></th>
-              <th>上行</th>
-              <th>下行</th>
-              <th>网络使用率</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="localcol">
-              <td id="localIP"></td>
-              <td id="upload"></td>
-              <td id="download"></td>
-              <td id="netuse"></td>
-            </tr>
-            </tbody>
-          </table>
-          -->
-          </div>
-          <div>
-
-          </div>
-        </div>
-        <div class="layui-col-xs6">
-          <!--  单目标监测 异常节点监测-->
-          <h1 style="margin-top: 10px;margin-left: 25px">目标独立监测：</h1>
-          <div style="margin-top: 40px;">
-            <form class="layui-form" action="">
-              <div class="layui-form-item">
-                <label class="layui-form-label">监测持续时间</label>
-                <div class="layui-input-block">
-                  <select name="min" lay-verify="required">
-                    <option value=""></option>
-                    <option value="5">5分钟</option>
-                    <option value="60">1小时</option>
-                    <option value="300">5小时</option>
-                    <option value="720">12小时</option>
-                    <option value="1440">24小时</option>
-                  </select>
-                </div>
-              </div>
-              <div class="layui-form-item">
-                <label class="layui-form-label">请选择</label>
-                <div class="layui-input-block target2Ping">
-                </div>
-              </div>
-              <div class="layui-form-item">
-                <label class="layui-form-label">其它节点</label>
-                <div class="layui-input-block">
-                  <input type="text" name="otherip" lay-verify="otherip" autocomplete="off" placeholder="请输入ip"
-                    class="layui-input">
-                </div>
-              </div>
-              <div class="layui-form-item">
-                <div class="layui-input-block">
-                  <button class="layui-btn ipt_btn  layui-btn-primary" lay-submit lay-filter="formDemo">立即提交</button>
-                  <div id="timediv" style="display: none">
-                    <h3 style="display: inline">剩余时间(秒)：</h3><i id="timer" style="display: inline"></i>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div>
-            <div id="doudong" style="width: 600px;height: 550px;"></div>
-          </div>
-
         </div>
 
+        <div id="netstatusdiv" class="layui-form" style="display: none">
+            <div class="netusestatus" style="color:#3296FA;margin: 10px"><i
+                        class="layui-icon layui-icon-radio"
+                        style="font-size: 5px; color: white;"></i>
+                状态指示</div>
+            <div id="localNetFlow" style="width: 100vw;height: 100vh;overflow: hidden !important;"
+                 class="ag-theme-balham"></div>
 
-      </div>
+        </div>
 
     </div>
-  </div>
+</div>
 
 </body>
 
 <script type="text/javascript">
-  'use strict';
-  const form = layui.form;
-  const layer = layui.layer;
-  const table = layui.table;
-  const pData = {{.}}
-  const fData = JSON.parse(pData)
-  console.log(pData)
-  const ffIp = fData.ip
-  const infoURI = "ws://" + ffIp + ":8769/info";
-  // let confUrl = "ws://" + ffIp + ":8769/config";
-  const pingStandaloneUrl = "http://" + ffIp + ":8769/startPingTargets";
-  const pingStandalneInfoUrl = "ws://" + ffIp + ":8769/getPingTargetsInfo";
-  const controlNetUsingUrl = "http://" + ffIp + ":8769/controlNetUsing";
-  const monitorNetInfoUrl = "ws://" + ffIp + ":8769/getNetUsingInfo";
-  const getHistoryUrl = "http://" + ffIp + ":8769/getHistory";
-  const getHistoryNetUseUrl = "http://" + ffIp + ":8769/getHistoryNetUse";
-  const netFlowTestUrl = "http://" + ffIp + ":8769/testNetFlow";
+    'use strict';
+    const $ = layui.$
+    const pData = {{.}}
+    const fData = JSON.parse(pData)
+    console.log(pData)
+    const ffIp = fData.ip
+    const monitorNetInfoUrl = "ws://" + ffIp + ":8769/getNetUsingInfo";
+    const getHistoryNetUseUrl = "http://" + ffIp + ":8769/getHistoryNetUse";
+    const netFlowTestUrl = "http://" + ffIp + ":8769/testNetFlow";
 
-  console.log(fData.targets)
-  const ips = fData.targets
-
-  for (let idx = 0; idx < ips.length; idx++) {
-    let mIP = $.trim(ips[idx])
-    console.log(mIP)
-    let iptHtml = '<input type="checkbox" class="ipt" name="' + mIP + '" title="' + mIP + '">'
-    $(".target2Ping").append(iptHtml)
-    let ipTr = $(".onoffTr").clone().removeClass("onoffTr").removeClass("invisible").addClass(mIP)
-    ipTr.find(".onoffTrbtn").attr({
-      "onclick": "testNetSpeed(\"" + mIP + "\")"
-    })
-    ipTr.appendTo(".onoffTable")
-    // testBeating(mIP)
-  }
+    let openedTable = null
+    let lastSelectTime = null
+    console.log(fData.targets)
 
 
-  let timerForEnd = 0
-
-  function caclLeftTimeSec(m) {
-    const sec = parseInt(m) * 60
-    $("#timer").text(sec)
-    timerForEnd = setInterval("timerTicks()", 1000)
-  }
-
-  function timerTicks() {
-    const sec = parseInt($("#timer").text()) - 1;
-    $("#timer").text(sec);
-    if (sec <= 0) {
-      clearInterval(timerForEnd)
-      $(".ipt").attr({
-        "disabled": "false"
-      })
-      $(".ipt_btn").attr({
-        "disabled": "false"
-      })
-      $(".ipt_btn").removeClass("layui-btn-disabled")
+    // 对Date的扩展，将 Date 转化为指定格式的String
+    // 月(M)、日(d)、小时(H)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+    // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+    // 例子：
+    // (new Date()).Format("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423
+    // (new Date()).Format("yyyy-M-d H:m:s.S")      ==> 2006-7-2 8:9:4.18
+    Date.prototype.Format = function (fmt) { //author: meizz
+        let o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (let k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
     }
-  }
-  // 对Date的扩展，将 Date 转化为指定格式的String
-  // 月(M)、日(d)、小时(H)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
-  // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
-  // 例子：
-  // (new Date()).Format("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423
-  // (new Date()).Format("yyyy-M-d H:m:s.S")      ==> 2006-7-2 8:9:4.18
-  Date.prototype.Format = function (fmt) { //author: meizz
-    let o = {
-      "M+": this.getMonth() + 1, //月份
-      "d+": this.getDate(), //日
-      "h+": this.getHours(), //小时
-      "m+": this.getMinutes(), //分
-      "s+": this.getSeconds(), //秒
-      "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-      "S": this.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt))
-      fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (let k in o)
-      if (new RegExp("(" + k + ")").test(fmt))
-        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-  }
 
-  /**
-   * 网络测速
-   */
-  function netFlowTest() {
-    // 如果已打开，不重复打开
-    if ($("#netSpeedTest").length === 0) {
-      layui.layer.open({
-        type: 0 ,//Page层类型
-        area: ['550px', '440px'],
-        title: "网速测试",
-        shade: 0.6 , //遮罩透明度
-        maxmin: true , //允许全屏最小化
-        anim: 1 , //0-6的动画形式，-1不开启
-        content: '<div id="netSpeedTest">\n' +
-          '  <div class="layui-form-item">\n' +
-          '    <label class="layui-form-label">测速节点</label>\n' +
-          '    <div class="layui-input-block">\n' +
-          '      <input type="text" id="netSpeedTestAddr" placeholder="请输入地址" class="layui-input layui-input-inline">\n' +
-          '      <button onclick="runSpeedTest()" class="layui-btn layui-btn-normal">开始</button>\n' +
-          '    </div>\n' +
-          '  </div>\n' +
-          '  <div class="layui-form-item">\n' +
-          '    <label class="layui-form-label">协议</label>\n' +
-          '    <div class="layui-input-block">\n' +
-          '      <select id="protoc" name="quiz1" style="min-height: 36px;border:0.5px" \n' +
-          '        <option value="">请选择</option>\n' +
-          '        <option value="http" selected="">http</option>\n' +
-          '        <option value="tcp">tcp</option>\n' +
-          '        <option value="udp">udp</option>\n' +
-          '      </select>\n' +
-          '    </div>\n' +
-          '  </div>\n' +
-          '  <div class="layui-form-item">\n' +
-          '    <label  class="layui-form-label">测速结果</label>\n' +
-          '    <div class="layui-input-block">\n' +
-          '      <textarea id="netspeedres" readonly style="margin-top:20px;height:200px" class="layui-textarea"></textarea>\n' +
-          '    </div>\n' +
-          '  </div>\n' +
-          '</div>'
-      });
-    }
-    let mySpIndex = null
-    window.runSpeedTest = function () {
-      $("#netspeedres").text("")
-      let ip = $("#netSpeedTestAddr").val()
-      let protoc = $("#protoc").val()
-      if (isValidIP(ip)) {
-        mySpIndex = layui.layer.load(1, {
-          shade: [0.1, '#fff'] //0.1透明度的白色背景
-        });
-        // TODO 通知开始网速测试
-        $.ajax({
-          type: 'POST',
-          url: netFlowTestUrl,
-          contentType:"application/x-www-form-urlencoded",
-          data: {
-            ip: ip,
-            protocol: protoc
-          },
-          success: function (e) {
-            layui.layer.close(mySpIndex)
-            console.log("success")
-            console.log(e)
-            let sum = ""
-            let count = 0
-            let vals = []
-            e.data.forEach(dp => {
-              count += 1;
-              if (dp.protocol !== $("#protoc").val().toUpperCase()) {
-                return
-              }
-              sum += dp.protocol + "   >>----第" + count + "秒---->>   " + dp.bits + "\n";
-              vals.push(parseFloat(dp.bits.substring(0, dp.bits.length - 1)));
-            })
-            console.log(vals)
-            let vmax = Math.max(...vals)
-            let vmin = Math.min(...vals)
-            let sc = 0
-            let scCot = 0
-            vals.forEach(vv => {
-              if (vv !== vmax && vv !== vmin) {
-                scCot += 1
-                sc += vv
-              }
+    /**
+     * 网络测速
+     */
+    function netFlowTest() {
+        // 如果已打开，不重复打开
+        if ($("#netSpeedTest").length === 0) {
+            layui.layer.open({
+                type: 0,//Page层类型
+                area: ['550px', '440px'],
+                title: "网速测试",
+                shade: 0.6, //遮罩透明度
+                maxmin: true, //允许全屏最小化
+                anim: 1, //0-6的动画形式，-1不开启
+                content: '<div id="netSpeedTest">\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">测速节点</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <input type="text" id="netSpeedTestAddr" placeholder="请输入地址" class="layui-input layui-input-inline">\n' +
+                    '      <button onclick="runSpeedTest()" class="layui-btn layui-btn-normal">开始</button>\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">协议</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <select id="protoc" name="quiz1" style="min-height: 36px;border:0.5px" \n' +
+                    '        <option value="">请选择</option>\n' +
+                    '        <option value="http" selected="">http</option>\n' +
+                    '        <option value="tcp">tcp</option>\n' +
+                    '        <option value="udp">udp</option>\n' +
+                    '      </select>\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '  <div class="layui-form-item">\n' +
+                    '    <label  class="layui-form-label">测速结果</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '      <textarea id="netspeedres" readonly style="margin-top:20px;height:200px" class="layui-textarea"></textarea>\n' +
+                    '    </div>\n' +
+                    '  </div>\n' +
+                    '</div>'
             });
-            sum += "\n"
-            sum += "平均速率：" + (sc / scCot).toFixed(3) + "\n"
-            $("#netspeedres").text(sum)
-          },
-          error: function (e) {
-            layui.layer.close(mySpIndex)
-            $("#netspeedres").text(e.responseText)
-
-            console.log("err")
-            console.log(e)
-          },
-          dataType: "json"
-        });
-
-      } else {
-        layui.layer.msg("IP地址不合法", {
-          icon: 2
-        });
-      }
-    }
-  }
-
-  let monitor = null
-  // 初始化
-  function init() {
-    initSock();
-    initForm();
-    initAgGrid();
-    if (monitor) {
-      if (monitor.readyState === monitor.CLOSED) {
-        handleNetStart()
-      }
-    } else {
-      handleNetStart()
-    }
-    if (fData.running) {
-      getPingTargetsInfo(null);
-    }
-  }
-  /**
-   * 查询历史记录
-   * @param st 开始时间
-   * @param et 结束时间
-   * @param ip ip地址
-   * @param status 状态
-   */
-  function queryHistory(st, et,ip="",status="") {
-    let d1 = new Date(new Date().setMinutes(new Date().getMinutes() - 5)).Format("yyyy/MM/dd hh:mm:ss");
-    let d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
-    if (st && et) {
-      d1 = st.Format("yyyy/MM/dd hh:mm:ss");
-      d2 = et.Format("yyyy/MM/dd hh:mm:ss");
-    }
-
-    console.log("d1 开始时间   " + d1)
-    console.log("d2 结束时间   " + d2)
-    let historyLayer = layui.layer.load(1, {
-      shade: [0.1, '#fff'] //0.1透明度的白色背景
-    });
-    // 三秒未加载成功 提醒清理日志
-    const historyTimeout = setTimeout("layui.layer.alert('加载时间过长，请考虑删除过期日志')", 3000)
-    $.ajax({
-      type: 'POST',
-      url: getHistoryUrl,
-      contentType:"application/x-www-form-urlencoded",
-      data: {
-        d1: d1,
-        d2: d2,
-        ip:ip,
-        status:status
-      },
-      success: function (e) {
-        layui.layer.close(historyLayer)
-        clearInterval(historyTimeout)
-        console.log("success")
-        // console.log(e)
-        let res = JSON.parse(e.data)
-        console.log(res)
-        handleResHistory(res.result, {
-          d1: d1,
-          d2: d2,
-          ip:ip,
-          status:status
-        })
-
-      },
-      error: function (e) {
-        layui.layer.close(historyLayer)
-        clearInterval(historyTimeout)
-        console.log("err")
-        console.log(e)
-      },
-      dataType: "json"
-    });
-  }
-  let openedTable = null
-  let lastSelectTime = null
-
-  /**
-   * 历史数据的前端渲染
-   * @param data 历史数据
-   * @param dtime 所选时间
-   */
-  function handleResHistory(data, dtime) {
-    //在这里面输入任何合法的js语句
-    let st = new Date(dtime.d1)
-    let et = new Date(dtime.d2)
-    let estr = et.Format("yyyy/MM/dd hh:mm:ss")
-    let sstr = st.Format("yyyy/MM/dd hh:mm:ss")
-    let tt = sstr + " - " + estr
-    window.leftHistory = function () {
-      let st1 = new Date(st).setMinutes(new Date(st).getMinutes() - 5)
-      let et1 = new Date(st)
-      if ($("#test5").val() !== "") {
-        lastSelectTime = $("#test5").val()
-        let t5t = new Date($("#test5").val())
-        st1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes() - 5)
-        et1 = new Date($("#test5").val())
-        const t5StrNew = new Date(st1).Format("yyyy-MM-dd hh:mm:ss")
-        $("#test5").val(t5StrNew)
-      }
-      st1 = new Date(st1)
-      queryHistory(st1, et1,$("#test5ip").val(),$("#test5status").val())
-    }
-    window.rightHistory = function () {
-      let st1 = new Date(et)
-      let et1 = new Date(et).setMinutes(new Date(et).getMinutes() + 5)
-      if ($("#test5").val() !== "") {
-        let t5t = new Date($("#test5").val())
-        st1 = new Date($("#test5").val())
-        et1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes() + 5)
-        const t5StrNew = new Date(et1).Format("yyyy-MM-dd hh:mm:ss")
-        $("#test5").val(t5StrNew)
-      }
-      et1 = new Date(et1)
-      queryHistory(st1, et1,$("#test5ip").val(),$("#test5status").val())
-    }
-    // 如果已打开，不重复打开
-    if ($("#openedLayerDiv").length === 0) {
-      openedTable = layui.layer.open({
-        type: 0 //Page层类型
-          ,
-        area: ['650px', '540px'],
-        title: "5Min记录" + tt,
-        shade: 0.6 //遮罩透明度
-          ,
-        maxmin: true //允许全屏最小化
-          ,
-        anim: 1 //0-6的动画形式，-1不开启
-          ,
-        content: '<div id="openedLayerDiv" class="layui-inline">\n' +
-          '      <label class="layui-input-inline">选择参考时间</label>\n' +
-          '      <div class="layui-input-inline">\n' +
-          '        <input type="text" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">\n' +
-          '      </div>\n' +
-          '    </div>' +
-                '<div  class="layui-inline">\n' +
-                '      <label class="layui-input-inline">IP </label>\n' +
-                '      <div class="layui-input-inline">\n' +
-                '        <input type="text" class="layui-input" id="test5ip" placeholder="ip">\n' +
-                '      </div>\n' +
-                '    </div>' +
-                '<div  class="layui-inline">\n' +
-                '      <label class="layui-input-inline">状态 </label>\n' +
-                '      <div class="layui-input-inline">\n' +
-                '        <input type="text" class="layui-input" id="test5status" placeholder="status">\n' +
-                '      </div>\n' +
-                '    </div>' +
-                ' <div class="layui-btn-group">\n' +
-          '    <button type="button" onclick="leftHistory(' +
-          ')" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-left"></i></button>\n' +
-          '    <button type="button" onclick="rightHistory(' +
-          ')" class="layui-btn layui-btn-sm "><i class="layui-icon layui-icon-right"></i></button>\n' +
-          '  </div>' +
-          '<table class="layui-hide" id="test"></table>',
-        id: 'testReload'
-      });
-    }
-
-    console.log(openedTable)
-    renderTableHistory(data)
-
-  }
-  /**
-   * table渲染历史数据
-   * @param data
-   */
-  function renderTableHistory(data) {
-    let table = layui.table;
-
-    table.render({
-      elem: '#test'
-      // ,height:350
-      ,
-      cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
-      ,
-      cols: [
-        [{
-          field: 'ip',
-          title: 'ip',
-          sort: true
-        }, {
-          field: 'status',
-          title: '状态',
-          sort: true
-        } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-          , {
-          field: 'time',
-          title: '时间',
-          sort: true
         }
-        ]
-      ],
-      data: data,
-      page: true //是否显示分页
-      ,
-      even: true,
-      limits: [10, 20, 50, 100],
-      limit: 10 //每页默认显示的数量
-      ,
-      done: function (res, curr, count) {
-        // //如果是异步请求数据方式，res即为你接口返回的信息。
-        // //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-        // console.log(res);
-        //
-        // //得到当前页码
-        // console.log(curr);
-        //
-        // //得到数据总量
-        // console.log(count);
+        let mySpIndex = null
+        window.runSpeedTest = function () {
+            $("#netspeedres").text("")
+            let ip = $("#netSpeedTestAddr").val()
+            let protoc = $("#protoc").val()
+            if (isValidIP(ip)) {
+                mySpIndex = layui.layer.load(1, {
+                    shade: [0.1, '#fff'] //0.1透明度的白色背景
+                });
+                // TODO 通知开始网速测试
+                $.ajax({
+                    type: 'POST',
+                    url: netFlowTestUrl,
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {
+                        ip: ip,
+                        protocol: protoc
+                    },
+                    success: function (e) {
+                        layui.layer.close(mySpIndex)
+                        console.log("success")
+                        console.log(e)
+                        let sum = ""
+                        let count = 0
+                        let vals = []
+                        e.data.forEach(dp => {
+                            count += 1;
+                            if (dp.protocol !== $("#protoc").val().toUpperCase()) {
+                                return
+                            }
+                            sum += dp.protocol + "   >>----第" + count + "秒---->>   " + dp.bits + "\n";
+                            vals.push(parseFloat(dp.bits.substring(0, dp.bits.length - 1)));
+                        })
+                        console.log(vals)
+                        let vmax = Math.max(...vals)
+                        let vmin = Math.min(...vals)
+                        let sc = 0
+                        let scCot = 0
+                        vals.forEach(vv => {
+                            if (vv !== vmax && vv !== vmin) {
+                                scCot += 1
+                                sc += vv
+                            }
+                        });
+                        sum += "\n"
+                        sum += "平均速率：" + (sc / scCot).toFixed(3) + "\n"
+                        $("#netspeedres").text(sum)
+                    },
+                    error: function (e) {
+                        layui.layer.close(mySpIndex)
+                        $("#netspeedres").text(e.responseText)
 
-        //日期时间选择器
-        layui.laydate.render({
-          elem: '#test5',
-          type: 'datetime'
-        });
-      }
-    });
-  }
-  /**
-   * 查询历史记录
-   * @param st 开始时间
-   * @param et 结束时间
-   */
-  function queryHistoryNetUse(st, et, netuse) {
-    var ddd  = new Date().setMinutes(new Date().getMinutes() - 5)
-    let d1 = new Date(ddd).Format("yyyy/MM/dd hh:mm:ss");
-    let d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
-    if (st && et) {
-      d1 =  new Date(st).Format("yyyy/MM/dd hh:mm:ss");
-      d2 = new Date(et).Format("yyyy/MM/dd hh:mm:ss");
-    }
-    if(!netuse){
-      netuse = "0"
-    }
-    console.log("d1 开始时间   " + new Date(parseInt(d1)))
-    console.log("d2 结束时间   " + new Date(parseInt(d2)))
-    console.log(d1)
-    console.log(d2)
-    let historyLayer = layui.layer.load(1, {
-      shade: [0.1, '#fff'] //0.1透明度的白色背景
-    });
-    // 三秒未加载成功 提醒清理日志
-    const historyTimeout = setTimeout("layui.layer.alert('加载时间过长，请考虑删除过期日志')", 3000)
-    $.ajax({
-      type: 'POST',
-      url: getHistoryNetUseUrl,
-      contentType:"application/x-www-form-urlencoded",
-      data: {
-        d1: d1,
-        d2: d2,
-        netuse:netuse
-      },
-      success: function (e) {
-        layui.layer.close(historyLayer)
-        clearInterval(historyTimeout)
-        console.log("success")
-        // console.log(e)
-        let res = JSON.parse(e.data)
-        console.log(res)
-        handleNetUseResHistory(res.result, {
-          d1: d1,
-          d2: d2,
-          netuse:"0"
-        })
+                        console.log("err")
+                        console.log(e)
+                    },
+                    dataType: "json"
+                });
 
-      },
-      error: function (e) {
-        layui.layer.close(historyLayer)
-        clearInterval(historyTimeout)
-        console.log("err")
-        console.log(e)
-      },
-      dataType: "json"
-    });
-  }
-  /**
-   * 历史数据的前端渲染
-   * @param data 历史数据
-   * @param dtime 所选时间
-   */
-  function handleNetUseResHistory(res, data) {
-    //在这里面输入任何合法的js语句
-
-    let st = new Date(data.d1)
-    let et = new Date(data.d2)
-    let netuse = data.netuse
-    let estr = et.Format("yyyy/MM/dd hh:mm:ss");
-    let sstr = st.Format("yyyy/MM/dd hh:mm:ss");
-    let tt = sstr + " - " + estr
-    window.leftHistory = function () {
-
-      let st1 = new Date(st).setMinutes(new Date(st).getMinutes() - 5)
-      let et1 = new Date(st)
-      if ($("#testnu5").val() !== "") {
-        lastSelectTime = $("#testnu5").val()
-        let t5t = new Date($("#testnu5").val())
-        st1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes() - 5)
-        et1 = new Date($("#testnu5").val())
-        const t5StrNew = new Date(st1).Format("yyyy-MM-dd hh:mm:ss")
-        $("#testnu5").val(t5StrNew)
-      }
-      st1 = new Date(st1)
-      netuse = $("#test5NetUse").val()
-      $(".layui-layer-title").text("5Min记录" + tt)
-      queryHistoryNetUse(st1, et1,netuse)
-
-    }
-    window.rightHistory = function () {
-      let st1 = new Date(et)
-      let et1 = new Date(et).setMinutes(new Date(et).getMinutes() + 5)
-      if ($("#testnu5").val() !== "") {
-        let t5t = new Date($("#testnu5").val())
-        st1 = new Date($("#testnu5").val())
-        et1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes() + 5)
-        const t5StrNew = new Date(et1).Format("yyyy-MM-dd hh:mm:ss")
-        $("#testnu5").val(t5StrNew)
-      }
-      et1 = new Date(et1)
-
-      netuse = $("#test5NetUse").val()
-      $(".layui-layer-title").text("5Min记录" + tt)
-      queryHistoryNetUse(st1, et1,netuse)
-    }
-    // 如果已打开，不重复打开
-    if ($("#openedLayerDiv").length === 0) {
-      openedTable = layui.layer.open({
-        type: 0 //Page层类型
-        ,
-        area: ['650px', '540px'],
-        title: "5Min记录" + tt,
-        shade: 0.6 //遮罩透明度
-        ,
-        maxmin: true //允许全屏最小化
-        ,
-        anim: 1 //0-6的动画形式，-1不开启
-        ,
-        content: '<div id="openedLayerDiv" class="layui-inline">\n' +
-                '      <label class="layui-input-inline">选择参考时间</label>\n' +
-                '      <div class="layui-input-inline">\n' +
-                '        <input type="text" class="layui-input" id="testnu5" placeholder="yyyy-MM-dd HH:mm:ss">\n' +
-                '      </div>\n' +
-                '    </div>' +
-                '<div  class="layui-inline">\n' +
-                '      <label class="layui-input-inline">网络利用率</label>\n' +
-                '      <div class="layui-input-inline">\n' +
-                '        <input type="text" class="layui-input" id="test5NetUse" placeholder="请输入网络利用率">\n' +
-                '      </div>\n' +
-                '    </div>' +
-                ' <div class="layui-btn-group">\n' +
-                '    <button type="button" onclick="leftHistory(' +
-                ')" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-left"></i></button>\n' +
-                '    <button type="button" onclick="rightHistory(' +
-                ')" class="layui-btn layui-btn-sm "><i class="layui-icon layui-icon-right"></i></button>\n' +
-                '  </div>' +
-                '<table class="layui-hide" id="test1"></table>',
-      });
-    }
-    renderTableNetUseHistory(res)
-
-  }
-  /**
-   * table渲染历史数据
-   * @param data
-   */
-  function renderTableNetUseHistory(data) {
-    let table = layui.table;
-
-    table.render({
-      elem: '#test1'
-        // ,height:350
-        ,
-      cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
-        ,
-      cols: [
-        [{
-            field: 'ip',
-            title: 'ip',
-            sort: true
-          }, {
-            field: 'upload',
-            title: '上行',
-            sort: true
-          } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-          , {
-            field: 'download',
-            title: '下行',
-            sort: true
-          }
-          , {
-          field: 'netuse',
-          title: '网络利用率',
-          sort: true
-        }
-        ]
-      ],
-      data: data,
-      page: true //是否显示分页
-        ,
-      even: true,
-      limits: [10, 20, 50, 100],
-      limit: 10 //每页默认显示的数量
-        ,
-      done: function (res, curr, count) {
-        // //如果是异步请求数据方式，res即为你接口返回的信息。
-        // //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-        // console.log(res);
-        //
-        // //得到当前页码
-        // console.log(curr);
-        //
-        // //得到数据总量
-        // console.log(count);
-
-        //日期时间选择器
-        layui.laydate.render({
-          elem: '#testnu5',
-          type: 'datetime'
-        });
-      }
-    });
-  }
-
-  /**
-   * 异常节点网络测试
-   * @param selectIps 异常节点ip集合
-   */
-  function getPingTargetsInfo(selectIps) {
-    let ptiSock = new WebSocket(pingStandalneInfoUrl)
-    let runningsTar = fData.running
-    let options = generateOption()
-    let chart = echarts.getInstanceByDom(document.getElementById("doudong"));
-    if (!chart) {
-      chart = echarts.init(document.getElementById("doudong"));
-    }
-    // 根据muban复制出来一个table
-    // $(".muban").clone().removeClass("muban").addClass("myTable").removeClass("invisible").appendTo(".zzLayer")
-    options.legend.data = []
-    options.series = []
-    let copyOfX = JSON.parse(JSON.stringify(options.xAxis[0]))
-    // let copyOfy = JSON.parse(JSON.stringify(options.yAxis[0]) )
-    options.xAxis = []
-    // options.yAxis =[]
-    if (selectIps) {
-      runningsTar = selectIps
-    }
-    if (runningsTar) {
-
-      for (let idx = 0; idx < runningsTar.length; idx++) {
-        console.log(idx)
-        let ip = $.trim(runningsTar[idx])
-        options.legend.data.push(ip) // catagory echart
-        let xxis = JSON.parse(JSON.stringify(copyOfX))
-        xxis.name = ip
-        xxis.axisLabel.margin = xxis.axisLabel.margin + (xxis.axisLabel.textStyle.fontSize + 4) * idx
-        xxis.axisLabel.show = (idx === 0)
-        xxis.data = []
-        options.xAxis.push(xxis) // n个x坐标轴
-        // let yyis = JSON.parse(JSON.stringify(copyOfy) )
-        // options.yAxis.push(yyis)
-        options.series.push(handleSeries(ip))
-      }
-    }
-    ptiSock.onmessage = function (e) {
-      // console.log(e.data)
-      if (e.data.indexOf("{") === -1) {
-        return
-      }
-      let data = JSON.parse(e.data);
-      // console.log(e);
-      if (data.hasOwnProperty("recv")) {
-        // pinginfo
-        // 修改为动态根据ip创建dom
-
-        // let ipSelector = ipSelect(data.ip)
-        // let lostp=data.lostPercent/100
-
-        // $("." + ipSelector).find("#ip").text(data.ip)
-        // $("." + ipSelector).find("#send").text(data.send)
-        // $("." + ipSelector).find("#lost").text(data.lost)
-        // $("." + ipSelector).find("#recv").text(data.recv)
-        // $("." + ipSelector).find("#short").text(data.short + "ms")
-        // $("." + ipSelector).find("#long").text(data.long + "ms")
-        // let colorLost = $("." + ipSelector).find("#lostPercent") //.text(data.lostPercent + "%")
-        // colorLost.text(lostp + "%")
-        // lostp === 0 ? colorLost.prevObject.css({
-        //   "color": "white",
-        //   "background": "#009688"
-        // }) : lostp > 0 && lostp < 10 ? colorLost.prevObject.css({
-        //   "color": "white",
-        //   "background": "#FFB800"
-        // }) : lostp > 10 ? colorLost.prevObject.css({
-        //   "color": "white",
-        //   "background": "red"
-        // }) : colorLost.prevObject.css({
-        //   "color": "white",
-        //   "background": "black"
-        // })
-
-        // echart绘制
-        let y = data.time.split(" ")[1]
-        // handle x data
-        for (let i = 0; i < options.xAxis.length; i++) {
-          if (options.xAxis[i].name === data.ip) {
-            options.xAxis[i].data.push(y)
-            // 超过60个数据删除
-            if (options.xAxis[i].data.length > 60) {
-              //删除第一个数据
-              options.xAxis[i].data.shift()
-              // 对应删除y
-              for (let y = 0; y < options.series.length; y++) {
-                if (options.series[y].name === data.ip) {
-                  options.series[y].data.shift()
-                }
-              }
+            } else {
+                layui.layer.msg("IP地址不合法", {
+                    icon: 2
+                });
             }
-
-          }
         }
-        // handel y data
-        for (let j = 0; j < options.series.length; j++) {
-          if (options.series[j].name === data.ip) {
-            options.series[j].data.push(data.duration >= 3000 ? -1 : data.duration)
-          }
-
-        }
-        // chart.clear() // 清空变量
-        chart.setOption(options);
-      }
-
     }
-  }
 
+    let monitor = null
 
-  /**
-   * 本地网路流量监控 -- 控制开启
-   */
-  function monitNetStart() {
-    if (monitor) {
-      if (monitor.readyState === monitor.CLOSED) {
-        handleNetStart()
-      }else{
-        $("#netstatusdiv").css({
-          "display": ""
-        })
-      }
-    } else {
-      handleNetStart()
-    }
-    // $.ajax({
-    //   type: 'POST',
-    //   url: controlNetUsingUrl,
-    //   data: {
-    //     "msg": "start"
-    //   },
-    //   success: function (e) {
-    //     console.log("success")
-    //     console.log(e)
-    //     layui.layer.msg("已开启", {
-    //       icon: 1
-    //     })
-    //     if (monitor) {
-    //       if (monitor.readyState === monitor.CLOSED) {
-    //         setTimeout("handleNetStart()", 2000)
-    //       }
-    //     } else {
-    //       setTimeout("handleNetStart()", 2000)
-    //     }
-    //
-    //   },
-    //   error: function (e) {
-    //     console.log("err")
-    //     console.log(e)
-    //     layui.layer.alert(e.responseText, {
-    //       icon: 2
-    //     })
-    //
-    //   },
-    //   dataType: "json"
-    // });
-  }
-let gridOptions ={}
-  function initAgGrid(){
-    //定义表格列
-    const columnDefs = [
-      { headerName: '本地IP', field: 'ip','pinned': 'left',width:130 },
-      { headerName: '上行', field: 'upload' ,width:110},
-      { headerName: '下行', field: 'download' ,width:110},
-      { headerName: '网络占用率', field: 'netuse' },
-    ];
-    //将列和数据赋给gridOptions
-    gridOptions = {
-      columnDefs: columnDefs,
-      rowData: [],
-      onGridReady: function () {
-        //表格创建完成后执行的事件
-        gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
-      },
-      defaultColDef: {
-        editable: false,//单元表格是否可编辑
-        // enableValue: true,
-        sortable: false, //开启排序
-        resizable: false,//是否可以调整列大小，就是拖动改变列大小
-        filter: false,  //开启刷选
-        lockPosition: true //禁止拖动列的位置
-      },
-      pagination: false,  //开启分页（前端分页）
-      paginationAutoPageSize: false, //根据网页高度自动分页（前端分页）
-
-    };
-    const  eGridDiv = document.querySelector('#localNetFlow');
-    new agGrid.Grid(eGridDiv, gridOptions);
-  }
-  /**
-   * 渲染本地网络流量监控数据
-   */
-  function handleNetStart() {
-    monitor = new WebSocket(monitorNetInfoUrl)
-    monitor.onclose = function () {
-      $("#netstatusdiv").css({
-        "display": "none"
-      })
-    }
-    monitor.onopen = function () {
-      $("#netstatusdiv").css({
-        "display": ""
-      })
-    }
-    monitor.onmessage = function (e) {
-      // console.log(e.data)
-      if (e.data.indexOf("{") === -1) {
-        return
-      }
-      let data = JSON.parse(e.data);
-      // console.log(e);
-      if (data.hasOwnProperty("upload")) {
-        // speedinfo
-        // document.getElementById('localIP').innerHTML = data.ip;
-        // document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
-        // document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
-        // let netUsePersent = (((data.download + data.upload ) / (data.bandwidth * 1024 / 8)) *
-        //         100).toFixed(3)
-        // document.getElementById('netuse').innerHTML = netUsePersent + "%";
-        // netUsePersent < 60 ? $(".localcol").css({
-        //   "color": "#009688",
-        //   "background": "white"
-        // }) : $(".localcol").css({
-        //   "color": "red",
-        //   "background": "white"
-        // });
-        data.upload = data.upload.toFixed(2) + "kb/s";
-        data.download = data.download.toFixed(2) + "kb/s";
-        data.netuse = data.netuse.toFixed(3) + "%"
-        gridOptions.api.setRowData([data]);
-        // table.render({
-        //   elem: '#localNetFlow',
-        //   cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
-        //     // ,size:"sm"
-        //     ,
-        //   cols: [
-        //     [{
-        //       field: 'ip',
-        //       width: 130,
-        //       align: "center",
-        //       title: '本地IP'
-        //     }, {
-        //       field: 'upload',
-        //       width: 110,
-        //       align: "center",
-        //       title: '上行'
-        //     }, {
-        //       field: 'download',
-        //       width: 110,
-        //       align: "center",
-        //       title: '下行'
-        //     }, {
-        //       field: 'netuse',
-        //       align: "center",
-        //       title: '网络占用率'
-        //     }]
-        //   ],
-        //   data: [data]
-        // });
-        iconFlash("netusestatus")
-      }
-    }
-  }
-
-  /**
-   * 本地网路流量监控 -- 控制关闭
-   */
-  function monitNetStop() {
-    if(monitor){
-      monitor.close()
-    }
-        $("#netstatusdiv").css({
-          "display": "none"
-        })
-    // $.ajax({
-    //   type: 'POST',
-    //   url: controlNetUsingUrl,
-    //   data: {
-    //     "msg": "stop"
-    //   },
-    //   success: function (e) {
-    //     console.log("success")
-    //     console.log(e)
-    //     let aaa = JSON.parse(e.data)
-    //     console.log(aaa)
-    //     $("#netstatusdiv").css({
-    //       "display": "none"
-    //     })
-    //     layui.layer.msg("已关闭", {
-    //       icon: 1
-    //     })
-    //     if (monitor) {
-    //       monitor.close()
-    //     }
-    //   },
-    //   error: function (e) {
-    //     console.log("err")
-    //     console.log(e)
-    //     $("#netstatusdiv").css({
-    //       "display": "none"
-    //     })
-    //     layui.layer.alert(e.responseText, {
-    //       icon: 2
-    //     })
-    //
-    //   },
-    //   dataType: "json"
-    // });
-
-  }
-
-  /**
-   * 修改配置文件 -- 未使用
-   */
-  function config() {
-    let layer = layui.layer
-    let confSock = new WebSocket(confUrl)
-    confSock.onopen = function (e) {
-      confSock.send("read")
-    }
-    let srcdata = ""
-    confSock.onmessage = function (e) {
-      srcdata = e.data
-      layer.prompt({
-        formType: 2,
-        value: e.data,
-        title: '修改配置文件',
-        area: ['600px', '350px'] //自定义文本域宽高
-      }, function (value, index, elem) {
-        if (value === srcdata) {
-          // 没有改动
-          layer.close(index);
-          return
-        }
-        // alert(value); //得到value
-        if (value.split("，").length !== 1) {
-          layer.msg("不能包含中文标点符号")
-          return
-        }
-        if (confSock.readyState !== 1) {
-          // 开始修改配置文件
-          new WebSocket(confUrl).onopen = function (e) {
-            e.target.send(value)
-            setTimeout(restart, 2000)
-          }
+    // 初始化
+    function init() {
+        initAgGrid();
+        if (monitor) {
+            if (monitor.readyState === monitor.CLOSED) {
+                handleNetStart()
+            }
         } else {
-          confSock.send(value)
+            handleNetStart()
         }
-        layer.close(index);
-      });
+    }
+    /**
+     * 查询历史记录
+     * @param st 开始时间
+     * @param et 结束时间
+     */
+    function queryHistoryNetUse(st, et, netuse) {
+        var ddd = new Date().setMinutes(new Date().getMinutes() - 5)
+        let d1 = new Date(ddd).Format("yyyy/MM/dd hh:mm:ss");
+        let d2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
+        if (st && et) {
+            d1 = new Date(st).Format("yyyy/MM/dd hh:mm:ss");
+            d2 = new Date(et).Format("yyyy/MM/dd hh:mm:ss");
+        }
+        if (!netuse) {
+            netuse = "0"
+        }
+        console.log("d1 开始时间   " + new Date(parseInt(d1)))
+        console.log("d2 结束时间   " + new Date(parseInt(d2)))
+        console.log(d1)
+        console.log(d2)
+        let historyLayer = layui.layer.load(1, {
+            shade: [0.1, '#fff'] //0.1透明度的白色背景
+        });
+        // 三秒未加载成功 提醒清理日志
+        const historyTimeout = setTimeout("layui.layer.alert('加载时间过长，请考虑删除过期日志')", 3000)
+        $.ajax({
+            type: 'POST',
+            url: getHistoryNetUseUrl,
+            contentType: "application/x-www-form-urlencoded",
+            data: {
+                d1: d1,
+                d2: d2,
+                netuse: netuse
+            },
+            success: function (e) {
+                layui.layer.close(historyLayer)
+                clearInterval(historyTimeout)
+                console.log("success")
+                // console.log(e)
+                let res = JSON.parse(e.data)
+                console.log(res)
+                handleNetUseResHistory(res.result, {
+                    d1: d1,
+                    d2: d2,
+                    netuse: "0"
+                })
+
+            },
+            error: function (e) {
+                layui.layer.close(historyLayer)
+                clearInterval(historyTimeout)
+                console.log("err")
+                console.log(e)
+            },
+            dataType: "json"
+        });
     }
 
-    // $.get('url', {}, function(str){
-    //   layui.layer.open({
-    //     type: 1,
-    //     content: str //注意，如果str是object，那么需要字符拼接。
-    //   });
-    // });
-  }
+    /**
+     * 历史数据的前端渲染
+     * @param data 历史数据
+     * @param dtime 所选时间
+     */
+    function handleNetUseResHistory(res, data) {
+        //在这里面输入任何合法的js语句
 
-  /**
-   * 获得转义后的ip string
-   * @param ip ip地址
-   * @returns {string} 转义后的ip地址
-   */
-  function ipSelect(ip) {
-    let ipbonds = $.trim(ip).split(".")
-    let classSelector = "";
-    for (let i = 0; i < ipbonds.length; i++) {
-      classSelector += ipbonds[i] + "\\."
+        let st = new Date(data.d1)
+        let et = new Date(data.d2)
+        let netuse = data.netuse
+        let estr = et.Format("yyyy/MM/dd hh:mm:ss");
+        let sstr = st.Format("yyyy/MM/dd hh:mm:ss");
+        let tt = sstr + " - " + estr
+        window.leftHistory = function () {
+
+            let st1 = new Date(st).setMinutes(new Date(st).getMinutes() - 5)
+            let et1 = new Date(st)
+            if ($("#testnu5").val() !== "") {
+                lastSelectTime = $("#testnu5").val()
+                let t5t = new Date($("#testnu5").val())
+                st1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes() - 5)
+                et1 = new Date($("#testnu5").val())
+                const t5StrNew = new Date(st1).Format("yyyy-MM-dd hh:mm:ss")
+                $("#testnu5").val(t5StrNew)
+            }
+            st1 = new Date(st1)
+            netuse = $("#test5NetUse").val()
+            $(".layui-layer-title").text("5Min记录" + tt)
+            queryHistoryNetUse(st1, et1, netuse)
+
+        }
+        window.rightHistory = function () {
+            let st1 = new Date(et)
+            let et1 = new Date(et).setMinutes(new Date(et).getMinutes() + 5)
+            if ($("#testnu5").val() !== "") {
+                let t5t = new Date($("#testnu5").val())
+                st1 = new Date($("#testnu5").val())
+                et1 = new Date(t5t).setMinutes(new Date(t5t).getMinutes() + 5)
+                const t5StrNew = new Date(et1).Format("yyyy-MM-dd hh:mm:ss")
+                $("#testnu5").val(t5StrNew)
+            }
+            et1 = new Date(et1)
+
+            netuse = $("#test5NetUse").val()
+            $(".layui-layer-title").text("5Min记录" + tt)
+            queryHistoryNetUse(st1, et1, netuse)
+        }
+        // 如果已打开，不重复打开
+        if ($("#openedLayerDiv").length === 0) {
+            openedTable = layui.layer.open({
+                type: 0 //Page层类型
+                ,
+                area: ['650px', '540px'],
+                title: "5Min记录" + tt,
+                shade: 0.6 //遮罩透明度
+                ,
+                maxmin: true //允许全屏最小化
+                ,
+                anim: 1 //0-6的动画形式，-1不开启
+                ,
+                content: '<div id="openedLayerDiv" class="layui-inline">\n' +
+                    '      <label class="layui-input-inline">选择参考时间</label>\n' +
+                    '      <div class="layui-input-inline">\n' +
+                    '        <input type="text" class="layui-input" id="testnu5" placeholder="yyyy-MM-dd HH:mm:ss">\n' +
+                    '      </div>\n' +
+                    '    </div>' +
+                    '<div  class="layui-inline">\n' +
+                    '      <label class="layui-input-inline">网络利用率</label>\n' +
+                    '      <div class="layui-input-inline">\n' +
+                    '        <input type="text" class="layui-input" id="test5NetUse" placeholder="请输入网络利用率">\n' +
+                    '      </div>\n' +
+                    '    </div>' +
+                    ' <div class="layui-btn-group">\n' +
+                    '    <button type="button" onclick="leftHistory(' +
+                    ')" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-left"></i></button>\n' +
+                    '    <button type="button" onclick="rightHistory(' +
+                    ')" class="layui-btn layui-btn-sm "><i class="layui-icon layui-icon-right"></i></button>\n' +
+                    '  </div>' +
+                    '<table class="layui-hide" id="test1"></table>',
+            });
+        }
+        renderTableNetUseHistory(res)
+
     }
-    let ipSelector = classSelector.substring(0, classSelector.length - 2)
-    return ipSelector
-  }
 
-  /**
-   * 开启网关（节点）状态监控数据的渲染
-   */
-  function initSock() {
+    /**
+     * table渲染历史数据
+     * @param data
+     */
+    function renderTableNetUseHistory(data) {
+        let table = layui.table;
 
-    let infoSock = new WebSocket(infoURI);
-    infoSock.onmessage = function (e) {
-      // console.log(e.data)
-      if (e.data.indexOf("{") === -1) {
-        return
-      }
-      let data = JSON.parse(e.data);
-      // console.log(e);
-      if (data.hasOwnProperty("status")) {
-        let ipSelector = ipSelect(data.ip)
-        let stat = data.status
+        table.render({
+            elem: '#test1'
+            // ,height:350
+            ,
+            cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,
+            cols: [
+                [{
+                    field: 'ip',
+                    title: 'ip',
+                    sort: true
+                }, {
+                    field: 'upload',
+                    title: '上行',
+                    sort: true
+                } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , {
+                    field: 'download',
+                    title: '下行',
+                    sort: true
+                }
+                    , {
+                    field: 'netuse',
+                    title: '网络利用率',
+                    sort: true
+                }
+                ]
+            ],
+            data: data,
+            page: true //是否显示分页
+            ,
+            even: true,
+            limits: [10, 20, 50, 100],
+            limit: 10 //每页默认显示的数量
+            ,
+            done: function (res, curr, count) {
+                // //如果是异步请求数据方式，res即为你接口返回的信息。
+                // //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+                // console.log(res);
+                //
+                // //得到当前页码
+                // console.log(curr);
+                //
+                // //得到数据总量
+                // console.log(count);
 
-        $("." + ipSelector).find("#ip").text(data.ip)
-        let colorStat = $("." + ipSelector).find("#status")
-        colorStat.text(data.status)
-        data.status === "ONLINE" ? colorStat.prevObject.css({
-          "color": "#009688"
-        }) : (data.status === "LOSTRATEG1" || data.status === "HIGH_LATENCY") ? colorStat.prevObject.css({
-          "color": "#FFB800",
-        }) : colorStat.prevObject.css({
-          "color": "red",
+                //日期时间选择器
+                layui.laydate.render({
+                    elem: '#testnu5',
+                    type: 'datetime'
+                });
+            }
+        });
+    }
+
+
+    /**
+     * 本地网路流量监控 -- 控制开启
+     */
+    function monitNetStart() {
+        if (monitor) {
+            if (monitor.readyState === monitor.CLOSED) {
+                handleNetStart()
+            } else {
+                $("#netstatusdiv").css({
+                    "display": ""
+                })
+            }
+        } else {
+            handleNetStart()
+        }
+        // $.ajax({
+        //   type: 'POST',
+        //   url: controlNetUsingUrl,
+        //   data: {
+        //     "msg": "start"
+        //   },
+        //   success: function (e) {
+        //     console.log("success")
+        //     console.log(e)
+        //     layui.layer.msg("已开启", {
+        //       icon: 1
+        //     })
+        //     if (monitor) {
+        //       if (monitor.readyState === monitor.CLOSED) {
+        //         setTimeout("handleNetStart()", 2000)
+        //       }
+        //     } else {
+        //       setTimeout("handleNetStart()", 2000)
+        //     }
+        //
+        //   },
+        //   error: function (e) {
+        //     console.log("err")
+        //     console.log(e)
+        //     layui.layer.alert(e.responseText, {
+        //       icon: 2
+        //     })
+        //
+        //   },
+        //   dataType: "json"
+        // });
+    }
+
+    let gridOptions = {}
+
+    function initAgGrid() {
+        //定义表格列
+        const columnDefs = [
+            {headerName: '本地IP', field: 'ip', 'pinned': 'left'},
+            // {headerName: '上行', field: 'upload', width: 110},
+            {headerName: '上行', field: 'upload'},
+            {headerName: '下行', field: 'download'},
+            {headerName: '网络占用率', field: 'netuse'},
+        ];
+        //将列和数据赋给gridOptions
+        gridOptions = {
+            columnDefs: columnDefs,
+            rowData: [],
+            onGridReady: function () {
+                //表格创建完成后执行的事件
+                gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
+            },
+            defaultColDef: {
+                editable: false,//单元表格是否可编辑
+                // enableValue: true,
+                sortable: false, //开启排序
+                resizable: false,//是否可以调整列大小，就是拖动改变列大小
+                filter: false,  //开启刷选
+                lockPosition: true //禁止拖动列的位置
+            },
+            pagination: false,  //开启分页（前端分页）
+            paginationAutoPageSize: false, //根据网页高度自动分页（前端分页）
+            rowHeight:25
+
+        };
+        const eGridDiv = document.querySelector('#localNetFlow');
+        new agGrid.Grid(eGridDiv, gridOptions);
+    }
+
+    /**
+     * 渲染本地网络流量监控数据
+     */
+    function handleNetStart() {
+        monitor = new WebSocket(monitorNetInfoUrl)
+        monitor.onclose = function () {
+            $("#netstatusdiv").css({
+                "display": "none"
+            })
+        }
+        monitor.onopen = function () {
+            $("#netstatusdiv").css({
+                "display": ""
+            })
+        }
+        monitor.onmessage = function (e) {
+            // console.log(e.data)
+            if (e.data.indexOf("{") === -1) {
+                return
+            }
+            let data = JSON.parse(e.data);
+            // console.log(e);
+            if (data.hasOwnProperty("upload")) {
+                // speedinfo
+                // document.getElementById('localIP').innerHTML = data.ip;
+                // document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
+                // document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
+                // let netUsePersent = (((data.download + data.upload ) / (data.bandwidth * 1024 / 8)) *
+                //         100).toFixed(3)
+                // document.getElementById('netuse').innerHTML = netUsePersent + "%";
+                // netUsePersent < 60 ? $(".localcol").css({
+                //   "color": "#009688",
+                //   "background": "white"
+                // }) : $(".localcol").css({
+                //   "color": "red",
+                //   "background": "white"
+                // });
+                data.upload = data.upload.toFixed(2) + "kb/s";
+                data.download = data.download.toFixed(2) + "kb/s";
+                data.netuse = data.netuse.toFixed(3) + "%"
+                gridOptions.api.setRowData([data]);
+                // table.render({
+                //   elem: '#localNetFlow',
+                //   cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                //     // ,size:"sm"
+                //     ,
+                //   cols: [
+                //     [{
+                //       field: 'ip',
+                //       width: 130,
+                //       align: "center",
+                //       title: '本地IP'
+                //     }, {
+                //       field: 'upload',
+                //       width: 110,
+                //       align: "center",
+                //       title: '上行'
+                //     }, {
+                //       field: 'download',
+                //       width: 110,
+                //       align: "center",
+                //       title: '下行'
+                //     }, {
+                //       field: 'netuse',
+                //       align: "center",
+                //       title: '网络占用率'
+                //     }]
+                //   ],
+                //   data: [data]
+                // });
+                iconFlash("netusestatus")
+            }
+        }
+    }
+
+    /**
+     * 本地网路流量监控 -- 控制关闭
+     */
+    function monitNetStop() {
+        if (monitor) {
+            monitor.close()
+        }
+        $("#netstatusdiv").css({
+            "display": "none"
         })
-        iconFlash(ipSelector)
-      }
+        // $.ajax({
+        //   type: 'POST',
+        //   url: controlNetUsingUrl,
+        //   data: {
+        //     "msg": "stop"
+        //   },
+        //   success: function (e) {
+        //     console.log("success")
+        //     console.log(e)
+        //     let aaa = JSON.parse(e.data)
+        //     console.log(aaa)
+        //     $("#netstatusdiv").css({
+        //       "display": "none"
+        //     })
+        //     layui.layer.msg("已关闭", {
+        //       icon: 1
+        //     })
+        //     if (monitor) {
+        //       monitor.close()
+        //     }
+        //   },
+        //   error: function (e) {
+        //     console.log("err")
+        //     console.log(e)
+        //     $("#netstatusdiv").css({
+        //       "display": "none"
+        //     })
+        //     layui.layer.alert(e.responseText, {
+        //       icon: 2
+        //     })
+        //
+        //   },
+        //   dataType: "json"
+        // });
 
     }
-  }
 
-  /**
-   * 返回echarts格式的series
-   * @param name
-   * @returns echarts series
-   */
-  function handleSeries(name) {
-    let frgb = 256
-    let r = Math.round(Math.random() * 256, 0) // 保证数据颜色区分
-    let g = Math.round(Math.random() * 256, 0)
-    let b = Math.round(Math.random() * 256, 0)
-    let serie = {
-      name: name,
-      type: 'line',
-      smooth: false,
-      symbol: 'circle',
-      symbolSize: 5,
-      showSymbol: false,
-      lineStyle: {
-        normal: {
-          width: 1
-        }
-      },
-      areaStyle: {
-        normal: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-            offset: 0,
-            color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0.3)'
-          }, {
-            offset: 0.8,
-            color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0)'
-          }], false),
-          shadowColor: 'rgba(0, 0, 0, 0.1)',
-          shadowBlur: 10
-        }
-      },
-      itemStyle: {
-        normal: {
-          color: 'rgb(' + r + ', ' + g + ', ' + b + ')',
-          borderColor: 'rgba(' + r + ', ' + g + ',2,0.27)',
-          borderWidth: 12
 
+    /**
+     * 获得转义后的ip string
+     * @param ip ip地址
+     * @returns {string} 转义后的ip地址
+     */
+    function ipSelect(ip) {
+        let ipbonds = $.trim(ip).split(".")
+        let classSelector = "";
+        for (let i = 0; i < ipbonds.length; i++) {
+            classSelector += ipbonds[i] + "\\."
         }
-      },
-      data: []
+        let ipSelector = classSelector.substring(0, classSelector.length - 2)
+        return ipSelector
     }
-    return serie
-  }
 
-  /**
-   * 生成echarts的Option
-   * @returns echart option
-   */
-  function generateOption() {
-    let ops = {
-      backgroundColor: '#394056',
-      title: {
-        top: 20,
-        text: '网络抖动（ -1 代表网络不可达）',
-        textStyle: {
-          fontWeight: 'normal',
-          fontSize: 16,
-          color: '#F1F1F3'
-        },
-        left: '1%'
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          lineStyle: {
-            color: '#57617B'
-          }
-        }
-      },
-      legend: {
-        top: 60,
-        icon: 'rect',
-        itemWidth: 14,
-        itemHeight: 8,
-        itemGap: 13,
-        data: ['CMCC', 'CTCC', 'CUCC'],
-        right: '4%',
-        textStyle: {
-          fontSize: 12,
-          color: '#F1F1F3'
-        }
-      },
-      grid: {
-        top: 150,
-        left: '2%',
-        right: '2%',
-        bottom: '2%',
-        containLabel: true
-      },
-      xAxis: [{
-        type: 'category',
-        boundaryGap: false,
-        axisLine: {
-          lineStyle: {
-            color: '#57617B'
-          }
-        },
-        axisLabel: {
-          margin: 18,
-          textStyle: {
-            fontSize: 10,
-            color: 'white'
-          },
-          show: true
-        },
-        axisLine: { // x轴 和name 颜色
-          lineStyle: {
-            color: 'white'
-          }
-        },
-        data: ['13:00', '13:05', '13:10', '13:15', '13:20', '13:25', '13:30', '13:35', '13:40', '13:45',
-          '13:50', '13:55'
-        ]
-      }],
-      dataZoom: [{
-        type: "inside" //详细配置可见echarts官网
-      }],
-      yAxis: [{
-        type: 'value',
-        name: '毫秒',
-        axisTick: {
-          show: false
-        },
-        axisLine: { // y轴 和name 颜色
-          lineStyle: {
-            color: 'white'
-          }
-        },
-        axisLabel: {
-          margin: 10,
-          textStyle: {
-            fontSize: 14,
-            color: 'white'
-          }
-        },
-        splitLine: {
-          lineStyle: {
-            color: '#57617B'
-          }
-        }
-      }],
-      series: [{
-        name: 'CMCC',
-        type: 'line',
-        smooth: false,
-        symbol: 'circle',
-        symbolSize: 5,
-        showSymbol: false,
-        lineStyle: {
-          normal: {
-            width: 1
-          }
-        },
-        areaStyle: {
-          normal: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-              offset: 0,
-              color: 'rgba(137, 189, 27, 0.3)'
-            }, {
-              offset: 0.8,
-              color: 'rgba(137, 189, 27, 0)'
-            }], false),
-            shadowColor: 'rgba(0, 0, 0, 0.1)',
-            shadowBlur: 10
-          }
-        },
-        itemStyle: {
-          normal: {
-            color: 'rgb(137,189,27)',
-            borderColor: 'rgba(137,189,2,0.27)',
-            borderWidth: 12
-
-          }
-        },
-        data: [220, 182, 191, 134, 150, 120, 110, 125, 145, 122, 165, 122]
-      }, {
-        name: 'CTCC',
-        type: 'line',
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 5,
-        showSymbol: false,
-        lineStyle: {
-          normal: {
-            width: 1
-          }
-        },
-        areaStyle: {
-          normal: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-              offset: 0,
-              color: 'rgba(0, 136, 212, 0.3)'
-            }, {
-              offset: 0.8,
-              color: 'rgba(0, 136, 212, 0)'
-            }], false),
-            shadowColor: 'rgba(0, 0, 0, 0.1)',
-            shadowBlur: 10
-          }
-        },
-        itemStyle: {
-          normal: {
-            color: 'rgb(0,136,212)',
-            borderColor: 'rgba(0,136,212,0.2)',
-            borderWidth: 12
-
-          }
-        },
-        data: [120, 110, 125, 145, 122, 165, 122, 220, 182, 191, 134, 150]
-      }, {
-        name: 'CUCC',
-        type: 'line',
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 5,
-        showSymbol: false,
-        lineStyle: {
-          normal: {
-            width: 1
-          }
-        },
-        areaStyle: {
-          normal: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-              offset: 0,
-              color: 'rgba(219, 50, 51, 0.3)'
-            }, {
-              offset: 0.8,
-              color: 'rgba(219, 50, 51, 0)'
-            }], false),
-            shadowColor: 'rgba(0, 0, 0, 0.1)',
-            shadowBlur: 10
-          }
-        },
-        itemStyle: {
-          normal: {
-            color: 'rgb(219,50,51)',
-            borderColor: 'rgba(219,50,51,0.2)',
-            borderWidth: 12
-          }
-        },
-        data: [220, 182, 125, 145, 122, 191, 134, 150, 120, 110, 165, 122]
-      }]
-    }
-    return JSON.parse(JSON.stringify(ops))
-  }
-
-  /**
-   * 状态指示
-   * @param ipSelector
-   */
-  function iconFlash(ipSelector) {
-    $("." + ipSelector).find(".layui-icon").css({
-      "color": "green"
-    })
-    setTimeout(function () {
-      $("." + ipSelector).find(".layui-icon").css({
-        "color": "white"
-      })
-    }, 1000)
-  }
-
-  /**
-   * IP地址的正则表达式
-   * @param ip IP地址
-   * @returns {boolean} ip地址格式是否正确
-   */
-  function isValidIP(ip) {
-    let reg =
-      /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-    return reg.test(ip);
-  }
-
-  /**
-   * 监控异常节点的表单初始化
-   */
-  function initForm() {
-
-    form.render()
-    // //自定义验证规则
-    // form.verify({
-    //   otherip: function(value){
-    //     if(isValidIP(value)){
-    //       return 'IP地址填写错误';
-    //     }
-    //   }
-    // });
-    //监听提交
-    form.on('submit(formDemo)', function (data) {
-
-
-      form.render()
-      // layer.msg(JSON.stringify(data.field));
-
-      let field = Object.keys(data.field)
-      let dt = []
-      let isContainIp = false // 是否包含ip
-      field.forEach(value => {
-        if (value === "min" || value === "otherip") {
-          return
-        }
-        if (isValidIP(value)) {
-          isContainIp = true
-        }
-        dt.push(value)
-      })
-      if (isValidIP(data.field.otherip)) {
-        isContainIp = true
-        dt.push(data.field.otherip)
-      }
-      if (dt.length === 0 || !isContainIp) {
-        return layui.layer.msg("请选择ip或填写ip", {
-          icon: 2
+    /**
+     * 状态指示
+     * @param ipSelector
+     */
+    function iconFlash(ipSelector) {
+        $("." + ipSelector).find(".layui-icon").css({
+            "color": "green"
         })
-      }
+        setTimeout(function () {
+            $("." + ipSelector).find(".layui-icon").css({
+                "color": "white"
+            })
+        }, 1000)
+    }
 
-      // if()
-      $(".ipt").attr({
-        "disabled": "true"
-      })
-      $(".ipt_btn").attr({
-        "disabled": "true"
-      })
-      $(".ipt_btn").addClass("layui-btn-disabled")
-      let datap = {
-        min: parseInt(data.field.min),
-        targets: dt
-      }
-      $.ajax({
-        type: 'POST',
-        url: pingStandaloneUrl,
-        data: JSON.stringify(datap),
-        contentType:"application/x-www-form-urlencoded",
-        success: function (e) {
-          console.log("success")
-          console.log(e)
-          $("#timediv").toggle()
-          caclLeftTimeSec(data.field.min)
-          getPingTargetsInfo(dt)
-        },
-        error: function (e) {
-          console.log("err")
-          console.log(e)
-          layui.layer.msg(e.responseJSON.data, {
-            icon: 2
-          })
-        },
-        dataType: "json"
-      });
+    /**
+     * IP地址的正则表达式
+     * @param ip IP地址
+     * @returns {boolean} ip地址格式是否正确
+     */
+    function isValidIP(ip) {
+        let reg =
+            /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+        return reg.test(ip);
+    }
 
-      console.log(datap)
 
-      return false;
-    });
-  }
-  init();
+    init();
 </script>
 
 <style>
-  .rev {
-    /* width: 80px; */
-  }
+    .rev {
+        /* width: 80px; */
+    }
 
-  .line {
-    display: block;
-  }
+    .line {
+        display: block;
+    }
 
-  table {
-    border-collapse: collapse;
-  }
+    table {
+        border-collapse: collapse;
+    }
 
 
-  .invisible {
-    display: none;
-  }
+    .invisible {
+        display: none;
+    }
 
-  th {
-    background-color: #3296FA;
-    color: white;
-  }
+    th {
+        background-color: #3296FA;
+        color: white;
+    }
 
-  .trbtn {
-    width: 40px;
-    height: 20px;
-  }
+    .trbtn {
+        width: 40px;
+        height: 20px;
+    }
 
-  h3 {
-    margin: 5px;
-  }
+    h3 {
+        margin: 5px;
+    }
 
-  .statusCommentDiv p {
-    margin: 2px;
-    padding-left: 40px;
-    font-size: 10px
-  }
-  .ag-body-viewport-wrapper.ag-layout-normal {
-    overflow-x: hidden;
-    overflow-y: hidden;
-  }
+    .statusCommentDiv p {
+        margin: 2px;
+        padding-left: 40px;
+        font-size: 10px
+    }
+
+    .ag-body-viewport-wrapper.ag-layout-normal {
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
 </style>
 
 </html>
