@@ -11,36 +11,42 @@
 <body>
 
 <div>
-    <div class="layui-container">
-        <h1>节点监控</h1>
+    <div class="main">
         <div class="onoff">
-            <div class="layui-btn-group" style="margin-top: 20px;">
+            <div style="text-align: right;margin-right: 50px">
                 <button id="" class="layui-btn layui-btn-sm" onclick="queryHistory()">查看历史</button>
             </div>
             <!-- lay-size="sm" -->
-            <table class="onoffTable layui-table" lay-skin="line">
-                <tr>
-                    <th>远程主机IP</th>
-                    <th>主机状态<sup>*</sup></th>
-                    <th class="invisible">操作</th>
-                </tr>
-                <tr class="onoffTr invisible">
-                    <td id="ip"></td>
-                    <td><i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i> <i
-                                id="status">
-                        </i></td>
-                    <td class="invisible">
-                        <button class="onoffTrbtn">测速</button>
-                    </td>
-                </tr>
-            </table>
-            <div class="statusCommentDiv" style="padding-top: 5px;color:black;font-size: 12px;">
-                <SUP>*</SUP>状态说明：
-                <p><i style="color: #009688">ONLINE</i>: 网络通畅</p>
-                <p><i style="color: #FFB800">LOSTRATEG1</i>: 丢包率大于1%</p>
-                <p><i style="color: #FFB800">HIGH_LATENCY</i>: 平均延迟超过300ms</p>
-                <p><i style="color: red">OFFLINE</i>: 网络不可达</p>
+            <div>
+                <div style="text-align: center;">
+
+                    <div class="layui-inline">
+
+                        <table class="onoffTable layui-table" lay-skin="line"
+                               style="max-width: 600px;min-width: 400px ">
+                            <tr>
+                                <th>远程主机IP</th>
+                                <th>主机状态<sup>*</sup></th>
+                            </tr>
+                            <tr class="onoffTr invisible">
+                                <td id="ip"></td>
+                                <td><i class="layui-icon layui-icon-radio" style="font-size: 5px; color: white;"></i> <i
+                                            id="status">
+                                    </i></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                {{/*                <div class="statusCommentDiv" style="padding-top: 5px;color:black;font-size: 12px;">*/}}
+                {{/*                    <SUP>*</SUP>状态说明：*/}}
+                {{/*                    <p><i style="color: #009688">ONLINE</i>: 网络通畅</p>*/}}
+                {{/*                    <p><i style="color: #FFB800">LOSTRATEG1</i>: 丢包率大于1%</p>*/}}
+                {{/*                    <p><i style="color: #FFB800">HIGH_LATENCY</i>: 平均延迟超过300ms</p>*/}}
+                {{/*                    <p><i style="color: red">OFFLINE</i>: 网络不可达</p>*/}}
+                {{/*                </div>*/}}
             </div>
+
 
         </div>
 
@@ -71,9 +77,6 @@
         let iptHtml = '<input type="checkbox" class="ipt" name="' + mIP + '" title="' + mIP + '">'
         $(".target2Ping").append(iptHtml)
         let ipTr = $(".onoffTr").clone().removeClass("onoffTr").removeClass("invisible").addClass(mIP)
-        ipTr.find(".onoffTrbtn").attr({
-            "onclick": "testNetSpeed(\"" + mIP + "\")"
-        })
         ipTr.appendTo(".onoffTable")
         // testBeating(mIP)
     }
@@ -102,8 +105,20 @@
         return fmt;
     }
     // 初始化
+    const statMap = new Map();
+
     function init() {
+        statMap.set("ONLINE", "在线");
+        statMap.set("OFFLINE", "不可达");
+        statMap.set("LOSTRATEG1", "丢包率高于1%");
+        statMap.set("HIGH_LATENCY", "延迟高于300毫秒");
+        resizeFrame()
         initSock();
+    }
+
+    function resizeFrame() {
+        const width = window.innerWidth - 200
+        $("body").css({width: width + "px"})
     }
 
     /**
@@ -190,6 +205,8 @@
                 $("#test5").val(t5StrNew)
             }
             st1 = new Date(st1)
+            tt = st1.Format("yyyy/MM/dd hh:mm:ss") + " - " + et1.Format("yyyy/MM/dd hh:mm:ss")
+            $(".layui-layer-title").text("5Min记录" + tt)
             queryHistory(st1, et1, $("#test5ip").val(), $("#test5status").val())
         }
         window.rightHistory = function () {
@@ -203,6 +220,8 @@
                 $("#test5").val(t5StrNew)
             }
             et1 = new Date(et1)
+            tt = st1.Format("yyyy/MM/dd hh:mm:ss") + " - " + et1.Format("yyyy/MM/dd hh:mm:ss")
+            $(".layui-layer-title").text("5Min记录" + tt)
             queryHistory(st1, et1, $("#test5ip").val(), $("#test5status").val())
         }
         // 如果已打开，不重复打开
@@ -212,8 +231,7 @@
                 ,
                 area: ['650px', '440px'],
                 title: "5Min记录" + tt,
-                shade: 0.6 //遮罩透明度
-                ,
+                // shade: 0.6 ,//遮罩透明度
                 maxmin: true //允许全屏最小化
                 ,
                 anim: 1 //0-6的动画形式，-1不开启
@@ -344,7 +362,7 @@
 
                 $("." + ipSelector).find("#ip").text(data.ip)
                 let colorStat = $("." + ipSelector).find("#status")
-                colorStat.text(data.status)
+                colorStat.text(statMap.get(data.status))
                 data.status === "ONLINE" ? colorStat.prevObject.css({
                     "color": "#009688"
                 }) : (data.status === "LOSTRATEG1" || data.status === "HIGH_LATENCY") ? colorStat.prevObject.css({
@@ -419,6 +437,18 @@
     .ag-body-viewport-wrapper.ag-layout-normal {
         overflow-x: hidden;
         overflow-y: hidden;
+    }
+
+    .main {
+        padding-left: 20px;
+        padding-top: 20px;
+        padding-right: 20px;
+    }
+
+    /*设置数据表表头字体*/
+    .layui-table th {
+        /*表头内容居中显示*/
+        text-align: center;
     }
 </style>
 

@@ -5,41 +5,59 @@
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>Go Web</title>
     <link rel="stylesheet" href="/js/layui-v2.5.6/layui/css/layui.css">
-    <link rel="stylesheet" href="/js/ag-grid/ag-grid.css">
 
     <script src="/js/layui-v2.5.6/layui/layui.all.js"></script>
-    <script src="/js/ag-grid/ag-grid-community.js"></script>
 
 </head>
 
 <body>
 
 <div>
-    <div class="layui-container">
-        <h1>流量监控</h1>
-        <div class="onoff">
-            <div class="layui-btn-group" style="margin-top: 20px;">
-                <button id="" class="layui-btn layui-btn-sm" onclick="queryHistoryNetUse()">查看历史</button>
-                <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="netFlowTest()">网速测试</button>
-                <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal"
-                        onclick="monitNetStart()">开启监控
-                </button>
-                <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">
-                    关闭监控
-                </button>
+    <div class="main">
+
+
+        <div style="text-align: center;">
+
+            <div class="layui-inline">
+
+                <div class="layui-btn-group" style="margin-top: 20px;">
+                    <button id="" class="layui-btn layui-btn-sm" onclick="queryHistoryNetUse()">查看历史</button>
+                    <button id="" class="layui-btn layui-btn-normal layui-btn-sm" onclick="netFlowTest()">网速测试
+                    </button>
+                    <button id="modify" class="layui-btn layui-btn-sm layui-btn-normal"
+                            onclick="monitNetStart()">开启监控
+                    </button>
+                    <button id="modify" class="layui-btn layui-btn-sm layui-btn-warm" onclick="monitNetStop()">
+                        关闭监控
+                    </button>
+                </div>
+                <table id="netstatusdiv" class="local layui-table" lay-skin="line" style="max-width: 600px;">
+                    <colgroup>
+                        <col width="160">
+                        <col width="150">
+                        <col width="150">
+                        <col width="200">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="netusestatus"> <i class="layui-icon layui-icon-radio"
+                                                     style="font-size: 5px; color: white;"></i> 本地IP</th>
+                        <th>上行</th>
+                        <th>下行</th>
+                        <th>网络使用率</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="localcol">
+                        <td id="localIP"></td>
+                        <td id="upload"></td>
+                        <td id="download"></td>
+                        <td id="netuse"></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <div id="netstatusdiv" class="layui-form" style="display: none">
-            <div class="netusestatus" style="color:#3296FA;margin: 10px"><i
-                        class="layui-icon layui-icon-radio"
-                        style="font-size: 5px; color: white;"></i>
-                状态指示</div>
-            <div id="localNetFlow" style="width: 100vw;height: 100vh;overflow: hidden !important;"
-                 class="ag-theme-balham"></div>
-
-        </div>
-
     </div>
 </div>
 
@@ -95,7 +113,7 @@
                 type: 0,//Page层类型
                 area: ['550px', '440px'],
                 title: "网速测试",
-                shade: 0.6, //遮罩透明度
+                // shade: 0.6, //遮罩透明度
                 maxmin: true, //允许全屏最小化
                 anim: 1, //0-6的动画形式，-1不开启
                 content: '<div id="netSpeedTest">\n' +
@@ -150,28 +168,11 @@
                         console.log(e)
                         let sum = ""
                         let count = 0
-                        let vals = []
                         e.data.forEach(dp => {
                             count += 1;
-                            if (dp.protocol !== $("#protoc").val().toUpperCase()) {
-                                return
-                            }
-                            sum += dp.protocol + "   >>----第" + count + "秒---->>   " + dp.bits + "\n";
-                            vals.push(parseFloat(dp.bits.substring(0, dp.bits.length - 1)));
+                            sum += dp.protocol + "   >>----第" + count + "秒---->>   " + dp.mbits.toFixed(3) + "MBits\n";
                         })
-                        console.log(vals)
-                        let vmax = Math.max(...vals)
-                        let vmin = Math.min(...vals)
-                        let sc = 0
-                        let scCot = 0
-                        vals.forEach(vv => {
-                            if (vv !== vmax && vv !== vmin) {
-                                scCot += 1
-                                sc += vv
-                            }
-                        });
-                        sum += "\n"
-                        sum += "平均速率：" + (sc / scCot).toFixed(3) + "\n"
+                        sum += "平均速率：" + e.avg.toFixed(3) + " MBits\n"
                         $("#netspeedres").text(sum)
                     },
                     error: function (e) {
@@ -196,7 +197,7 @@
 
     // 初始化
     function init() {
-        initAgGrid();
+        resizeFrame()
         if (monitor) {
             if (monitor.readyState === monitor.CLOSED) {
                 handleNetStart()
@@ -205,6 +206,12 @@
             handleNetStart()
         }
     }
+
+    function resizeFrame() {
+        const width = window.innerWidth - 200
+        $("body").css({width: width + "px"})
+    }
+
     /**
      * 查询历史记录
      * @param st 开始时间
@@ -291,6 +298,7 @@
             }
             st1 = new Date(st1)
             netuse = $("#test5NetUse").val()
+            tt = st1.Format("yyyy/MM/dd hh:mm:ss") + " - " + et1.Format("yyyy/MM/dd hh:mm:ss")
             $(".layui-layer-title").text("5Min记录" + tt)
             queryHistoryNetUse(st1, et1, netuse)
 
@@ -308,6 +316,7 @@
             et1 = new Date(et1)
 
             netuse = $("#test5NetUse").val()
+            tt = st1.Format("yyyy/MM/dd hh:mm:ss") + " - " + et1.Format("yyyy/MM/dd hh:mm:ss")
             $(".layui-layer-title").text("5Min记录" + tt)
             queryHistoryNetUse(st1, et1, netuse)
         }
@@ -318,8 +327,8 @@
                 ,
                 area: ['650px', '540px'],
                 title: "5Min记录" + tt,
-                shade: 0.6 //遮罩透明度
-                ,
+                // shade: 0.6 //遮罩透明度
+                // ,
                 maxmin: true //允许全屏最小化
                 ,
                 anim: 1 //0-6的动画形式，-1不开启
@@ -331,7 +340,7 @@
                     '      </div>\n' +
                     '    </div>' +
                     '<div  class="layui-inline">\n' +
-                    '      <label class="layui-input-inline">网络利用率</label>\n' +
+                    '      <label class="layui-input-inline">网络利用率(%)</label>\n' +
                     '      <div class="layui-input-inline">\n' +
                     '        <input type="text" class="layui-input" id="test5NetUse" placeholder="请输入网络利用率">\n' +
                     '      </div>\n' +
@@ -360,26 +369,35 @@
             elem: '#test1'
             // ,height:350
             ,
-            cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            size:"sm"
+            ,
+            cellMinWidth: 60 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             ,
             cols: [
                 [{
                     field: 'ip',
                     title: 'ip',
+                    width: 120,
                     sort: true
                 }, {
                     field: 'upload',
-                    title: '上行',
+                    title: '上行(kb/s)',
                     sort: true
                 } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
                     , {
                     field: 'download',
-                    title: '下行',
+                    title: '下行(kb/s)',
                     sort: true
                 }
                     , {
                     field: 'netuse',
-                    title: '网络利用率',
+                    title: '网络利用率(%)',
+                    sort: true
+                }
+                    , {
+                    field: 'time',
+                    title: '时间',
+                    width: 150,
                     sort: true
                 }
                 ]
@@ -417,7 +435,7 @@
      */
     function monitNetStart() {
         if (monitor) {
-            if (monitor.readyState === monitor.CLOSED) {
+            if (monitor.readyState !== monitor.OPEN) {
                 handleNetStart()
             } else {
                 $("#netstatusdiv").css({
@@ -460,42 +478,6 @@
         // });
     }
 
-    let gridOptions = {}
-
-    function initAgGrid() {
-        //定义表格列
-        const columnDefs = [
-            {headerName: '本地IP', field: 'ip', 'pinned': 'left'},
-            // {headerName: '上行', field: 'upload', width: 110},
-            {headerName: '上行', field: 'upload'},
-            {headerName: '下行', field: 'download'},
-            {headerName: '网络占用率', field: 'netuse'},
-        ];
-        //将列和数据赋给gridOptions
-        gridOptions = {
-            columnDefs: columnDefs,
-            rowData: [],
-            onGridReady: function () {
-                //表格创建完成后执行的事件
-                gridOptions.api.sizeColumnsToFit();//调整表格大小自适应
-            },
-            defaultColDef: {
-                editable: false,//单元表格是否可编辑
-                // enableValue: true,
-                sortable: false, //开启排序
-                resizable: false,//是否可以调整列大小，就是拖动改变列大小
-                filter: false,  //开启刷选
-                lockPosition: true //禁止拖动列的位置
-            },
-            pagination: false,  //开启分页（前端分页）
-            paginationAutoPageSize: false, //根据网页高度自动分页（前端分页）
-            rowHeight:25
-
-        };
-        const eGridDiv = document.querySelector('#localNetFlow');
-        new agGrid.Grid(eGridDiv, gridOptions);
-    }
-
     /**
      * 渲染本地网络流量监控数据
      */
@@ -520,23 +502,23 @@
             // console.log(e);
             if (data.hasOwnProperty("upload")) {
                 // speedinfo
-                // document.getElementById('localIP').innerHTML = data.ip;
-                // document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
-                // document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
-                // let netUsePersent = (((data.download + data.upload ) / (data.bandwidth * 1024 / 8)) *
-                //         100).toFixed(3)
-                // document.getElementById('netuse').innerHTML = netUsePersent + "%";
-                // netUsePersent < 60 ? $(".localcol").css({
-                //   "color": "#009688",
-                //   "background": "white"
-                // }) : $(".localcol").css({
-                //   "color": "red",
-                //   "background": "white"
-                // });
-                data.upload = data.upload.toFixed(2) + "kb/s";
-                data.download = data.download.toFixed(2) + "kb/s";
-                data.netuse = data.netuse.toFixed(3) + "%"
-                gridOptions.api.setRowData([data]);
+                document.getElementById('localIP').innerHTML = data.ip;
+                document.getElementById('upload').innerHTML = data.upload.toFixed(2) + "kb/s";
+                document.getElementById('download').innerHTML = data.download.toFixed(2) + "kb/s";
+                document.getElementById('netuse').innerHTML = data.netuse.toFixed(3) + "%"
+                data.netuse < 60 ? $(".localcol").css({
+                    "color": "#009688",
+                    "background": "white"
+                }) : $(".localcol").css({
+                    "color": "red",
+                    "background": "white"
+                });
+                // //****************
+                // data.upload = data.upload.toFixed(2) + "kb/s";
+                // data.download = data.download.toFixed(2) + "kb/s";
+                // data.netuse = data.netuse.toFixed(3) + "%"
+                // gridOptions.api.setRowData([data]);
+                // //******************
                 // table.render({
                 //   elem: '#localNetFlow',
                 //   cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
@@ -701,10 +683,10 @@
         padding-left: 40px;
         font-size: 10px
     }
-
-    .ag-body-viewport-wrapper.ag-layout-normal {
-        overflow-x: hidden;
-        overflow-y: hidden;
+    /*设置数据表表头字体*/
+    .layui-table th {
+        /*表头内容居中显示*/
+        text-align: center;
     }
 </style>
 

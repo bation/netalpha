@@ -17,38 +17,42 @@
 </style>
 
 <body>
-<div>
+<div class="main">
+    <div style="text-align: center;">
+        <div class="layui-inline">
+            <form class="layui-form" lay-filter="configForm" style="max-width: 600px; min-width: 400px ">
+                <div class="layui-form-item" style="margin-top:10px;">
+                    <label class="layui-form-label" >监控间隔：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" lay-verify="interval" name="INTERVAL_SEC" placeholder="以秒位单位，最小5，最大20，超出范围，自动取相近值5或20">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top:10px;">
+                    <label class="layui-form-label" >本机带宽：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" lay-verify="bandwidth" name="DEVICE_BANDWIDTH" placeholder="本机带宽">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top:10px;">
+                    <label class="layui-form-label" >反馈接口地址：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" lay-verify="respUrl" name="OFFLINE_MSG_REP_URL" placeholder="示例：http://0.0.0.0:8080/archiveInfo">
+                    </div>
+                </div>
 
-    <div class="layui-form" lay-filter="configForm" style="max-width: 600px; margin: 0px auto; padding: 5% 0;">
-        <div class="layui-form-item" style="margin-top:10px;">
-			<label class="layui-form-label" for="test1">监控间隔：</label>
-			<div class="layui-input-block">
-                <input type="text" class="layui-input" lay-verify="interval" name="INTERVAL_SEC" placeholder="以秒位单位，最小5，最大20，超出范围，自动取相近值5或20">
-            </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">网络节点IP：</label>
+                    <div class="layui-input-block">
+                        <textarea name="DEVICE_TARGET" lay-verify="nodes" placeholder="多个IP以逗号“,”分割 ，例如：0.0.0.0,1.1.1.1" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div  style="text-align: right;margin-right: 50px">
+                    <button  class="layui-btn  layui-btn-primary" lay-submit lay-filter="formDemo">保存</button>
+                </div>
+            </form>
         </div>
-        <div class="layui-form-item" style="margin-top:10px;">
-			<label class="layui-form-label" for="test2">本机带宽：</label>
-			<div class="layui-input-block">
-                <input type="text" class="layui-input" lay-verify="bandwidth" name="DEVICE_BANDWIDTH" placeholder="本机带宽">
-            </div>
-        </div>
-        <div class="layui-form-item" style="margin-top:10px;">
-			<label class="layui-form-label" for="test3">反馈接口地址：</label>
-			<div class="layui-input-block">
-                <input type="text" class="layui-input" lay-verify="respUrl" name="OFFLINE_MSG_REP_URL" placeholder="示例：http://0.0.0.0:8080/archiveInfo">
-            </div>
-        </div>
-
-		<div class="layui-form-item layui-form-text">
-			<label class="layui-form-label">网络节点IP：</label>
-			<div class="layui-input-block">
-				<textarea name="DEVICE_TARGET" lay-verify="nodes" placeholder="多个IP以逗号“,”分割 ，例如：0.0.0.0,1.1.1.1" class="layui-textarea"></textarea>
-			</div>
-		</div>
-		<div style="text-align: left;margin-left:245px ;margin-top:10px;">
-			<button  class="layui-btn  layui-btn-primary" lay-submit lay-filter="formDemo">保存</button>
-		</div>
     </div>
+
 
 </div>
 
@@ -93,28 +97,34 @@
 
 		let field = data.field
 		console.log(field)
-		$.ajax({
-			type: 'POST',
-			url: updateConfigURI,
-			contentType:"application/x-www-form-urlencoded",
-			data: field,
-			success: function (e) {
-				console.log("success")
-				console.log(e)
+        submitData(field)
+        return false // 不跳转页面
+
+	});
+	function submitData(field) {
+        $.ajax({
+            type: 'POST',
+            url: updateConfigURI,
+            contentType:"application/x-www-form-urlencoded",
+            data: field,
+            success: function (e) {
+                console.log("success")
+                console.log(e)
                 layui.layer.msg("修改成果："+e.data, {
                     icon: 1
                 })
-			},
-			error: function (e) {
-				console.log("err")
-				console.log(e)
-				layui.layer.msg("err", {
-					icon: 2
-				})
-			},
-			dataType: "json"
-		});
-	});
+            },
+            error: function (e) {
+                console.log("err")
+                console.log(e)
+                layui.layer.msg("err", {
+                    icon: 2
+                })
+            },
+            dataType: "json"
+
+        });
+    }
 	/**
 	 * IP地址的正则表达式
 	 * @param ip IP地址
@@ -125,7 +135,11 @@
 				/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
 		return reg.test(ip);
 	}
-
+    resizeFrame()
+    function resizeFrame() {
+        const width = window.innerWidth - 200
+        $("body").css({width:width+"px"})
+    }
 </script>
 </body>
 </html>

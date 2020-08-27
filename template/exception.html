@@ -12,52 +12,71 @@
 <body>
 
 <div>
-    <div class="layui-container" style="height: 100vh">
+    <div class="main">
 
         <!--  单目标监测 异常节点监测-->
-        <h1 style="margin-top: 10px;margin-left: 25px">目标独立监测：</h1>
-        <div style="margin-top: 40px;">
-            <form class="layui-form" action="">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">监测持续时间</label>
-                    <div class="layui-input-block">
-                        <select name="min" lay-verify="required">
-                            <option value=""></option>
-                            <option value="5">5分钟</option>
-                            <option value="60">1小时</option>
-                            <option value="300">5小时</option>
-                            <option value="720">12小时</option>
-                            <option value="1440">24小时</option>
-                        </select>
+        <div >
+            <div style="text-align: right;margin-right: 50px;margin-bottom: 10px">
+                <div style="display: inline">
+                    <div id="timediv" style="display: none;">
+                        <h3 style="display: inline">剩余时间(秒)：</h3><i id="timer"></i>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">请选择</label>
-                    <div class="layui-input-block target2Ping">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">其它节点</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="otherip" lay-verify="otherip" autocomplete="off"
-                               placeholder="请输入ip"
-                               class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn ipt_btn  layui-btn-primary" lay-submit lay-filter="formDemo">
-                            立即提交
-                        </button>
-                        <div id="timediv" style="display: none">
-                            <h3 style="display: inline">剩余时间(秒)：</h3><i id="timer" style="display: inline"></i>
+
+                <button class="layui-btn layui-btn-sm layui-btn-primary"  onclick="hideChart()">
+                    返回
+                </button>
+            </div>
+
+            <div style="text-align: center;">
+
+                <div class="layui-inline">
+{{/*                    主要显示*/}}
+                    <form id="expform" class="layui-form" action="" style="max-width: 600px;  ">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">监测持续时间</label>
+                            <div class="layui-input-block">
+                                <select name="min" lay-verify="required">
+                                    <option value=""></option>
+                                    <option value="5">5分钟</option>
+                                    <option value="60">1小时</option>
+                                    <option value="300">5小时</option>
+                                    <option value="720">12小时</option>
+                                    <option value="1440">24小时</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">请选择</label>
+                            <div class="layui-input-block target2Ping">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">其它节点</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="otherip" lay-verify="otherip" autocomplete="off"
+                                       placeholder="请输入ip"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block" style="text-align: right;margin-right: 50px">
+                                <button class="layui-btn ipt_btn  layui-btn-primary" lay-submit lay-filter="formDemo">
+                                    立即提交
+                                </button>
+
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
-        <div style="text-align: center">
-            <div id="doudong" style="width: 90vw;height: 550px;"></div>
+            </div>
+
+            <div id="chartctn" style="display: none">
+
+                <div id="chartdiv" style="width: 80vw;height: 420px;">
+
+                </div>
+            </div>
         </div>
 
 
@@ -87,6 +106,10 @@
         $(".target2Ping").append(iptHtml)
     }
 
+    function hideChart() {
+        $('#chartctn').toggle();
+        $('#expform').toggle();
+    }
 
     let timerForEnd = 0
 
@@ -100,14 +123,15 @@
         const sec = parseInt($("#timer").text()) - 1;
         $("#timer").text(sec);
         if (sec <= 0) {
-            clearInterval(timerForEnd)
+            clearInterval(timerForEnd);
             $(".ipt").attr({
                 "disabled": "false"
-            })
+            });
             $(".ipt_btn").attr({
                 "disabled": "false"
-            })
-            $(".ipt_btn").removeClass("layui-btn-disabled")
+            });
+            $(".ipt_btn").removeClass("layui-btn-disabled");
+            $("#expform").toggle();
         }
     }
 
@@ -138,10 +162,18 @@
 
     // 初始化
     function init() {
+        resizeFrame()
         initForm();
         if (fData.running) {
             getPingTargetsInfo(null);
+            $("#expform").toggle();
+            $("#chartctn").toggle();
         }
+    }
+
+    function resizeFrame() {
+        const width = window.innerWidth - 200
+        $("body").css({width: width + "px"})
     }
 
     /**
@@ -152,9 +184,9 @@
         let ptiSock = new WebSocket(pingStandalneInfoUrl)
         let runningsTar = fData.running
         let options = generateOption()
-        let chart = echarts.getInstanceByDom(document.getElementById("doudong"));
+        let chart = echarts.getInstanceByDom(document.getElementById("chartdiv"));
         if (!chart) {
-            chart = echarts.init(document.getElementById("doudong"));
+            chart = echarts.init(document.getElementById("chartdiv"));
         }
         // 根据muban复制出来一个table
         // $(".muban").clone().removeClass("muban").addClass("myTable").removeClass("invisible").appendTo(".zzLayer")
@@ -614,6 +646,10 @@
                     $("#timediv").toggle()
                     caclLeftTimeSec(data.field.min)
                     getPingTargetsInfo(dt)
+                    $("#expform").toggle();
+                    $("#chartctn").toggle();
+
+
                 },
                 error: function (e) {
                     console.log("err")

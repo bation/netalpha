@@ -165,7 +165,10 @@ func readLog(path string, ch chan int, ws *websocket.Conn) {
 
 func startPingTargetStandaloneFunc(w http.ResponseWriter, r *http.Request) {
 	AllowCrossOrigin(w)
-
+	if r.Method != "POST" {
+		w.WriteHeader(405)
+		return
+	}
 	// 传输的json必须是字符串格式的json string
 	defer r.Body.Close()
 	type RequestSocketUrl struct {
@@ -327,7 +330,10 @@ func reportNodeDownFunc(ip string, downtime string) []byte {
 // 获取网卡流量历史记录
 func getHistroyNetUseFunc(w http.ResponseWriter, r *http.Request) {
 	AllowCrossOrigin(w)
-
+	if r.Method != "POST" {
+		w.WriteHeader(405)
+		return
+	}
 	var d1 string
 	var d2 string
 	var netuse string
@@ -361,6 +367,10 @@ func getHistroyNetUseFunc(w http.ResponseWriter, r *http.Request) {
 // 获取通断历史记录
 func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	AllowCrossOrigin(w)
+	if r.Method != "POST" {
+		w.WriteHeader(405)
+		return
+	}
 	var d1 string
 	var d2 string
 	var ip string
@@ -402,17 +412,29 @@ func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 // 更新配置文件
 func updateConfig(w http.ResponseWriter, r *http.Request) {
 	AllowCrossOrigin(w)
+	if r.Method != "POST" {
+		w.WriteHeader(405)
+		return
+	}
 	defer r.Body.Close()
 	r.ParseForm()
 	var jsonMap url.Values
 	jsonMap = r.PostForm
 	ret := historyRes{Data: ""}
 	ret.Data = "ok"
-	ret_json, err := json.Marshal(ret)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	if isok, _ := cfg.SetValues(jsonMap); isok {
+
+	if isok, err := cfg.SetValues(jsonMap); isok && err == nil {
+		ret_json, errmh := json.Marshal(ret)
+		if errmh != nil {
+			log4go.Error(err.Error())
+		}
+		w.Write([]byte(ret_json))
+	} else {
+		ret.Data = "fail"
+		ret_json, errmh := json.Marshal(ret)
+		if errmh != nil {
+			log4go.Error(err.Error())
+		}
 		w.Write([]byte(ret_json))
 	}
 	//fmt.Printf("jsonMap:%s \n",jsonMap)

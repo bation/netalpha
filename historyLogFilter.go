@@ -218,6 +218,9 @@ func getHistoryNetUseFromLogFile(path string, stime time.Time, etime time.Time, 
 				fmt.Println(errt.Error() + ":::::asdfasdfljalsdfj")
 			}
 			if t.After(stime) && t.Before(etime) {
+				tStr := tstr[1 : len(tstr)-5]
+				// fmt.Println(tStr)
+				msg := msg[0:len(msg)-1] + ",\"time\":\"" + tStr + "\"}"
 				// 时间在给定区间内
 				result += msg + ","
 			}
