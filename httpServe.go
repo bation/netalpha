@@ -461,7 +461,27 @@ func httpHandle() {
 	http.HandleFunc("/netflow", templateNetFlow)     //入口
 	http.HandleFunc("/exception", templateException) //入口
 	http.HandleFunc("/config", templateConfig)       //入口
+	http.HandleFunc("/document", templateDocument)   //入口
+}
 
+func templateDocument(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/document.html")
+	if err != nil {
+		fmt.Fprintln(w, err)
+		log4go.Error(err)
+		return
+	}
+	var runningTargets []string
+	files := GetRunningFiles()
+	for _, val := range files {
+		valIp := strings.Split(val, "_")[0]
+		runningTargets = append(runningTargets, valIp)
+	}
+	cfg.RunningTargets = runningTargets
+	mjson, _ := json.Marshal(cfg)
+	mString := string(mjson)
+
+	t.Execute(w, mString)
 }
 
 func templateNode(w http.ResponseWriter, r *http.Request) {

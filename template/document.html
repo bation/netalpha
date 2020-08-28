@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" href="/js/layui-v2.5.6/layui/css/layui.css">
+<script src="/js/marked.min.js"></script>
+<script src="/js/jquery-2.2.3.min.js"></script>
+<body>
+<div id="content"  class="main">
+
+</div>
+
+<script>
+    const dd = {{.}}
+    let html =''
+
+        resizeFrame()
+    function resizeFrame() {
+        const width = window.innerWidth - 220
+        $("body").css({width:width+"px"})
+    }
+    function initContent(content){
+        document.getElementById("content").innerHTML=content
+    }
+    function gg(a){
+        html+=marked(a)
+    }
+    function l1(a){
+        return '# '+a
+    }
+    function l2(a){
+        return '## '+a
+    }
+    function l3(a){
+        return '### '+a
+    }
+    function p(a){
+        return a+'  \n'
+    }
+    function xieti(a){
+        return '*'+a+'*'
+    }
+    function cuti(a){
+        return '**'+a+'**'
+    }
+    function liebiao(a){
+        return '- '+a
+    }
+    function liebiaoNode(a){
+        return '    -    '+a
+    }
+    function fenge(a){
+        return '___ '+a
+    }
+    function code(a){
+        return '```javascript\n'+a+'\n```'
+    }
+    gg(l3('一、节点监控'))
+    gg("</br>")
+    gg(liebiaoNode('1.获取节点监控实时信息'))
+    gg(liebiaoNode('    URL:   ws://192.168.96.183:8769/info'))
+    gg(liebiaoNode('    请求方式:   WebSocket'))
+    gg(liebiaoNode('    请求参数:   无'))
+    gg(liebiaoNode('    返回参数:   {data:"{"ip":"120.201.115.1","status":"ONLINE","time":"2020-08-27 16:19:56"}"}'))
+    gg(liebiaoNode('    返回参数说明:   data type json string'))
+    gg(liebiaoNode('                    ip type string IP地址'))
+    gg(liebiaoNode('                    status type string 在线状态 取值范围：ONLINE(在线)，OFFLINE（不可达）,LOSTRATEG1（丢包率高于1%）,HIGH_LATENCY（延迟高于300毫秒）'))
+    gg(liebiaoNode('                    time type time string 时间'))
+    gg("</br>")
+    gg(liebiaoNode('2.获取节点监控历史数据'))
+    gg(liebiaoNode('    URL:   http://192.168.96.183:8769/getHistory'))
+    gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    请求参数:   {"d1":"2020/08/27 16:27:01","d2":"2020/08/27 16:32:01","ip":"192.168.96.183","status":"ONLINE"}'))
+    gg(liebiaoNode('    请求参数说明:  d1 type string 开始时间'))
+    gg(liebiaoNode('                   d2 type string 结束时间'))
+    gg(liebiaoNode('                   ip type string IP地址'))
+    gg(liebiaoNode('                   status type string 状态，取值范围参考/info接口'))
+    gg(liebiaoNode('                   注意：开始时间与结束时间相差大于10min的，只返回10min数据'))
+    gg(liebiaoNode('    返回参数:   {"data":"{\"result\":[{\"ip\":\"192.168.96.231\",\"status\":\"LOSTRATEG1\",\"time\":\"2020-08-27 16:27:02\"},{\"ip\":\"120.201.115.1\",\"status\":\"ONLINE\",\"time\":\"2020-08-27 16:27:03\"},{\"ip\":\"39.156.66.14\",\"status\":\"ONLINE\",\"time\":\"2020-08-27 16:31:54\"}]}"}'))
+    gg(liebiaoNode('    返回参数说明:   data type json string'))
+    gg(liebiaoNode('                    ip type string IP地址'))
+    gg(liebiaoNode('                    status type string 在线状态 取值范围：ONLINE(在线)，OFFLINE（不可达）,LOSTRATEG1（丢包率高于1%）,HIGH_LATENCY（延迟高于300毫秒）'))
+    gg(liebiaoNode('                    time type time string 时间'))
+
+    gg("</br>")
+    gg("</br>")
+    gg(l3('二、流量监测'))
+    gg("</br>")
+    gg(liebiaoNode('1.获取流量监测实时信息'))
+    gg(liebiaoNode('    URL:   ws://192.168.96.183:8769/getNetUsingInfo'))
+    gg(liebiaoNode('    请求方式:   WebSocket'))
+    gg(liebiaoNode('    返回参数:   {data:"{"ip":"192.168.96.183","upload":0,"download":0,"bandwidth":100,"netuse":0}"}'))
+    gg(liebiaoNode('    返回参数说明:   data type json string'))
+    gg(liebiaoNode('                    ip type string IP地址'))
+    gg(liebiaoNode('                    upload type float 上行流量 单位kb/s'))
+    gg(liebiaoNode('                    download type float 下行流量 单位kb/s'))
+    gg(liebiaoNode('                    bandwidth type float 带宽设置值 单位MBytes'))
+    gg(liebiaoNode('                    netuse type float 网络占用率 单位 百分比'))
+    gg("</br>")
+    gg(liebiaoNode('2.获取流量监测历史数据'))
+    gg(liebiaoNode('    URL:   http://192.168.96.183:8769/getHistoryNetUse'))
+    gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    请求参数:   {"d1":"2020/08/27 16:27:01","d2":"2020/08/27 16:32:01","netuse":"0.1"}'))
+    gg(liebiaoNode('    请求参数说明:   netuse type number string 网络利用率'))
+    gg(liebiaoNode('                    d1 type string 开始时间'))
+    gg(liebiaoNode('                    d2 type string 结束时间'))
+    gg(liebiaoNode('                    注意：开始时间与结束时间相差大于10min的，只返回10min数据'))
+    gg(liebiaoNode('                    netuse type float 网络占用率 单位 百分比'))
+    gg(liebiaoNode('    返回参数:   {data: "{"result":[{"ip":"192.168.96.183","upload":23.512077,"download":128.79414,"bandwidth":100,"netuse":1.1898923,"time":"2020/08/28 08:15:28"},{"ip":"192.168.96.183","upload":22.87132,"download":52.448048,"bandwidth":100,"netuse":0.58843255,"time":"2020/08/28 08:19:58"}]}"}'))
+    gg(liebiaoNode('    返回参数说明:   data type json string'))
+    gg(liebiaoNode('                    result type array 历史记录集合'))
+    gg(liebiaoNode('                    ip type string IP地址'))
+    gg(liebiaoNode('                    upload type float 上行流量 单位kb/s'))
+    gg(liebiaoNode('                    download type float 下行流量 单位kb/s'))
+    gg(liebiaoNode('                    bandwidth type float 带宽设置值 单位MBytes'))
+    gg(liebiaoNode('                    netuse type float 网络占用率 单位 百分比'))
+    gg(liebiaoNode('                    time type time string 时间'))
+    gg("</br>")
+    gg(liebiaoNode('3.获取流量监测历史数据'))
+    gg(liebiaoNode('    URL:   http://192.168.96.183:8769/testNetFlow'))
+    gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    请求参数:   {"ip":"192.168.96.183","protocol":"http"}'))
+    gg(liebiaoNode('    请求参数说明:   ip type string ip地址'))
+    gg(liebiaoNode('                    protocol type string 协议（可选http、tcp、udp）'))
+    gg(liebiaoNode('    返回参数:   {"data":[{"protocol":"HTTP","bits":"22.08K","mbits":0.0215625},{"protocol":"HTTP","bits":"42.50M","mbits":42.5},{"protocol":"HTTP","bits":"42.11M","mbits":42.11},{"protocol":"HTTP","bits":"41.98M","mbits":41.98},{"protocol":"HTTP","bits":"41.22M","mbits":41.22}],"avg":41.9525}'))
+    gg(liebiaoNode('    返回参数说明:   data array 速度测试集合'))
+    gg(liebiaoNode('                    protocol type string 协议类型'))
+    gg(liebiaoNode('                    bits type string 速率，未格式化统一单位'))
+    gg(liebiaoNode('                    mbits type float 速率，单位MBits'))
+    gg(liebiaoNode('                    avg type float 平均速率，单位MBits'))
+    gg("</br>")
+    gg("</br>")
+    gg(l3('三、异常监测'))
+    gg("</br>")
+    gg(liebiaoNode('1.测试节点网络连接情况'))
+    gg(liebiaoNode('    URL:   http://192.168.96.183:8769/startPingTargets'))
+    gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    请求参数:   {"min":5,"targets":["192.168.96.183","39.156.66.14","192.168.96.233"]}'))
+    gg(liebiaoNode('    请求参数说明:   min type int 测试持续时间（单位分钟）'))
+    gg(liebiaoNode('                    targets type array 测试节点IP集合'))
+    gg(liebiaoNode('                    targets type array 测试节点IP集合'))
+    gg(liebiaoNode('    返回参数:   {data: "done"}'))
+    gg(liebiaoNode('    返回参数说明:   data string 状态'))
+    gg("</br>")
+    gg(liebiaoNode('2.获取实时测试节点网络连接情况'))
+    gg(liebiaoNode('    URL:   ws://192.168.96.183:8769/getPingTargetsInfo'))
+    gg(liebiaoNode('    请求方式:   WebSocket'))
+    gg(liebiaoNode('    返回参数:   {data:"{"ip":"120.201.115.1","send":1,"recv":1,"lost":0,"duration":6,"maxDuration":6,"minDuration":6,"avgDuration":6,"time":"2020/08/28 09:05:39"}"}'))
+    gg(liebiaoNode('    返回参数说明:   data type json string '))
+    gg(liebiaoNode('                    ip type string 测试地址'))
+    gg(liebiaoNode('                    send type int 已发送ICMP请求数量'))
+    gg(liebiaoNode('                    recv type int 已接收ICMP响应数量'))
+    gg(liebiaoNode('                    lost type int ICMP响应超时数量'))
+    gg(liebiaoNode('                    duration type int ICMP响应时长 单位毫秒'))
+    gg(liebiaoNode('                    maxDuration type int ICMP最长响应时长 单位毫秒'))
+    gg(liebiaoNode('                    minDuration type int ICMP最短响应时长 单位毫秒'))
+    gg(liebiaoNode('                    avgDuration type int ICMP平均响应时长 单位毫秒'))
+    gg(liebiaoNode('                    time type time string 时间'))
+    gg("</br>")
+    gg("</br>")
+    gg(l3('四、配置修改'))
+    gg("</br>")
+    gg(liebiaoNode('1.修改配置文件'))
+    gg(liebiaoNode('    URL:   http://192.168.96.183:8769/updateConfig'))
+    gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    请求参数:   {INTERVAL_SEC: "5", DEVICE_BANDWIDTH: "100", OFFLINE_MSG_REP_URL: "", DEVICE_TARGET: "192.168.96.183,192.168.96.230,192.168.96.231,39.156.66.14,120.201.115.1"}'))
+    gg(liebiaoNode('    请求参数说明:   INTERVAL_SEC type string int 间隔时间 单位 秒'))
+    gg(liebiaoNode('                    DEVICE_BANDWIDTH type string int 本地网卡带宽'))
+    gg(liebiaoNode('                    OFFLINE_MSG_REP_URL type string 断线反馈地址'))
+    gg(liebiaoNode('                    DEVICE_TARGET type string 以逗号分割的节点IP地址'))
+    gg(liebiaoNode('    返回参数:   {data: "ok"}'))
+    gg(liebiaoNode('    返回参数说明:   data string 状态'))
+
+    gg("</br>")
+    gg("</br>")
+    gg(l3('五、其它接口'))
+    gg("</br>")
+    gg(liebiaoNode('1.节点不可达反馈接口'))
+    gg(liebiaoNode('    URL:   需在配置文件中配置'))
+    gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    请求参数:   {"ip": "192.168.96.183", downtime: "2020/08/28 09:05:39"}'))
+    gg(liebiaoNode('    请求参数说明:   ip type string 网络不可达IP'))
+    gg(liebiaoNode('    请求参数说明:   downtime type time string 断线时间'))
+
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+
+
+    initContent(html)
+
+
+</script>
+</body>
+</html>

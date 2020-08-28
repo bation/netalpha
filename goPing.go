@@ -245,10 +245,13 @@ func stat(logger *log4go.Logger, ip string, sendN int64, lostN int64, recvN int6
 	if lost >= 1 && sendN >= 100 {
 		stat.Stat = WARN
 	}
-	if sumAVG >= 3000 {
-		stat.Stat = OFFLINE
-		reportNodeDownFunc(stat.Ip, stat.Time)
+	if cfg.OfflineRepURL != "" {
+		if sumAVG >= 3000 {
+			stat.Stat = OFFLINE
+			go reportNodeDownFunc(stat.Ip, stat.Time)
+		}
 	}
+
 	stat.Time = time.Now().Format("2006-01-02 15:04:05")
 	//直接写日志，不用Chanel
 	logger.Info(structToJsonsting(stat))
