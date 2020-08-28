@@ -49,7 +49,8 @@ func main() {
 	fmt.Printf("间隔：%d 秒, ip:%s, 设备名：%s, 带宽：%f Mbps, 配置文件位置：%s, 网关：%s \n", cfg.Interval, cfg.Ip, cfg.name, cfg.Bandwidth, cfg.path, cfg.Targets)
 	if !iscfgOk {
 		//需要重新修改配置文件
-		fmt.Println("请修改配置文件中的 DEVICE_IP 和 DEVICE_BANDWIDTH，然后重新运行！")
+		lgg.Error("启动失败，DEVICE_IP未找到！")
+		lgg.Error("请修改配置文件中的 DEVICE_IP为本机IP地址，配置文件位于程序运行目录下的./config/config.cfg文件！")
 		os.Exit(1)
 	}
 	// 正式开始

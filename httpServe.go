@@ -186,6 +186,11 @@ func startPingTargetStandaloneFunc(w http.ResponseWriter, r *http.Request) {
 		log4go.Error("format body to json failed " + err.Error())
 		return
 	}
+	if data.Min==0||len(data.Targets)==0{
+		w.WriteHeader(400)//bad request
+		w.Write([]byte("arg err"))
+		return
+	}
 	fmt.Printf("min: %d ,tar:%s \n", data.Min, data.Targets)
 	//if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 	//	fmt.Println("decode err:"+ err.Error())
@@ -352,6 +357,11 @@ func getHistroyNetUseFunc(w http.ResponseWriter, r *http.Request) {
 		d2 = GetPostArg(r, "d2")
 		netuse = GetPostArg(r, "netuse")
 	}
+	if len(d1+d2)==0{
+		w.WriteHeader(400)//bad request
+		w.Write([]byte("arg err"))
+		return
+	}
 	if strings.TrimSpace(netuse) == "" {
 		netuse = "0"
 	}
@@ -381,8 +391,8 @@ func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(405)
 		return
 	}
-	var d1 string
-	var d2 string
+	var d1 string // 必须参数
+	var d2 string // 必须参数
 	var ip string
 	var status string
 	if r.Method == "POST" {
@@ -399,6 +409,11 @@ func getHistoryFunc(w http.ResponseWriter, r *http.Request) {
 	//ds2 := strings.Split(data[1], "=")
 	//d1 := ds1[1]
 	//d2 := ds2[1]
+	if len(d1+d2)==0{
+		w.WriteHeader(400)//bad request
+		w.Write([]byte("arg err"))
+		return
+	}
 	res := getHistroy(d1, d2, ip, status)
 	ret := historyRes{Data: ""}
 	ret.Data = "{\"result\":" + res + "}"
@@ -430,6 +445,11 @@ func updateConfig(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	var jsonMap url.Values
 	jsonMap = r.PostForm
+	if r.PostForm == nil{
+		w.WriteHeader(400)//bad request
+		w.Write([]byte("arg err"))
+		return
+	}
 	ret := historyRes{Data: ""}
 	ret.Data = "ok"
 
