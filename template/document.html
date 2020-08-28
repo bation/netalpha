@@ -49,7 +49,7 @@
         return '- '+a
     }
     function liebiaoNode(a){
-        return '    -    '+a
+        return '        '+a
     }
     function fenge(a){
         return '___ '+a
@@ -72,6 +72,7 @@
     gg(liebiaoNode('2.获取节点监控历史数据'))
     gg(liebiaoNode('    URL:   http://192.168.96.183:8769/getHistory'))
     gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    Content-Type:   application/x-www-form-urlencoded'))
     gg(liebiaoNode('    请求参数:   {"d1":"2020/08/27 16:27:01","d2":"2020/08/27 16:32:01","ip":"192.168.96.183","status":"ONLINE"}'))
     gg(liebiaoNode('    请求参数说明:  d1 type string 开始时间'))
     gg(liebiaoNode('                   d2 type string 结束时间'))
@@ -102,6 +103,7 @@
     gg(liebiaoNode('2.获取流量监测历史数据'))
     gg(liebiaoNode('    URL:   http://192.168.96.183:8769/getHistoryNetUse'))
     gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    Content-Type:   application/x-www-form-urlencoded'))
     gg(liebiaoNode('    请求参数:   {"d1":"2020/08/27 16:27:01","d2":"2020/08/27 16:32:01","netuse":"0.1"}'))
     gg(liebiaoNode('    请求参数说明:   netuse type number string 网络利用率'))
     gg(liebiaoNode('                    d1 type string 开始时间'))
@@ -118,9 +120,10 @@
     gg(liebiaoNode('                    netuse type float 网络占用率 单位 百分比'))
     gg(liebiaoNode('                    time type time string 时间'))
     gg("</br>")
-    gg(liebiaoNode('3.获取流量监测历史数据'))
+    gg(liebiaoNode('3.测试节点网络最大带宽'))
     gg(liebiaoNode('    URL:   http://192.168.96.183:8769/testNetFlow'))
     gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    Content-Type:   application/x-www-form-urlencoded'))
     gg(liebiaoNode('    请求参数:   {"ip":"192.168.96.183","protocol":"http"}'))
     gg(liebiaoNode('    请求参数说明:   ip type string ip地址'))
     gg(liebiaoNode('                    protocol type string 协议（可选http、tcp、udp）'))
@@ -137,6 +140,7 @@
     gg(liebiaoNode('1.测试节点网络连接情况'))
     gg(liebiaoNode('    URL:   http://192.168.96.183:8769/startPingTargets'))
     gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    Content-Type:   application/x-www-form-urlencoded'))
     gg(liebiaoNode('    请求参数:   {"min":5,"targets":["192.168.96.183","39.156.66.14","192.168.96.233"]}'))
     gg(liebiaoNode('    请求参数说明:   min type int 测试持续时间（单位分钟）'))
     gg(liebiaoNode('                    targets type array 测试节点IP集合'))
@@ -144,7 +148,7 @@
     gg(liebiaoNode('    返回参数:   {data: "done"}'))
     gg(liebiaoNode('    返回参数说明:   data string 状态'))
     gg("</br>")
-    gg(liebiaoNode('2.获取实时测试节点网络连接情况'))
+    gg(liebiaoNode('2.获取测试节点实时网络连接情况'))
     gg(liebiaoNode('    URL:   ws://192.168.96.183:8769/getPingTargetsInfo'))
     gg(liebiaoNode('    请求方式:   WebSocket'))
     gg(liebiaoNode('    返回参数:   {data:"{"ip":"120.201.115.1","send":1,"recv":1,"lost":0,"duration":6,"maxDuration":6,"minDuration":6,"avgDuration":6,"time":"2020/08/28 09:05:39"}"}'))
@@ -165,6 +169,7 @@
     gg(liebiaoNode('1.修改配置文件'))
     gg(liebiaoNode('    URL:   http://192.168.96.183:8769/updateConfig'))
     gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    Content-Type:   application/x-www-form-urlencoded'))
     gg(liebiaoNode('    请求参数:   {INTERVAL_SEC: "5", DEVICE_BANDWIDTH: "100", OFFLINE_MSG_REP_URL: "", DEVICE_TARGET: "192.168.96.183,192.168.96.230,192.168.96.231,39.156.66.14,120.201.115.1"}'))
     gg(liebiaoNode('    请求参数说明:   INTERVAL_SEC type string int 间隔时间 单位 秒'))
     gg(liebiaoNode('                    DEVICE_BANDWIDTH type string int 本地网卡带宽'))
@@ -180,10 +185,19 @@
     gg(liebiaoNode('1.节点不可达反馈接口'))
     gg(liebiaoNode('    URL:   需在配置文件中配置'))
     gg(liebiaoNode('    请求方式:   POST'))
+    gg(liebiaoNode('    Content-Type:   application/x-www-form-urlencoded'))
     gg(liebiaoNode('    请求参数:   {"ip": "192.168.96.183", downtime: "2020/08/28 09:05:39"}'))
     gg(liebiaoNode('    请求参数说明:   ip type string 网络不可达IP'))
     gg(liebiaoNode('    请求参数说明:   downtime type time string 断线时间'))
 
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
+    gg("</br>")
     gg("</br>")
     gg("</br>")
     gg("</br>")

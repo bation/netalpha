@@ -137,9 +137,8 @@ func checkErr(err error, extra string) bool {
 }
 
 type PostMapData struct {
-	Url           string
-	Data          map[string]string //post要传输的数据，必须key value必须都是string
-	DataInterface map[string]interface{}
+	Url  string
+	Data map[string]string //post要传输的数据，必须key value必须都是string
 }
 
 //适用于 application/x-www-form-urlencoded
@@ -155,21 +154,19 @@ func (r *PostMapData) PostWithAppEncoded() ([]byte, error) {
 		return nil, err
 	}
 	//伪装头部
-	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
-	req.Header.Add("Accept-Encoding", "gzip, deflate, br")
-	req.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4")
-	req.Header.Add("Connection", "keep-alive")
-	req.Header.Add("Content-Length", "25")
+	//req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+	//req.Header.Add("Accept-Encoding", "gzip, deflate, br")
+	//req.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4")
+	//req.Header.Add("Connection", "keep-alive")
+	//req.Header.Add("Content-Length", "25")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Cookie", "")
-	//req.Header.Add("Host","www.lagou.com")
-	//req.Header.Add("Origin","https://www.lagou.com")
-	//req.Header.Add("Referer","https://www.lagou.com/jobs/list_python?labelWords=&fromSearch=true&suginput=")
-	req.Header.Add("X-Anit-Forge-Code", "0")
-	req.Header.Add("X-Anit-Forge-Token", "None")
-	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-	req.Header.Add("X-Requested-With", "XMLHttpRequest")
+	//req.Header.Add("Cookie", "")
+	//req.Header.Add("X-Anit-Forge-Code", "0")
+	//req.Header.Add("X-Anit-Forge-Token", "None")
+	//req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+	//req.Header.Add("X-Requested-With", "XMLHttpRequest")
 	//提交请求
+
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if err != nil {
@@ -240,19 +237,20 @@ func Get(url string) string {
 // data：        POST请求提交的数据
 // contentType： 请求体格式，如：application/json
 // content：     请求放回的内容
-func Post(url string, data interface{}, contentType string) string {
+func Post(url string, data interface{}, contentType string) (string, error) {
 
 	// 超时时间：5秒
 	client := &http.Client{Timeout: 5 * time.Second}
-	jsonStr, _ := json.Marshal(data)
+	jsonStr, err := json.Marshal(data)
 	resp, err := client.Post(url, contentType, bytes.NewBuffer(jsonStr))
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
+	if resp != nil {
+		result, _ := ioutil.ReadAll(resp.Body)
+		defer resp.Body.Close()
+		return string(result), err
 
-	result, _ := ioutil.ReadAll(resp.Body)
-	return string(result)
+	}
+	return "", err
+
 }
 
 // 允许跨域 CRS

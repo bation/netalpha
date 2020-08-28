@@ -309,22 +309,32 @@ func handleNetUsing(conn *websocket.Conn) {
 
 }
 
+type PostData struct {
+	Ip       string `json:"ip"`
+	Downtime string `json:"downtime"`
+}
+
 // 反馈节点掉线，
-func reportNodeDownFunc(ip string, downtime string) []byte {
+func reportNodeDownFunc(ip string, downtime string) ([]byte, error) {
 	//done 反馈节点掉线接口
 	if cfg.OfflineRepURL == "" {
-		return nil
+		return nil, nil
 	}
 	var ptc PostMapData
 	ptc.Url = cfg.OfflineRepURL
+	ptc.Data = make(map[string]string)
 	ptc.Data["ip"] = ip
 	ptc.Data["downtime"] = downtime
-	resp, err := ptc.PostWithFormData()
-	if err != nil {
-		log4go.Error("反馈失败：" + err.Error())
-	}
-	return resp
-
+	bts, err := ptc.PostWithAppEncoded()
+	//var pd PostData
+	//pd.Ip = ip
+	//pd.Downtime = downtime
+	//str,err:=Post(cfg.OfflineRepURL,pd,"application/x-www-form-urlencoded")
+	//if err != nil {
+	//	log4go.Error("反馈失败：" + err.Error())
+	//}
+	//return str
+	return bts, err
 }
 
 // 获取网卡流量历史记录
@@ -440,6 +450,7 @@ func updateConfig(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("jsonMap:%s \n",jsonMap)
 }
 func httpHandle() {
+	http.HandleFunc("/testResOffline", test)  // 传输数据 ethr
 	http.HandleFunc("/testNetFlow", httpEthr) // 传输数据 ethr
 	// http.Handle("/css/", http.FileServer(http.Dir("template")))
 	//http.HandleFunc("/echo", echoFunc)                             // 传输数据 读写
@@ -462,6 +473,24 @@ func httpHandle() {
 	http.HandleFunc("/exception", templateException) //入口
 	http.HandleFunc("/config", templateConfig)       //入口
 	http.HandleFunc("/document", templateDocument)   //入口
+}
+
+func test(w http.ResponseWriter, r *http.Request) {
+	AllowCrossOrigin(w)
+	if r.Method != "POST" {
+		w.WriteHeader(405)
+		return
+	}
+	defer r.Body.Close()
+	r.ParseForm()
+	if r.PostForm != nil {
+		if len(r.PostForm) != 0 {
+			ip := r.PostForm.Get("ip")
+			downtime := r.PostForm.Get("downtime")
+			fmt.Println(ip + " 断线时间：" + downtime)
+		}
+	}
+
 }
 
 func templateDocument(w http.ResponseWriter, r *http.Request) {
