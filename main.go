@@ -9,13 +9,16 @@ import (
 )
 
 var mainThread = sync.WaitGroup{}
-var interval = 5 //间隔 秒
+
 ////整合广播ping speed
 //var brocastSpeed = NewBroadcaster()
 //var chanelSpeedRcver = brocastSpeed.Listen()
 var netUsingQuene Queue // 接收及发送数据的队列--本地网卡流量
 var cfg Config
 var statusQuene Queue // 接收及发送数据的队列--网关节点状态监控
+var stopQuene Queue   // 用于存储需停止发送icmp的IP
+
+var defaultLogger log4go.Logger
 
 func main() {
 	// 初始化配置文件
@@ -23,6 +26,7 @@ func main() {
 	//fmt.Println("",cfg.offlineRepURL=="")
 	netUsingQuene.Init()
 	statusQuene.Init()
+	stopQuene.Init()
 	lgg := log4go.NewLogger()
 	defer lgg.Close()
 	//lgg.LoadConfiguration("./config/log4go.xml")
@@ -36,6 +40,7 @@ func main() {
 	lgg.AddFilter("log", log4go.INFO, flw)
 	lgg.SetAsDefaultLogger()
 	lgg.Info("start running")
+	defaultLogger = lgg
 	httpHandle()
 
 	//cfg.setValueByKey("DURATION","5")
@@ -49,7 +54,6 @@ func main() {
 	}
 	// 正式开始
 
-	interval = cfg.Interval
 	// ping 直接写入log
 	for statusQuene.Size() > 0 {
 		statusQuene.Dequeue()

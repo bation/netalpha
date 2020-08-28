@@ -144,6 +144,33 @@ func (c *Config) initValue() {
 		fmt.Printf("*****ping target: %s ******\n", val)
 		pingTargets = append(pingTargets, strings.TrimSpace(val))
 	}
+	//判断是否已在ping列表
+	if len(c.Targets) > 0 {
+		//找出多出来的target 节点
+		var nodesAppend []string
+		for _, val := range pingTargets {
+			if !Contain(val, c.Targets) {
+				nodesAppend = append(nodesAppend, val)
+			}
+		}
+		// 开始增加ping线程
+		if len(nodesAppend) > 0 {
+			for _, val := range nodesAppend {
+				go PingForStatus(val)
+			}
+		}
+		var nodesToStop []string
+		for _, val := range c.Targets {
+			if !Contain(val, pingTargets) {
+				//停止ping线程
+				nodesToStop = append(nodesToStop, val)
+				stopQuene.Enqueue(val)
+			}
+		}
+		fmt.Printf("增加节点：%s \n", nodesAppend)
+		fmt.Printf("停止节点：%s \n", nodesToStop)
+
+	}
 	c.Targets = pingTargets
 	c.Interval = strToInt(c.GetValueByKey("INTERVAL_SEC"))
 	if c.Interval < 5 {

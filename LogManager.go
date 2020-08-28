@@ -52,7 +52,7 @@ func GetRunningFiles() []string {
 	files := listAllLogFileName(1, "./log")
 	var temp []string
 	for _, fname := range files {
-		fmt.Println(fname)
+		//fmt.Println(fname)
 		vls := strings.Split(fname, "_")
 		if len(vls) == 3 {
 			stt := strings.Split(vls[2], ".")[0]

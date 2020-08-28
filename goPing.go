@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/AlexStocks/log4go"
 	"net"
-
 	// "strconv"
 	"time"
 )
@@ -52,12 +51,37 @@ func GoPing(args []string, isStandalone bool, logger *log4go.Logger, min int) {
 		if host == "" {
 			continue
 		}
-		go ping(host, isStandalone, argsmap, logger, endTime)
+		go PingSingleIP(host, isStandalone, argsmap, logger, endTime)
 	}
 
 }
+func PingForStatus(ip string) {
+	endTime, _ := time.ParseInLocation(NOTIME, NOTIME, time.Local)
+	var count int
+	var size int
+	var timeout int64
+	var neverstop bool
+	count = 4
+	timeout = 3000
+	size = 32
+	neverstop = true
+	argsmap := map[string]interface{}{}
+	argsmap["w"] = timeout
+	argsmap["n"] = count
+	argsmap["l"] = size
+	argsmap["t"] = neverstop
+	PingSingleIP(ip, false, argsmap, &defaultLogger, endTime)
+}
 
-func ping(host string, isStandalone bool, args map[string]interface{}, logger *log4go.Logger, endTime time.Time) {
+// 通断状态 isStandalone = false
+// 通断状态 endTime, _ = time.ParseInLocation(NOTIME, NOTIME, time.Local)
+// 通断状态 logger log4go
+// argsmap := map[string]interface{}{}
+//	argsmap["w"] = 3000
+//	argsmap["n"] = 4
+//	argsmap["l"] = 32
+//	argsmap["t"] = true
+func PingSingleIP(host string, isStandalone bool, args map[string]interface{}, logger *log4go.Logger, endTime time.Time) {
 	var count int
 	var size int
 	var timeout int64
@@ -102,7 +126,13 @@ func ping(host string, isStandalone bool, args map[string]interface{}, logger *l
 				return
 			}
 		}
-
+		if stopQuene.Size() > 0 {
+			if stopQuene.Peek().(string) == ip.String() {
+				stopQuene.Dequeue()
+				logger.Error("*****ip: %s 因配置文件修改而终止*****", ip.String())
+				return
+			}
+		}
 		sendN++
 		var msg []byte = make([]byte, size+ECHO_REQUEST_HEAD_LEN)
 		msg[0] = 8                        // echo
@@ -142,7 +172,7 @@ func ping(host string, isStandalone bool, args map[string]interface{}, logger *l
 			// 异常节点监测，每5秒一次，不可调
 			time.Sleep(time.Duration(5 * 1000 * 1000 * 1000))
 		} else {
-			time.Sleep(time.Duration(interval * 1000 * 1000 * 1000))
+			time.Sleep(time.Duration(cfg.Interval * 1000 * 1000 * 1000))
 
 		}
 

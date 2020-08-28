@@ -11,11 +11,31 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
 
+//判断target中是否存在obj
+//判断某个元素是否在 slice,array ,map中
+func Contain(obj interface{}, target interface{}) bool {
+	targetValue := reflect.ValueOf(target)
+	switch reflect.TypeOf(target).Kind() {
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < targetValue.Len(); i++ {
+			if targetValue.Index(i).Interface() == obj {
+				return true
+			}
+		}
+	case reflect.Map:
+		if targetValue.MapIndex(reflect.ValueOf(obj)).IsValid() {
+			return true
+		}
+	}
+
+	return false
+}
 func float64ToStr(flt float64) string {
 	return strconv.FormatFloat(flt, 'f', -1, 64)
 }
